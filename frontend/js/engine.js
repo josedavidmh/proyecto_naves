@@ -61,6 +61,7 @@ export class GameEngine {
     this.stageTargetDistance = 3200;
     this.midBossSpawned = false;
     this.finalBossSpawned = false;
+    this.mainBossDefeated = false;
     this.activeBoss = null;
 
     // Entradas
@@ -240,6 +241,7 @@ export class GameEngine {
     this.stageDistance = 0;
     this.midBossSpawned = false;
     this.finalBossSpawned = false;
+    this.mainBossDefeated = false;
     this.activeBoss = null;
     this.updateHudWeaponAndBombs();
 
@@ -773,6 +775,23 @@ export class GameEngine {
 
       // Soltar GRAN PREMIO DE JEFE (Mejora de armas + 2 Bombas tácticas)
       this.spawnBossGrandPrize(enemy.x, enemy.y);
+
+      // Si es el Jefe Principal de Área (no un subjefe intermedio)
+      if (!enemy.isSubBoss) {
+        this.mainBossDefeated = true;
+        this.enemyProjectiles = []; // Proteger al jugador limpiando todos los proyectiles hostiles
+
+        // Anuncio cinemático en pantalla
+        this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 35, `🏆 ¡JEFE DE ÁREA DERROTADO!`, "#fbbf24");
+        this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 + 5, `ÁREA ${this.currentStage} SUPERADA CON ÉXITO`, "#10b981");
+
+        // Breve ventana de 1.8 segundos para recoger el Gran Premio antes de abrir la pantalla de victoria
+        setTimeout(() => {
+          if (this.isRunning) {
+            this.handleStageVictory();
+          }
+        }, 1800);
+      }
     } else {
       this.screenShake = Math.max(this.screenShake, 3.5);
       Sound.playExplosion();
