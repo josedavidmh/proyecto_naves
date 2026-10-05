@@ -122,3 +122,47 @@ def get_current_user(current_user: User):
         "success": True,
         "user": current_user.to_dict()
     }), 200
+
+@auth_bp.route("/change-password", methods=["POST"])
+@token_required
+def change_password(current_user: User):
+    """Permite al usuario autenticado cambiar su contraseña."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "Cuerpo de solicitud JSON requerido."}), 400
+
+    current_password = data.get("current_password", "").strip()
+    new_password = data.get("new_password", "").strip()
+
+    if not current_password or not new_password:
+        return jsonify({
+            "success": False,
+            "error": "Debe proporcionar la 'contraseña actual' y la 'nueva contraseña'."
+        }), 400
+
+    if not current_user.check_password(current_password):
+        return jsonify({
+            "success": False,
+            "error": "La contraseña actual introducida no es correcta."
+        }), 401
+
+    if len(new_password) < 6:
+        return jsonify({
+            "success": False,
+            "error": "La nueva contraseña debe tener al menos 6 caracteres."
+        }), 400
+
+    if current_password == new_password:
+        return jsonify({
+            "success": False,
+            "error": "La nueva contraseña no puede ser idéntica a la anterior."
+        }), 400
+
+    current_user.set_password(new_password)
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": "Contraseña de acceso actualizada con éxito."
+    }), 200
+

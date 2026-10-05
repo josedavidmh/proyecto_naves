@@ -235,6 +235,81 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Modal y Formulario de Cambio de Contraseña
+  const btnOpenChangePassword = document.getElementById("btn-open-change-password");
+  const changePasswordModal = document.getElementById("change-password-modal");
+  const btnCloseChangePwd = document.getElementById("btn-close-change-pwd");
+  const btnCancelChangePwd = document.getElementById("btn-cancel-change-pwd");
+  const formChangePassword = document.getElementById("form-change-password");
+  const changePwdAlert = document.getElementById("change-pwd-alert");
+
+  function openChangePasswordModal() {
+    if (!changePasswordModal) return;
+    if (changePwdAlert) changePwdAlert.classList.add("hidden");
+    if (formChangePassword) formChangePassword.reset();
+    changePasswordModal.classList.remove("hidden");
+  }
+
+  function closeChangePasswordModal() {
+    if (!changePasswordModal) return;
+    changePasswordModal.classList.add("hidden");
+  }
+
+  if (btnOpenChangePassword) {
+    btnOpenChangePassword.addEventListener("click", openChangePasswordModal);
+  }
+  if (btnCloseChangePwd) {
+    btnCloseChangePwd.addEventListener("click", closeChangePasswordModal);
+  }
+  if (btnCancelChangePwd) {
+    btnCancelChangePwd.addEventListener("click", closeChangePasswordModal);
+  }
+
+  if (formChangePassword) {
+    formChangePassword.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const currPwd = document.getElementById("input-curr-pwd").value.trim();
+      const newPwd = document.getElementById("input-new-pwd").value.trim();
+      const confirmPwd = document.getElementById("input-confirm-pwd").value.trim();
+      const submitBtn = document.getElementById("btn-submit-change-pwd");
+
+      if (newPwd !== confirmPwd) {
+        changePwdAlert.className = "p-2 rounded text-xs font-mono bg-red-950/80 text-red-300 border border-red-500";
+        changePwdAlert.textContent = "Error: La nueva contraseña y la confirmación no coinciden.";
+        changePwdAlert.classList.remove("hidden");
+        return;
+      }
+
+      if (newPwd.length < 6) {
+        changePwdAlert.className = "p-2 rounded text-xs font-mono bg-red-950/80 text-red-300 border border-red-500";
+        changePwdAlert.textContent = "Error: La nueva contraseña debe tener al menos 6 caracteres.";
+        changePwdAlert.classList.remove("hidden");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "ACTUALIZANDO...";
+
+      const res = await ApiService.changePassword(currPwd, newPwd);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "ACTUALIZAR CLAVE ➔";
+
+      if (res.ok && res.data.success) {
+        changePwdAlert.className = "p-2 rounded text-xs font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-500";
+        changePwdAlert.textContent = "✔ ¡Contraseña actualizada con éxito en SQLite!";
+        changePwdAlert.classList.remove("hidden");
+        setTimeout(() => {
+          closeChangePasswordModal();
+          showAlert("Contraseña de piloto actualizada exitosamente.", "success");
+        }, 1200);
+      } else {
+        changePwdAlert.className = "p-2 rounded text-xs font-mono bg-red-950/80 text-red-300 border border-red-500";
+        changePwdAlert.textContent = res.data.error || "No se pudo actualizar la contraseña.";
+        changePwdAlert.classList.remove("hidden");
+      }
+    });
+  }
+
   // Inicializar
   checkInitialSession();
 });

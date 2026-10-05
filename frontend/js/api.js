@@ -88,6 +88,14 @@ export const ApiService = {
     });
   },
 
+  // Cambio de contraseña del piloto (Ruta protegida JWT)
+  async changePassword(current_password, new_password) {
+    return this.request("/api/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({ current_password, new_password })
+    });
+  },
+
   // Chequeo de salud del backend
   async checkHealth() {
     return this.request("/api/health", {

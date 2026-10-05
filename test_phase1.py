@@ -81,5 +81,42 @@ class TestPhase1AuthAndDatabase(unittest.TestCase):
         self.assertEqual(data_me["user"]["username"], "PilotoAlpha")
         self.assertEqual(data_me["user"]["email"], "alpha@naves.com")
 
+    def test_03_change_password(self):
+        # Registrar y obtener token
+        reg_payload = {
+            "username": "PilotoBeta",
+            "email": "beta@naves.com",
+            "password": "InitialPassword123!"
+        }
+        res_reg = self.client.post("/api/auth/register", json=reg_payload)
+        token = res_reg.get_json()["token"]
+
+        # Intento de cambio con contraseña actual incorrecta
+        res_fail = self.client.post("/api/auth/change-password", headers={
+            "Authorization": f"Bearer {token}"
+        }, json={
+            "current_password": "WrongPassword!",
+            "new_password": "NewSecretPassword456!"
+        })
+        self.assertEqual(res_fail.status_code, 401)
+
+        # Cambio exitoso
+        res_success = self.client.post("/api/auth/change-password", headers={
+            "Authorization": f"Bearer {token}"
+        }, json={
+            "current_password": "InitialPassword123!",
+            "new_password": "NewSecretPassword456!"
+        })
+        self.assertEqual(res_success.status_code, 200)
+        self.assertTrue(res_success.get_json()["success"])
+
+        # Login con la nueva contraseña
+        res_new_login = self.client.post("/api/auth/login", json={
+            "identifier": "beta@naves.com",
+            "password": "NewSecretPassword456!"
+        })
+        self.assertEqual(res_new_login.status_code, 200)
+        self.assertTrue(res_new_login.get_json()["success"])
+
 if __name__ == "__main__":
     unittest.main()

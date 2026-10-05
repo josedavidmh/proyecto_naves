@@ -11,10 +11,11 @@
 
 export const ADS_CONFIG = {
   // Tu identificador de editor en Google AdSense
-  CLIENT_ID: "ca-pub-XXXXXXXXXXXXXXXX",
+  CLIENT_ID: "ca-pub-6261859133501243",
+
 
   // Identificador del bloque de anuncios que aparece al inicio de cada misión (Briefing)
-  SLOT_PRE_MISSION: "1234567890",
+  SLOT_PRE_MISSION: "1668600475",
 
   // Identificador opcional para anuncios en pantalla de victoria/derrota
   SLOT_POST_MISSION: "0987654321",
