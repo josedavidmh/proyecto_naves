@@ -30,10 +30,24 @@ class Config:
         raw_db_url = raw_env_url
 
     if raw_db_url.startswith("postgres://"):
-        # Render provee URLs que inician con postgres://, SQLAlchemy 2.0 requiere postgresql://
+        # Render provee URLs que inician con postgres://, SQLAlchemy requiere postgresql://
         raw_db_url = raw_db_url.replace("postgres://", "postgresql://", 1)
         
-    if raw_db_url.startswith("postgresql://") or raw_db_url.startswith("postgresql+psycopg2://"):
+    if raw_db_url.startswith("postgresql://") or raw_db_url.startswith("postgresql+"):
+        # Detectar el driver PostgreSQL disponible en el entorno
+        try:
+            import psycopg
+            pg_driver = "postgresql+psycopg://"
+        except ImportError:
+            try:
+                import psycopg2
+                pg_driver = "postgresql+psycopg2://"
+            except ImportError:
+                pg_driver = "postgresql://"
+
+        if raw_db_url.startswith("postgresql://"):
+            raw_db_url = raw_db_url.replace("postgresql://", pg_driver, 1)
+
         SQLALCHEMY_DATABASE_URI = raw_db_url
     else:
         db_filename = raw_db_url.replace("sqlite:///", "")
