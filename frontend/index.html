@@ -351,19 +351,40 @@
       </div>
 
       <!-- Pantalla Canvas del Juego -->
-      <div class="canvas-container">
+      <div class="canvas-container" style="position: relative;">
         <canvas id="game-canvas" width="800" height="600"></canvas>
+
+        <!-- Overlay de Controles Táctiles para Móviles / Tablets -->
+        <div id="mobile-touch-controls" class="mobile-touch-overlay">
+          <!-- Botón Táctil Bomba (Abajo Izquierda) -->
+          <button id="btn-touch-bomb" class="touch-action-btn touch-bomb-btn" type="button" title="Lanzar Bomba Táctica [B]">
+            <span class="touch-btn-icon">💣</span>
+            <span class="touch-btn-label">BOMBA</span>
+            <span id="touch-bomb-badge" class="touch-btn-badge">1</span>
+          </button>
+
+          <!-- Botón Táctil Habilidad Especial (Abajo Derecha) -->
+          <button id="btn-touch-special" class="touch-action-btn touch-special-btn" type="button" title="Activar Habilidad Especial [E]">
+            <span class="touch-btn-icon">⚡</span>
+            <span class="touch-btn-label">ESPECIAL</span>
+            <span id="touch-special-badge" class="touch-btn-badge">LISTO</span>
+          </button>
+
+          <!-- Botón Táctil Pausa (Arriba Derecha) -->
+          <button id="btn-touch-pause" class="touch-action-btn touch-pause-btn" type="button" title="Pausar Combate [P]">
+            <span class="touch-btn-icon">⏸️</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Consejos de Control -->
-      <div style="margin-top: 0.75rem; display: flex; justify-content: center; gap: 1.25rem; font-size: 0.72rem; font-family: monospace; color: #64748b; flex-wrap: wrap;">
+      <!-- Consejos de Control Multiplataforma -->
+      <div style="margin-top: 0.75rem; display: flex; justify-content: center; gap: 1.25rem; font-size: 0.72rem; font-family: monospace; color: #64748b; flex-wrap: wrap; text-align: center;">
         <span>🎮 <b>WASD / Flechas / Ratón:</b> Mover</span>
-        <span>🔥 <b>Espacio / Clic Izq:</b> Disparar</span>
-        <span>⚡ <b>Tecla E / Shift:</b> Habilidad Especial</span>
-        <span>💣 <b>Tecla B:</b> Bomba Táctica</span>
-        <span>⭐ <b>Mejora Armas:</b> Se pierde tras 2 golpes</span>
+        <span>🔥 <b>Espacio / Clic:</b> Disparar</span>
+        <span>⚡ <b>Tecla E:</b> Habilidad</span>
+        <span>💣 <b>Tecla B:</b> Bomba</span>
+        <span>📱 <b>Móvil / Touch:</b> Desliza el dedo para mover (Disparo automático al tocar)</span>
         <span>⛶ <b>Tecla F:</b> Pantalla Completa</span>
-        <span>⏸️ <b>Tecla P:</b> Pausa</span>
       </div>
     </section>
 
@@ -677,16 +698,9 @@
     </div>
   </div>
 
-  <!-- Footer & Créditos -->
-  <footer class="main-footer" style="padding: 1.25rem 1rem; text-align: center; border-top: 1px solid rgba(56, 189, 248, 0.2); background: rgba(8, 12, 22, 0.85); backdrop-filter: blur(8px);">
-    <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-      <span style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 1rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 9999px; font-family: 'Orbitron', monospace; font-size: 0.8rem; color: #94a3b8;">
-        🚀 Arquitectura y Producción: <strong style="color: #00f3ff; text-shadow: 0 0 10px rgba(0, 243, 255, 0.4); font-weight: 700;">Jose David Montesino</strong>
-      </span>
-    </div>
-    <div style="font-size: 0.7rem; color: #64748b; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;">
-      SPACE ASSAULT • ARQUITECTURA DE SOFTWARE PRO • CERO MOCKS • 60 FPS CANVAS
-    </div>
+  <!-- Footer -->
+  <footer class="main-footer">
+    SPACE ASSAULT • ARQUITECTURA DE SOFTWARE PRO • CERO MOCKS • 60 FPS CANVAS
   </footer>
 
   <!-- Botón Flotante Permanente de Pantalla Completa / Expandir -->

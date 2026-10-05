@@ -294,6 +294,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- CONTROLES TÁCTILES MÓVILES (INSTANTÁNEOS SIN RETARDO) ---
+  const btnTouchBomb = document.getElementById("btn-touch-bomb");
+  const btnTouchSpecial = document.getElementById("btn-touch-special");
+  const btnTouchPause = document.getElementById("btn-touch-pause");
+
+  if (btnTouchBomb) {
+    btnTouchBomb.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (engine && engine.isRunning) engine.triggerBomb();
+    });
+  }
+
+  if (btnTouchSpecial) {
+    btnTouchSpecial.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (engine && engine.isRunning) engine.activateSpecialAbility();
+    });
+  }
+
+  if (btnTouchPause) {
+    btnTouchPause.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (engine && engine.isRunning) engine.togglePause();
+    });
+  }
+
   // Reintentar tras derrota
   btnRestartFromGameOver.addEventListener("click", () => {
     gameOverModal.classList.add("hidden");

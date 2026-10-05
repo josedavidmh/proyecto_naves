@@ -119,6 +119,70 @@ export class GameEngine {
         this.keys["Space"] = false;
       }
     });
+
+    // --- CONTROLES TÁCTILES ULTRA-FLUIDOS PARA MÓVILES Y TABLETS ---
+    let isTouching = false;
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+
+    const handleTouchStart = (e) => {
+      if (!this.isRunning || this.isPaused) return;
+      e.preventDefault();
+      isTouching = true;
+
+      const touch = e.touches[0];
+      const rect = this.canvas.getBoundingClientRect();
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
+
+      lastTouchX = (touch.clientX - rect.left) * scaleX;
+      lastTouchY = (touch.clientY - rect.top) * scaleY;
+
+      // Disparo automático continuo al tocar
+      this.keys["Space"] = true;
+    };
+
+    const handleTouchMove = (e) => {
+      if (!this.isRunning || this.isPaused || !isTouching) return;
+      e.preventDefault();
+
+      const touch = e.touches[0];
+      const rect = this.canvas.getBoundingClientRect();
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
+
+      const currentX = (touch.clientX - rect.left) * scaleX;
+      const currentY = (touch.clientY - rect.top) * scaleY;
+
+      // Movimiento delta relativo: permite maniobrar en cualquier parte de la pantalla
+      // con máxima precisión sin que el dedo cubra la nave
+      const deltaX = (currentX - lastTouchX) * 1.25;
+      const deltaY = (currentY - lastTouchY) * 1.25;
+
+      this.player.x += deltaX;
+      this.player.y += deltaY;
+
+      // Restricción dentro de los límites del canvas
+      this.player.x = Math.max(this.player.width / 2, Math.min(this.canvas.width - this.player.width / 2, this.player.x));
+      this.player.y = Math.max(this.player.height / 2, Math.min(this.canvas.height - this.player.height / 2, this.player.y));
+
+      lastTouchX = currentX;
+      lastTouchY = currentY;
+      this.keys["Space"] = true;
+    };
+
+    const handleTouchEnd = (e) => {
+      e.preventDefault();
+      if (e.touches.length === 0) {
+        isTouching = false;
+        this.keys["Space"] = false;
+      }
+    };
+
+    this.canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    this.canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    this.canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+    this.canvas.addEventListener("touchcancel", handleTouchEnd, { passive: false });
   }
 
   toggleFullscreen() {
@@ -1048,6 +1112,30 @@ export class GameEngine {
       }
     }
 
+    // Actualizar botón e indicador táctil de habilidad especial
+    const touchSpecialBadge = document.getElementById("touch-special-badge");
+    const touchSpecialBtn = document.getElementById("btn-touch-special");
+    if (touchSpecialBadge) {
+      if (this.player.isSpecialActive) {
+        touchSpecialBadge.textContent = `${this.player.specialTimer.toFixed(0)}s`;
+        if (touchSpecialBtn) {
+          touchSpecialBtn.classList.add("is-active");
+          touchSpecialBtn.classList.remove("is-cooling");
+        }
+      } else if (this.player.specialCooldownTimer > 0) {
+        touchSpecialBadge.textContent = `${this.player.specialCooldownTimer.toFixed(0)}s`;
+        if (touchSpecialBtn) {
+          touchSpecialBtn.classList.remove("is-active");
+          touchSpecialBtn.classList.add("is-cooling");
+        }
+      } else {
+        touchSpecialBadge.textContent = "LISTO";
+        if (touchSpecialBtn) {
+          touchSpecialBtn.classList.remove("is-active", "is-cooling");
+        }
+      }
+    }
+
     if (this.hud.scoreText) this.hud.scoreText.textContent = this.score.toLocaleString();
     if (this.hud.stageProgress) {
       const pct = Math.min(100, Math.floor(distanceRatio * 100));
@@ -1059,6 +1147,12 @@ export class GameEngine {
 
   updateHudWeaponAndBombs() {
     if (!this.hud) return;
+
+    // Actualizar badge táctil móvil de bombas
+    const touchBombBadge = document.getElementById("touch-bomb-badge");
+    if (touchBombBadge) {
+      touchBombBadge.textContent = this.bombs;
+    }
 
     if (this.hud.weaponLevelText) {
       const lvl = this.player.weaponLevel;
