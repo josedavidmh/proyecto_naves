@@ -19,9 +19,11 @@ export class ScenarioRenderer {
     this.groundCraters = [];
     this.spaceStars = [];
     this.spaceAsteroids = [];
+    this.arcticIcebergs = [];
 
     this.initIslands();
     this.initSnow();
+    this.initArcticIcebergs();
     this.initJungle();
     this.initSpaceStars();
     this.initSpaceAsteroids();
@@ -168,6 +170,35 @@ export class ScenarioRenderer {
     }
   }
 
+  initArcticIcebergs() {
+    this.arcticIcebergs = [];
+    for (let i = 0; i < 26; i++) {
+      const x = Math.random() * (this.canvas.width - 60) + 30;
+      const y = Math.random() * (this.canvas.height * 2.2) - 150;
+      this.arcticIcebergs.push(this.createArcticIceberg(x, y));
+    }
+  }
+
+  createArcticIceberg(x, y) {
+    const radius = Math.random() * 22 + 12;
+    const numPts = 8;
+    const pts = [];
+    for (let p = 0; p < numPts; p++) {
+      const ang = (p / numPts) * Math.PI * 2;
+      const r = radius * (0.75 + Math.random() * 0.5);
+      pts.push({ x: Math.cos(ang) * r, y: Math.sin(ang) * r });
+    }
+    return {
+      x,
+      y,
+      radius,
+      poly: pts,
+      rotation: Math.random() * Math.PI * 2,
+      driftSpeed: Math.random() * 14 + 10,
+      glowColor: Math.random() > 0.4 ? "rgba(56, 189, 248, 0.35)" : "rgba(34, 211, 238, 0.45)"
+    };
+  }
+
   initJungle() {
     this.jungleTrees = [];
     this.groundCraters = [];
@@ -240,13 +271,25 @@ export class ScenarioRenderer {
         }
       }
     } else if (stageNumber === 4) {
-      // Ventisca de nieve
+      // 1. Ventisca de nieve polar con ráfagas horizontales dinámicas
+      const wind = Math.sin(this.scrollY * 0.04) * 1.8;
       for (const flake of this.snowflakes) {
         flake.y += flake.speedY;
-        flake.x += flake.speedX;
+        flake.x += flake.speedX + wind;
         if (flake.y > this.canvas.height) {
           flake.y = 0;
           flake.x = Math.random() * this.canvas.width;
+        }
+        if (flake.x < 0) flake.x = this.canvas.width;
+        else if (flake.x > this.canvas.width) flake.x = 0;
+      }
+
+      // 2. Deriva oceánica de témpanos de hielo (icebergs) hacia el sur
+      for (const berg of this.arcticIcebergs) {
+        berg.y += berg.driftSpeed * dt;
+        if (berg.y > this.canvas.height + 60) {
+          berg.y = -60;
+          berg.x = Math.random() * this.canvas.width;
         }
       }
     } else if (stageNumber === 5) {
@@ -2083,37 +2126,828 @@ export class ScenarioRenderer {
   }
 
   // ==========================================
-  // ESCENARIO 4: SECTOR CRIOGÉNICO DE HIELO
+  // ESCENARIO 4: EL CÍRCULO ÁRTICO: DE GROENLANDIA AL POLO NORTE (MAPA GEOGRÁFICO REAL)
   // ==========================================
   renderStage4_IceZone(ctx, w, h, distanceRatio) {
-    // Fondo azul gélido
-    const iceGrad = ctx.createLinearGradient(0, 0, 0, h);
-    iceGrad.addColorStop(0, "#082f49");
-    iceGrad.addColorStop(1, "#0c4a6e");
-    ctx.fillStyle = iceGrad;
+    // 1. Fondo del Océano Glacial Ártico y Mar de Groenlandia
+    const oceanGrad = ctx.createLinearGradient(0, 0, 0, h);
+    oceanGrad.addColorStop(0, "#021326");
+    oceanGrad.addColorStop(0.5, "#04223f");
+    oceanGrad.addColorStop(1, "#02182e");
+    ctx.fillStyle = oceanGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // Bloques de glaciares y grietas de hielo
-    ctx.strokeStyle = "rgba(186, 230, 253, 0.4)";
-    ctx.lineWidth = 3;
-    const offset = (this.scrollY * 0.4) % 180;
-    for (let y = -100 + offset; y < h + 100; y += 180) {
+    // Ondas y corrientes del agua ártica con brillo gélido
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.09)";
+    ctx.lineWidth = 1.2;
+    const waveOffset = (this.scrollY * 0.25) % 40;
+    for (let wy = waveOffset; wy < h; wy += 40) {
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w * 0.3, y + 40);
-      ctx.lineTo(w * 0.5, y + 10);
-      ctx.lineTo(w * 0.8, y + 70);
-      ctx.lineTo(w, y + 30);
+      ctx.moveTo(0, wy);
+      ctx.bezierCurveTo(w * 0.25, wy + 6, w * 0.75, wy - 6, w, wy);
       ctx.stroke();
     }
 
-    // Tempestad de nieve / ventisca
-    ctx.fillStyle = "rgba(240, 249, 255, 0.85)";
+    // Altura total del recorrido ártico continuo (3600px)
+    const totalMapHeight = 3600;
+    const scrollMapY = distanceRatio * (totalMapHeight - h);
+
+    ctx.save();
+    ctx.translate(0, -scrollMapY);
+
+    // --- A. MAPA CONTINENTAL ÁRTICO, GROENLANDIA Y POLO NORTE ---
+    this.drawArcticContinents(ctx, w, h);
+
+    // --- B. TÉMPANOS DE HIELO (ICEBERGS) DERIVANDO EN AGUAS ABIERTAS ---
+    this.drawFloatingIcebergs(ctx, w);
+
+    ctx.restore();
+
+    // 2. Efecto atmosférico: Aurora Boreal ondeando en el cielo polar
+    this.drawAuroraBorealis(ctx, w, h);
+
+    // 3. Tempestad de nieve / Ventisca polar
+    this.drawSnowBlizzard(ctx);
+
+    // 4. Cartela de posición geográfica ártica inferior
+    this.renderArcticPositionBanner(ctx, w, h, distanceRatio);
+
+    // 5. Radar polar estereográfico en esquina inferior izquierda
+    this.renderPolarStereographicRadar(ctx, distanceRatio);
+  }
+
+  /**
+   * Traza la geografía real del Círculo Ártico, Groenlandia, Banquisa y Polo Norte
+   */
+  drawArcticContinents(ctx, w, h) {
+    // ----------------------------------------------------
+    // ZONA 1: CÍRCULO POLAR ÁRTICO & MARES BOREALES (Y: 0 a 820)
+    // ----------------------------------------------------
+
+    // 1.1 Línea del Paralelo 66°33'49" N (Círculo Polar Ártico)
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([12, 8]);
+    ctx.beginPath();
+    ctx.moveTo(0, 130);
+    ctx.lineTo(w, 130);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Rótulos tácticos del paralelo polar
+    ctx.font = "bold 9px 'Orbitron', monospace";
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillText("🌐 CÍRCULO POLAR ÁRTICO · PARALELO 66°33'49\" N", 20, 122);
+    ctx.textAlign = "right";
+    ctx.fillText("TEMP AGUA: -1.8°C · INGRESO AL CASQUETE BOREAL", w - 20, 122);
+    ctx.textAlign = "left";
+
+    // 1.2 ISLANDIA (Southwest: Y: 180 a 540, X: w * 0.08 a w * 0.36)
+    ctx.fillStyle = "#1e293b"; // Basalto volcánico oscuro
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    // Penínsulas y fiordos islandeses (Westfjords, Reykjanes, Snaefellsnes)
+    ctx.moveTo(w * 0.12, 220);
+    ctx.lineTo(w * 0.18, 190);
+    ctx.lineTo(w * 0.28, 180);
+    ctx.lineTo(w * 0.35, 230); // Costa este
+    ctx.lineTo(w * 0.36, 340);
+    ctx.lineTo(w * 0.31, 440); // Costa sureste
+    ctx.lineTo(w * 0.22, 510); // Costa sur
+    ctx.lineTo(w * 0.14, 460); // Reykjanes / Reykjavik
+    ctx.lineTo(w * 0.08, 380);
+    ctx.lineTo(w * 0.06, 280); // Vestfirðir (Fiordos del noroeste)
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Nieve y permafrost interior de Islandia
+    ctx.fillStyle = "#cbd5e1";
+    ctx.beginPath();
+    ctx.moveTo(w * 0.14, 240);
+    ctx.lineTo(w * 0.24, 220);
+    ctx.lineTo(w * 0.32, 270);
+    ctx.lineTo(w * 0.28, 420);
+    ctx.lineTo(w * 0.16, 430);
+    ctx.closePath();
+    ctx.fill();
+
+    // Glaciar Vatnajökull (El casquete de hielo más grande de Islandia)
+    ctx.fillStyle = "#f8fafc";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.25, 360, 28, 20, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(14, 165, 233, 0.6)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Manantial geotérmico / Laguna Azul (Cyan neón volcánico)
+    ctx.fillStyle = "#06b6d4";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.13, 440, 8, 5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cartel táctico de Islandia
+    ctx.font = "bold 9px 'Orbitron', monospace";
+    ctx.fillStyle = "#e2e8f0";
+    ctx.fillText("ISLANDIA [64°N - 66°N] · TIERRA DE HIELO Y VOLCANES", w * 0.10, 535);
+
+    // 1.3 ARCHIPIÉLAGO DE SVALBARD (Northeast: Y: 280 a 720, X: w * 0.68 a w * 0.94)
+    // Isla Principal: Spitsbergen
+    ctx.fillStyle = "#334155";
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(w * 0.76, 320);
+    ctx.lineTo(w * 0.84, 300);
+    ctx.lineTo(w * 0.90, 360);
+    ctx.lineTo(w * 0.88, 520);
+    ctx.lineTo(w * 0.80, 580);
+    ctx.lineTo(w * 0.74, 520);
+    ctx.lineTo(w * 0.72, 410);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Glaciares de Spitsbergen
+    ctx.fillStyle = "#f1f5f9";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.81, 420, 22, 55, 0.1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Isla Nordaustlandet (Noreste de Svalbard)
+    ctx.fillStyle = "#334155";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.89, 360, 18, 28, -0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#f8fafc";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.89, 360, 13, 20, -0.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Isla Edgeøya (Sureste de Svalbard)
+    ctx.fillStyle = "#334155";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.86, 620, 14, 20, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Rótulo táctico de Svalbard
+    ctx.font = "bold 9px 'Orbitron', monospace";
+    ctx.fillStyle = "#e2e8f0";
+    ctx.fillText("SVALBARD [78°N] · BÓVEDA GLOBAL DE SEMILLAS", w * 0.65, 710);
+
+    // ----------------------------------------------------
+    // ZONA 2: GROENLANDIA (KALAALLIT NUNAAT) & EL INLANDIS (Y: 820 a 2280)
+    // ----------------------------------------------------
+    // 2.1 Masa rocosa costera de Groenlandia (Acantilados basálticos y fiordos)
+    ctx.fillStyle = "#0f172a";
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
+    ctx.lineWidth = 3.5;
+
+    ctx.beginPath();
+    // Kap Farvel (Cabo Farewell) en el extremo sur
+    ctx.moveTo(w * 0.48, 850);
+    // Costa Oeste de Groenlandia subiendo hacia Nuuk y Bahía de Disko
+    ctx.lineTo(w * 0.38, 930);
+    ctx.lineTo(w * 0.26, 1060);
+    ctx.lineTo(w * 0.18, 1220); // Nuuk / Maniitsoq
+    ctx.lineTo(w * 0.12, 1360); // Bahía de Disko / Fiordo de Ilulissat
+    ctx.lineTo(w * 0.16, 1480);
+    ctx.lineTo(w * 0.11, 1620); // Bahía de Melville
+    ctx.lineTo(w * 0.15, 1800); // Thule (Qaanaaq)
+    ctx.lineTo(w * 0.19, 2020); // Tierra de Inglefield
+    ctx.lineTo(w * 0.28, 2200); // Tierra de Washington
+    // Costa Norte (Peary Land y Cabo Morris Jesup - tierra más septentrional)
+    ctx.lineTo(w * 0.45, 2280);
+    ctx.lineTo(w * 0.58, 2270); // Kap Morris Jesup [83°39' N]
+    // Costa Este de Groenlandia bajando hacia el sur
+    ctx.lineTo(w * 0.72, 2180); // Tierra de Kronprins Christian
+    ctx.lineTo(w * 0.82, 1980); // Tierra del Rey Christian X
+    ctx.lineTo(w * 0.88, 1720); // Tierra de Christian IX
+    ctx.lineTo(w * 0.84, 1500);
+    ctx.lineTo(w * 0.90, 1320); // Fiordo Scoresby Sund (Fiordo más grande del mundo)
+    ctx.lineTo(w * 0.79, 1300); // Entrante profundo del fiordo
+    ctx.lineTo(w * 0.86, 1220);
+    ctx.lineTo(w * 0.78, 1080); // Costa de Blosseville
+    ctx.lineTo(w * 0.65, 960);
+    ctx.lineTo(w * 0.54, 880);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 2.2 EL INLANDIS: Enorme casquete polar interior de Groenlandia (Capa de Hielo Continental)
+    const inlandisGrad = ctx.createLinearGradient(0, 950, 0, 2200);
+    inlandisGrad.addColorStop(0, "#e2e8f0");
+    inlandisGrad.addColorStop(0.2, "#f8fafc");
+    inlandisGrad.addColorStop(0.7, "#ffffff");
+    inlandisGrad.addColorStop(1, "#e0f2fe");
+    ctx.fillStyle = inlandisGrad;
+
+    ctx.beginPath();
+    ctx.moveTo(w * 0.48, 920);
+    ctx.lineTo(w * 0.32, 1040);
+    ctx.lineTo(w * 0.24, 1200);
+    ctx.lineTo(w * 0.18, 1350);
+    ctx.lineTo(w * 0.21, 1520);
+    ctx.lineTo(w * 0.18, 1700);
+    ctx.lineTo(w * 0.22, 1920);
+    ctx.lineTo(w * 0.32, 2120);
+    ctx.lineTo(w * 0.52, 2210); // Norte del Inlandis
+    ctx.lineTo(w * 0.68, 2120);
+    ctx.lineTo(w * 0.76, 1920);
+    ctx.lineTo(w * 0.81, 1680);
+    ctx.lineTo(w * 0.77, 1420);
+    ctx.lineTo(w * 0.80, 1200);
+    ctx.lineTo(w * 0.70, 1040);
+    ctx.closePath();
+    ctx.fill();
+
+    // Borde brillante con resplandor criogénico del Inlandis
+    ctx.strokeStyle = "rgba(186, 230, 253, 0.7)";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // 2.3 Grietas y fallas glaciares profundas del Inlandis (Azul cyan profundo)
+    ctx.strokeStyle = "rgba(14, 165, 233, 0.85)";
+    ctx.lineWidth = 2;
+    const crevasses = [
+      { x1: w * 0.35, y1: 1080, x2: w * 0.52, y2: 1110, x3: w * 0.65, y3: 1090 },
+      { x1: w * 0.28, y1: 1240, x2: w * 0.44, y2: 1270, x3: w * 0.58, y3: 1250 },
+      { x1: w * 0.42, y1: 1390, x2: w * 0.59, y2: 1420, x3: w * 0.74, y3: 1390 },
+      { x1: w * 0.30, y1: 1720, x2: w * 0.48, y2: 1750, x3: w * 0.66, y3: 1730 },
+      { x1: w * 0.38, y1: 1910, x2: w * 0.55, y2: 1940, x3: w * 0.72, y3: 1900 },
+      { x1: w * 0.45, y1: 2060, x2: w * 0.58, y2: 2090, x3: w * 0.68, y3: 2070 }
+    ];
+    for (const c of crevasses) {
+      ctx.beginPath();
+      ctx.moveTo(c.x1, c.y1);
+      ctx.lineTo(c.x2, c.y2);
+      ctx.lineTo(c.x3, c.y3);
+      ctx.stroke();
+    }
+
+    // Lagos supraglaciares de agua de deshielo azul zafiro
+    ctx.fillStyle = "#0284c7";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.38, 1160, 16, 9, 0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(w * 0.62, 1340, 20, 11, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(w * 0.46, 1820, 18, 8, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Rótulos cartográficos de Groenlandia
+    ctx.font = "bold 11px 'Orbitron', monospace";
+    ctx.fillStyle = "#0369a1";
+    ctx.fillText("GROENLANDIA (KALAALLIT NUNAAT)", w * 0.24, 1135);
+    ctx.font = "9px 'Orbitron', monospace";
+    ctx.fillStyle = "#0284c7";
+    ctx.fillText("INLANDIS: CASQUETE DE HIELO CONTINENTAL [3,200m]", w * 0.22, 1150);
+
+    ctx.font = "bold 9px monospace";
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillText("FIORDO DE ILULISSAT [69°N] ➔", w * 0.04, 1370);
+    ctx.fillText("SCORESBY SUND [70°N] ➔", w * 0.68, 1290);
+
+    // 2.4 PUESTO AVANZADO DE RADAR THULE-VEKTOR (Y: ~1540 · SECTOR SUBLÍDER 40%)
+    ctx.save();
+    const radarBaseX = w * 0.5;
+    const radarBaseY = 1540;
+
+    // Plataforma hexagonal de hormigón polar
+    ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const ang = (i / 6) * Math.PI * 2;
+      const hx = radarBaseX + Math.cos(ang) * 48;
+      const hy = radarBaseY + Math.sin(ang) * 48;
+      if (i === 0) ctx.moveTo(hx, hy);
+      else ctx.lineTo(hx, hy);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Conduits de refrigeración criogénica
+    ctx.strokeStyle = "#00f3ff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(radarBaseX - 48, radarBaseY);
+    ctx.lineTo(radarBaseX - 85, radarBaseY);
+    ctx.moveTo(radarBaseX + 48, radarBaseY);
+    ctx.lineTo(radarBaseX + 85, radarBaseY);
+    ctx.stroke();
+
+    // Cúpula del radar con haz giratorio
+    ctx.fillStyle = "#1e293b";
+    ctx.beginPath();
+    ctx.arc(radarBaseX, radarBaseY, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#38bdf8";
+    ctx.stroke();
+
+    const sweepAngle = (this.scrollY * 0.05) % (Math.PI * 2);
+    ctx.fillStyle = "rgba(0, 243, 255, 0.4)";
+    ctx.beginPath();
+    ctx.moveTo(radarBaseX, radarBaseY);
+    ctx.arc(radarBaseX, radarBaseY, 44, sweepAngle, sweepAngle + 0.45);
+    ctx.closePath();
+    ctx.fill();
+
+    // Alerta táctica del Sublíder Frost-Bite
+    ctx.font = "bold 10px 'Orbitron', monospace";
+    ctx.fillStyle = "#fbbf24";
+    ctx.textAlign = "center";
+    ctx.fillText("⚠️ PUESTO RADAR THULE · BASTIÓN SUBLÍDER", radarBaseX, radarBaseY + 68);
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText("INTERCEPCIÓN CRIOGÉNICA: FROST-BITE DETECTADO", radarBaseX, radarBaseY + 80);
+    ctx.textAlign = "left";
+    ctx.restore();
+
+    // ----------------------------------------------------
+    // ZONA 3: ISLA ELLESMERE, ESTRECHO DE NARES & BANQUISA POLAR (Y: 2200 a 2980)
+    // ----------------------------------------------------
+    // 3.1 Isla Ellesmere (Canadá, 83°N - Cabo Columbia) al noroeste
+    ctx.fillStyle = "#1e293b";
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 2250);
+    ctx.lineTo(w * 0.22, 2280);
+    ctx.lineTo(w * 0.28, 2380);
+    ctx.lineTo(w * 0.24, 2520);
+    ctx.lineTo(w * 0.16, 2640);
+    ctx.lineTo(0, 2680);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Nieve y glaciares de Ellesmere
+    ctx.fillStyle = "#e2e8f0";
+    ctx.beginPath();
+    ctx.moveTo(0, 2300);
+    ctx.lineTo(w * 0.18, 2330);
+    ctx.lineTo(w * 0.20, 2460);
+    ctx.lineTo(w * 0.12, 2560);
+    ctx.lineTo(0, 2600);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.font = "bold 9px 'Orbitron', monospace";
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText("ISLA ELLESMERE [CANADÁ · 83°N]", 15, 2480);
+    ctx.fillText("ESTRECHO DE NARES ➔", w * 0.26, 2450);
+
+    // 3.2 La Gran Banquisa Polar Fracturada (Sea Ice Pack)
+    // Mosaico de inmensas placas de hielo marino con grietas abiertas (polinias)
+    this.drawSeaIcePack(ctx, w, 2320, 2960);
+
+    // Paralelo 85°00' N
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.6)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath();
+    ctx.moveTo(0, 2750);
+    ctx.lineTo(w, 2750);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = "bold 9px 'Orbitron', monospace";
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillText("PARALELO 85°00'00\" N · OCÉANO GLACIAL CENTRAL (BANQUISA PERPETUA)", 20, 2742);
+
+    // ----------------------------------------------------
+    // ZONA 4: POLO NORTE GEOGRÁFICO [90°00'00" N] & CIUDADELA SUBGLACIAL (Y: 2950 a 3600)
+    // ----------------------------------------------------
+    // 4.1 Rejilla Polar Estereográfica: Todos los meridianos convergen al punto (w * 0.5, 3380)
+    const poleX = w * 0.5;
+    const poleY = 3380;
+
+    // Casquete de hielo polar macizo perpetuo
+    const poleGrad = ctx.createRadialGradient(poleX, poleY, 30, poleX, poleY, 340);
+    poleGrad.addColorStop(0, "#ffffff");
+    poleGrad.addColorStop(0.4, "#f0f9ff");
+    poleGrad.addColorStop(0.8, "#e0f2fe");
+    poleGrad.addColorStop(1, "rgba(224, 242, 254, 0.4)");
+    ctx.fillStyle = poleGrad;
+    ctx.beginPath();
+    ctx.arc(poleX, poleY, 320, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Círculos concéntricos de latitud extrema (88°N, 89°N, 89.5°N)
+    ctx.strokeStyle = "rgba(14, 165, 233, 0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.arc(poleX, poleY, 240, 0, Math.PI * 2); // 88°N
+    ctx.arc(poleX, poleY, 150, 0, Math.PI * 2); // 89°N
+    ctx.arc(poleX, poleY, 80, 0, Math.PI * 2);  // 89.5°N
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Meridianos convergentes (0°, 45°, 90°, 135°, 180°, etc.)
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+    ctx.lineWidth = 1.2;
+    for (let m = 0; m < 8; m++) {
+      const ang = (m / 8) * Math.PI;
+      ctx.beginPath();
+      ctx.moveTo(poleX - Math.cos(ang) * 280, poleY - Math.sin(ang) * 280);
+      ctx.lineTo(poleX + Math.cos(ang) * 280, poleY + Math.sin(ang) * 280);
+      ctx.stroke();
+    }
+
+    // Rosa de los Vientos Holográfica del Polo Norte
+    ctx.save();
+    ctx.translate(poleX, poleY);
+
+    ctx.strokeStyle = "#fbbf24";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, 56, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Cruz dorada del Polo Norte
+    ctx.beginPath();
+    ctx.moveTo(0, -65);
+    ctx.lineTo(0, 65);
+    ctx.moveTo(-65, 0);
+    ctx.lineTo(65, 0);
+    ctx.stroke();
+
+    // Indicadores: ¡Todas las direcciones desde el Polo Norte apuntan al Sur!
+    ctx.font = "bold 10px 'Orbitron', monospace";
+    ctx.fillStyle = "#fbbf24";
+    ctx.textAlign = "center";
+    ctx.fillText("S", 0, 80);
+    ctx.fillText("S", 0, -72);
+    ctx.fillText("S", 80, 4);
+    ctx.fillText("S", -80, 4);
+    ctx.restore();
+
+    // 4.2 CIUDADELA SUBGLACIAL DE VEKTOR (BASE JEFE FINAL ZERO-KELVIN)
+    ctx.save();
+    ctx.translate(poleX, poleY);
+
+    // Bastión octogonal exterior
+    ctx.fillStyle = "rgba(10, 15, 30, 0.95)";
+    ctx.strokeStyle = "#ff0055";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const ang = (i / 8) * Math.PI * 2;
+      const bx = Math.cos(ang) * 115;
+      const by = Math.sin(ang) * 115;
+      if (i === 0) ctx.moveTo(bx, by);
+      else ctx.lineTo(bx, by);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Reactor criogénico de nitrógeno líquido en el centro del eje polar
+    const coreGrad = ctx.createRadialGradient(0, 0, 8, 0, 0, 48);
+    coreGrad.addColorStop(0, "#ffffff");
+    coreGrad.addColorStop(0.3, "#00f3ff");
+    coreGrad.addColorStop(0.8, "#0284c7");
+    coreGrad.addColorStop(1, "rgba(15, 23, 42, 0.9)");
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, 46, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Anillo giratorio superconductor del reactor
+    const ringAngle = -(this.scrollY * 0.04);
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 3;
+    ctx.setLineDash([12, 10]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 36, ringAngle, ringAngle + Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Luces rojas de alarma de combate
+    const blink = Math.sin(this.scrollY * 0.1) > 0;
+    ctx.fillStyle = blink ? "#ef4444" : "#7f1d1d";
+    for (let i = 0; i < 8; i++) {
+      const ang = (i / 8) * Math.PI * 2 + Math.PI / 8;
+      ctx.beginPath();
+      ctx.arc(Math.cos(ang) * 98, Math.sin(ang) * 98, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Rótulos tácticos de la Ciudadela Polar
+    ctx.font = "bold 12px 'Orbitron', monospace";
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.fillText("★ POLO NORTE GEOGRÁFICO ★", 0, -135);
+    ctx.font = "bold 10px 'Orbitron', monospace";
+    ctx.fillStyle = "#fbbf24";
+    ctx.fillText("LATITUD 90°00'00\" N · CONVERGENCIA TOTAL", 0, -120);
+
+    ctx.font = "bold 10px 'Orbitron', monospace";
+    ctx.fillStyle = "#ff0055";
+    ctx.fillText("☠️ CIUDADELA SUBGLACIAL VEKTOR · JEFE: ZERO-KELVIN", 0, 142);
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#cbd5e1";
+    ctx.fillText("PROTOCOLO DE CONGELACIÓN ABSOLUTA ACTIVADO", 0, 155);
+
+    ctx.restore();
+  }
+
+  /**
+   * Genera el mosaico de la banquisa polar fracturada con placas flotantes y polinias
+   */
+  drawSeaIcePack(ctx, w, startY, endY) {
+    const floeRows = 7;
+    const floeCols = 5;
+    const cellW = w / floeCols;
+    const cellH = (endY - startY) / floeRows;
+
+    ctx.fillStyle = "rgba(240, 249, 255, 0.88)";
+    ctx.strokeStyle = "rgba(14, 165, 233, 0.55)";
+    ctx.lineWidth = 2;
+
+    for (let r = 0; r < floeRows; r++) {
+      for (let c = 0; c < floeCols; c++) {
+        const cx = c * cellW + cellW / 2;
+        const cy = startY + r * cellH + cellH / 2;
+        const radX = cellW * 0.42;
+        const radY = cellH * 0.38;
+
+        // Placa de hielo multianual con forma irregular
+        ctx.beginPath();
+        const pts = 6;
+        for (let p = 0; p < pts; p++) {
+          const ang = (p / pts) * Math.PI * 2;
+          const px = cx + Math.cos(ang) * (radX + ((p % 2) * 6 - 3));
+          const py = cy + Math.sin(ang) * (radY + (((p + 1) % 2) * 6 - 3));
+          if (p === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Cresta de presión interna
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+        ctx.beginPath();
+        ctx.moveTo(cx - radX * 0.4, cy);
+        ctx.lineTo(cx + radX * 0.4, cy + 4);
+        ctx.stroke();
+      }
+    }
+  }
+
+  /**
+   * Dibuja los témpanos de hielo (icebergs) que flotan a la deriva
+   */
+  drawFloatingIcebergs(ctx, w) {
+    for (const berg of this.arcticIcebergs) {
+      ctx.save();
+      ctx.translate(berg.x, berg.y);
+      ctx.rotate(berg.rotation);
+
+      // 1. Masa sumergida de hielo azul turquesa brillante (visible bajo el agua)
+      ctx.fillStyle = berg.glowColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, berg.radius * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 2. Superficie visible del iceberg (Hielo blanco polar anguloso)
+      ctx.fillStyle = "#f8fafc";
+      ctx.beginPath();
+      for (let p = 0; p < berg.poly.length; p++) {
+        const pt = berg.poly[p];
+        if (p === 0) ctx.moveTo(pt.x, pt.y);
+        else ctx.lineTo(pt.x, pt.y);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // 3. Faceta de sombra del iceberg para volumen tridimensional
+      ctx.fillStyle = "rgba(147, 197, 253, 0.45)";
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      for (let p = 0; p < Math.floor(berg.poly.length / 2) + 1; p++) {
+        const pt = berg.poly[p];
+        ctx.lineTo(pt.x, pt.y);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // 4. Borde nítido de hielo escarchado
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+  }
+
+  /**
+   * Cortinas ondeantes de Aurora Boreal en la alta atmósfera (Verde esmeralda y violeta)
+   */
+  drawAuroraBorealis(ctx, w, h) {
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    const time = this.scrollY * 0.02;
+
+    // Cortina 1: Esmeralda boreal ondeando
+    const grad1 = ctx.createLinearGradient(0, 0, 0, h * 0.42);
+    grad1.addColorStop(0, "rgba(16, 185, 129, 0.28)");
+    grad1.addColorStop(0.5, "rgba(52, 211, 153, 0.16)");
+    grad1.addColorStop(1, "rgba(16, 185, 129, 0)");
+
+    ctx.fillStyle = grad1;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    for (let x = 0; x <= w; x += 25) {
+      const y = 35 + Math.sin(x * 0.008 + time) * 32 + Math.cos(x * 0.016 - time * 0.8) * 18;
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // Cortina 2: Cian y violeta etéreo
+    const grad2 = ctx.createLinearGradient(0, 0, 0, h * 0.52);
+    grad2.addColorStop(0, "rgba(6, 182, 212, 0.24)");
+    grad2.addColorStop(0.6, "rgba(168, 85, 247, 0.14)");
+    grad2.addColorStop(1, "rgba(6, 182, 212, 0)");
+
+    ctx.fillStyle = grad2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    for (let x = 0; x <= w; x += 30) {
+      const y = 65 + Math.sin(x * 0.01 - time * 0.7) * 40 + Math.sin(x * 0.022 + time * 1.1) * 14;
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Ventisca de nieve polar con copos brillantes
+   */
+  drawSnowBlizzard(ctx) {
+    ctx.fillStyle = "rgba(240, 249, 255, 0.88)";
     for (const flake of this.snowflakes) {
       ctx.beginPath();
       ctx.arc(flake.x, flake.y, flake.size, 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+
+  /**
+   * Cartela táctica inferior de coordenadas y avance geográfico por el Ártico
+   */
+  renderArcticPositionBanner(ctx, w, h, distanceRatio) {
+    let regionText = "CRUCE DEL CÍRCULO POLAR ÁRTICO [66°33' N] · MAR DE GROENLANDIA";
+    let subText = "Sobrevolando aguas boreales entre Islandia y Svalbard · Rumbo al norte";
+
+    if (distanceRatio > 0.22 && distanceRatio <= 0.55) {
+      regionText = "ISLA DE GROENLANDIA (KALAALLIT NUNAAT) · INLANDIS GLACIAR [75°N]";
+      subText = "Sobrevolando casquete de hielo continental · Puesto Thule de Vektor en rango";
+    } else if (distanceRatio > 0.55 && distanceRatio <= 0.80) {
+      regionText = "BANQUISA POLAR FRACTURADA [82°N - 87°N] · ESTRECHO DE NARES";
+      subText = "Hielo marino perpetuo y polinias · Convergencia de meridianos polar";
+    } else if (distanceRatio > 0.80) {
+      regionText = "POLO NORTE GEOGRÁFICO [90°00' N] · CIUDADELA SUBGLACIAL DE VEKTOR";
+      subText = "¡Alerta máxima! Destructor Zero-Kelvin detectado en el eje polar";
+    }
+
+    ctx.save();
+    ctx.fillStyle = "rgba(7, 10, 24, 0.85)";
+    ctx.fillRect(w / 2 - 220, h - 38, 440, 30);
+    ctx.strokeStyle = distanceRatio > 0.80 ? "#ff0055" : "rgba(56, 189, 248, 0.65)";
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(w / 2 - 220, h - 38, 440, 30);
+
+    ctx.font = "9px 'Orbitron', monospace";
+    ctx.fillStyle = distanceRatio > 0.80 ? "#fbbf24" : "#38bdf8";
+    ctx.textAlign = "center";
+    ctx.fillText(regionText, w / 2, h - 22);
+
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#cbd5e1";
+    ctx.fillText(subText, w / 2, h - 11);
+    ctx.restore();
+  }
+
+  /**
+   * Radar Polar Estereográfico en la esquina inferior izquierda:
+   * Proyección polar circular que muestra la travesía desde 66°33'N (borde) hasta 90°00'N (centro).
+   */
+  renderPolarStereographicRadar(ctx, distanceRatio) {
+    const rx = 15;
+    const ry = this.canvas.height - 150;
+    const rw = 105;
+    const rh = 140;
+
+    ctx.save();
+    // 1. Caja del radar polar
+    ctx.fillStyle = "rgba(7, 14, 30, 0.92)";
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(rx, ry, rw, rh);
+    ctx.strokeRect(rx, ry, rw, rh);
+
+    // 2. Encabezado
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "bold 8px 'Orbitron', monospace";
+    ctx.fillText("RADAR POLAR", rx + 8, ry + 12);
+
+    // 3. Proyección estereográfica centrada en el Polo Norte (90°N)
+    const centerX = rx + rw / 2;
+    const centerY = ry + rh / 2 + 5;
+    const maxRadius = 46; // Corresponde al Círculo Polar Ártico (66°33'N)
+
+    // Círculos de latitud polar concéntricos
+    // Exterior: 66°33' N
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 75°N
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, maxRadius * 0.65, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 85°N
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, maxRadius * 0.30, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Cruz central del Polo Norte 90°N
+    ctx.strokeStyle = "#fbbf24";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(centerX - 5, centerY);
+    ctx.lineTo(centerX + 5, centerY);
+    ctx.moveTo(centerX, centerY - 5);
+    ctx.lineTo(centerX, centerY + 5);
+    ctx.stroke();
+
+    // Mini silueta esquemática de Groenlandia en el radar
+    ctx.fillStyle = "rgba(224, 242, 254, 0.3)";
+    ctx.beginPath();
+    ctx.moveTo(centerX - 4, centerY + maxRadius * 0.88);
+    ctx.lineTo(centerX - 16, centerY + maxRadius * 0.65);
+    ctx.lineTo(centerX - 12, centerY + maxRadius * 0.22);
+    ctx.lineTo(centerX + 6, centerY + maxRadius * 0.26);
+    ctx.lineTo(centerX + 12, centerY + maxRadius * 0.68);
+    ctx.closePath();
+    ctx.fill();
+
+    // 4. Posición del avión avanzando hacia el Polo Norte (de la periferia al centro)
+    const currentR = maxRadius * (1 - distanceRatio);
+    // El caza avanza de sur a norte (de abajo hacia el centro)
+    const shipX = centerX;
+    const shipY = centerY + currentR;
+
+    // Estela de trayectoria hacia el polo
+    ctx.strokeStyle = "rgba(0, 243, 255, 0.6)";
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY + maxRadius);
+    ctx.lineTo(centerX, centerY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Marcador del jugador
+    ctx.fillStyle = "#ff0055";
+    ctx.beginPath();
+    ctx.arc(shipX, shipY, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(shipX, shipY, 6.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 5. Telemetría de latitud y destino
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#34d399";
+    const currentLat = (66.56 + distanceRatio * (90.00 - 66.56)).toFixed(1);
+    ctx.fillText(`LAT: ${currentLat}° N`, rx + 8, ry + rh - 13);
+    ctx.fillText(distanceRatio > 0.8 ? "ZONA: POLO 90°N" : "OBJ: POLO NORTE", rx + 8, ry + rh - 3);
+
+    ctx.restore();
   }
 
   // ==========================================

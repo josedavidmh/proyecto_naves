@@ -1541,7 +1541,7 @@ export class GameEngine {
       1: "Travesía Continental: Norteamérica a la Antártida",
       2: "Pacífico Oceánico: De Isla en Isla a Australia",
       3: "Travesía Interplanetaria: Tierra, Marte, Júpiter y Saturno",
-      4: "Sector Criogénico: Glaciares y Tempestad de Hielo",
+      4: "El Círculo Ártico: De Groenlandia al Polo Norte",
       5: "Jungla Devastada: Asalto al Cuartel General"
     };
     ctx.font = "11px Orbitron, monospace";

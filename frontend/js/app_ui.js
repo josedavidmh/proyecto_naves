@@ -496,8 +496,8 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       {
         num: 4,
-        title: "Fase 4: Territorio Criogénico / Sector de Hielo",
-        desc: "Tormenta de hielo polar con ventiscas y defensas congeladas de alta resistencia.",
+        title: "Fase 4: El Círculo Ártico: De Groenlandia al Polo Norte",
+        desc: "Cruza el Círculo Polar a 66°N, el inmenso Inlandis de Groenlandia y la banquisa polar hasta la ciudadela subglacial del Polo Norte (90°N).",
         unlocked: playerProgress.stages["4"].unlocked
       },
       {

@@ -45,13 +45,13 @@ export const MissionLore = {
 
   4: {
     operation: "OPERACIÓN CERO ABSOLUTO",
-    stageName: "Fase 4: Sector Criogénico de Hielo",
-    classification: "ASALTO A FÁBRICA DE BLINDAJE CRIOGÉNICO",
-    lore: "Tras la explosión del reactor joviano, los restos del suministro energético de Vektor fueron trasladados a una base oculta en el sector criogénico de hielo. Allí, el acorazado Zero-Kelvin está utilizando el frío extremo para estabilizar ojivas de permafrost y reconstruir los blindajes térmicos de la nave de Vektor. Debemos purgar esta zona helada en medio de ventiscas letales y recuperar los códigos de desencriptación que desbloquean las compuertas blindadas de la fortaleza de la selva.",
-    objective: "Destruir la fundición criogénica, abatir al Zero-Kelvin y robar los códigos de acceso a la selva.",
+    stageName: "Fase 4: El Círculo Ártico: De Groenlandia al Polo Norte",
+    classification: "INCURSIÓN POLAR A LA CIUDADELA SUBGLACIAL",
+    lore: "El General Vektor ha instalado una base industrial secreta bajo el hielo eterno del Océano Ártico. Ingresando por el Círculo Polar Ártico a 66°33' N, tu nave deberá cruzar el Mar de Groenlandia entre Islandia y Svalbard, sobrevolar el colosal casquete de hielo continental (Inlandis) de Groenlandia —donde el sublíder Frost-Bite comanda un puesto avanzado de radar en Thule—, y abrirte paso a través de la banquisa polar fracturada hasta alcanzar el mismísimo Polo Norte Geográfico a 90°00' N. Allí, en una colosal ciudadela criogénica subglacial, el destructor Zero-Kelvin custodia los códigos de desencriptación para desbloquear el búnker central en la selva.",
+    objective: "Cruzar el Círculo Ártico y Groenlandia, abatir a Frost-Bite en el Inlandis y destruir a Zero-Kelvin en el Polo Norte Geográfico (90°N).",
     intel: {
-      subBoss: "Frost-Bite — Caminante blindado con proyectiles criogénicos en cono.",
-      finalBoss: "Zero-Kelvin — Destructor glacial que desata tormentas de esquirlas congeladas."
+      subBoss: "Frost-Bite — Fortaleza bípeda ártica apostada en el puesto radar de Groenlandia con proyectiles criogénicos.",
+      finalBoss: "Zero-Kelvin — Destructor glacial subglacial en el eje del Polo Norte armado con tormentas de esquirlas de permafrost."
     },
     threatLevel: "AMENAZA: EXTREMA"
   },

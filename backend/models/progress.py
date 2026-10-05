@@ -75,7 +75,7 @@ class PlayerProgress(db.Model):
                 "1": {"name": "Travesía Continental: Norteamérica a la Antártida", "unlocked": self.stage_1_unlocked},
                 "2": {"name": "Pacífico Oceánico: De Isla en Isla a Australia", "unlocked": self.stage_2_unlocked},
                 "3": {"name": "Travesía a Saturno: Rumbo a los Anillos (Vía Marte y Júpiter)", "unlocked": self.stage_3_unlocked},
-                "4": {"name": "Sector Criogénico: Glaciares y Tempestad de Hielo", "unlocked": self.stage_4_unlocked},
+                "4": {"name": "El Círculo Ártico: De Groenlandia al Polo Norte", "unlocked": self.stage_4_unlocked},
                 "5": {"name": "Jungla Devastada: Asalto al Cuartel General del Boss", "unlocked": self.stage_5_unlocked}
             },
             "campaign_completed": self.campaign_completed,

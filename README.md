@@ -1,4 +1,4 @@
-# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.7`
+# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.8`
 
 Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combate únicas, 5 fases progresivas con desbloqueo secuencial persistente, sublíderes y jefes de fase, mapa continental de América en alta resolución y backend SQLite con autenticación JWT sin mocks.
 
@@ -66,24 +66,24 @@ Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combat
 
 - **Fase 1: Asalto Continental sobre América (Operación Cóndor Aéreo):**
   - Fondo continental geográfico con relieve satelital de Norteamérica, Caribe, Cordillera de los Andes, Cuenca Amazónica, Patagonia y Cabo de Hornos.
-  - Sublíder al 50%: *Zephyr Cruiser*.
-  - Jefe al 90%: *Vanguard Dreadnought*.
+  - Sublíder al 40%: *Aurora-9*.
+  - Jefe al 85%: *Goliath Apex*.
 - **Fase 2: Espacio Aéreo Pacífico & Archipiélagos:**
-  - Océano profundo con atolones e islas reflectantes.
-  - Sublíder: *Hydra Frigate*.
-  - Jefe: *Leviathan Carrier*.
+  - Océano profundo con atolones, archipiélagos y la inmensa costa de Australia.
+  - Sublíder al 40%: *Nautilus-X*.
+  - Jefe al 85%: *Leviathan Colossus*.
 - **Fase 3: Travesía Interplanetaria a Saturno (Vía Marte y Júpiter):**
   - Despegue desde la Tierra con el planeta alejándose, sobrevuelo orbital de Marte, navegación por el Cinturón de Asteroides en 3D, aproximación a Júpiter y asalto final a la mega-estación en los majestuosos anillos de Saturno.
   - Sublíder al 40% (en Júpiter): *Jovian Core (Sonda de Fusión Gravitatoria)*.
   - Jefe Final al 85% (en Saturno): *Ganymede Titan (Estación de Batalla de Saturno)*.
-- **Fase 4: Territorio Criogénico / Sector de Hielo:**
-  - Vórtices de ventisca polar y partículas de nieve en tiempo real.
-  - Sublíder: *Glacier Sentinel*.
-  - Jefe: *Frost Titan*.
+- **Fase 4: El Círculo Ártico: De Groenlandia al Polo Norte (90°N):**
+  - Travesía geográfica real continua de 3,600px: Cruce del Círculo Polar Ártico a 66°33' N entre Islandia y Svalbard; sobrevuelo de la colosal isla de Groenlandia (Kalaallit Nunaat) y su inmenso casquete continental de hielo (Inlandis) con fiordos basálticos (Scoresby Sund e Ilulissat); navegación por la banquisa polar fracturada y polinias a lo largo de la Isla Ellesmere; y aproximación al Polo Norte Geográfico (90°00' N) con convergencia estereográfica de meridianos, rosa de los vientos polar, cortinas boreales ondeantes, radar polar estereográfico en el HUD y asalto a la ciudadela criogénica subglacial de Vektor.
+  - Sublíder al 40% (en puesto radar de Groenlandia): *Frost-Bite (Caminante Polar Bípedo)*.
+  - Jefe Final al 85% (en la Ciudadela del Polo Norte): *Zero-Kelvin (Destructor Glacial Subglacial)*.
 - **Fase 5: Jungla Profunda & Fortaleza Central:**
   - Capa de jungla con copas de árboles y terreno destructible por impactos de bombardeo orbital con cráteres permanentes y humo.
-  - Sublíder al 50%: *Shadow Assassin Gunship*.
-  - Jefe Final Supremo al 90%: *General Vektor - Apex Conqueror*.
+  - Sublíder al 40%: *Jungle-Beast*.
+  - Jefe Final Supremo al 85%: *General Vektor - Apex Conqueror*.
 
 ---
 
