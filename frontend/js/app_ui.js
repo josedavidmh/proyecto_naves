@@ -658,6 +658,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function startMission(ship, stageNumber) {
     battleContainer.classList.remove("hidden");
     hudShipName.textContent = ship.name.toUpperCase();
+    const elStageBadge = document.getElementById("hud-stage-badge");
+    if (elStageBadge) elStageBadge.textContent = `FASE ${stageNumber}`;
     engine.start(ship, stageNumber, currentUser ? currentUser.username : "PILOTO");
 
     // Centrar automáticamente la pantalla de combate para eliminar el desplazamiento incómodo

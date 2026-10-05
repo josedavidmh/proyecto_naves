@@ -6,7 +6,7 @@
   <title>Space Assault - Tactical Aerial & Space Combat</title>
   
   <!-- Estilos Sci-Fi Arcade 100% autosuficientes y fuentes Google -->
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/style.css?v=3.5">
 
   <!-- Google AdSense SDK Oficial (Monetización de Misiones) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6261859133501243"
@@ -303,11 +303,14 @@
     <section id="battle-container" class="battle-wrapper hidden">
       <!-- HUD Táctico Superior -->
       <div class="hud-bar">
-        <!-- Salud y Nave -->
-        <div style="width: 140px;">
-          <div style="display: flex; justify-content: space-between; font-size: 0.65rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.25rem;">
-            <span id="hud-ship-name" style="color: #38bdf8; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">NAVE</span>
-            <span id="hud-health-text" style="color: #34d399;">100 / 100</span>
+        <!-- Salud, Nave y Fase Actual -->
+        <div style="min-width: 150px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.25rem; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.35rem; overflow: hidden;">
+              <span id="hud-ship-name" style="color: #38bdf8; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">NAVE</span>
+              <span id="hud-stage-badge" style="font-family: 'Orbitron', monospace; font-size: 0.62rem; color: #fbbf24; font-weight: 800; border: 1px solid rgba(251, 191, 36, 0.4); padding: 1px 5px; border-radius: 3px; background: rgba(251, 191, 36, 0.15); white-space: nowrap;">FASE 1</span>
+            </div>
+            <span id="hud-health-text" style="color: #34d399; font-weight: bold;">100 / 100</span>
           </div>
           <div style="width: 100%; height: 10px; background: #0f172a; border-radius: 9999px; overflow: hidden; border: 1px solid #334155;">
             <div id="hud-health-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, #10b981, #00f3ff); transition: width 0.15s ease;"></div>
@@ -804,7 +807,7 @@
   </button>
 
   <!-- Scripts Modulares -->
-  <script type="module" src="./js/auth.js"></script>
-  <script type="module" src="./js/app_ui.js"></script>
+  <script type="module" src="./js/auth.js?v=3.5"></script>
+  <script type="module" src="./js/app_ui.js?v=3.5"></script>
 </body>
 </html>

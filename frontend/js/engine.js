@@ -243,6 +243,7 @@ export class GameEngine {
     this.finalBossSpawned = false;
     this.mainBossDefeated = false;
     this.activeBoss = null;
+    this.stageBannerTimer = 2.4;
     this.updateHudWeaponAndBombs();
 
     // Reinicializar terreno para la fase correspondiente
@@ -371,6 +372,10 @@ export class GameEngine {
     this.updateFloatingTexts(dt);
     this.updateShockwaves(dt);
     this.updateHUD(distanceRatio);
+
+    if (this.stageBannerTimer > 0) {
+      this.stageBannerTimer = Math.max(0, this.stageBannerTimer - dt);
+    }
 
     // Condición de derrota
     if (this.player.health <= 0) {
@@ -1378,7 +1383,87 @@ export class GameEngine {
       this.bombFlash = Math.max(0, this.bombFlash - 0.04);
     }
 
+    // 13. Banner Cinemático de Despliegue de Fase
+    if (this.stageBannerTimer > 0) {
+      this.drawStageIntroBanner();
+    }
+
+    // 14. Banner Cinemático de Jefe de Área Derrotado
+    if (this.mainBossDefeated) {
+      this.drawBossDefeatedCinematicBanner();
+    }
+
     this.ctx.restore();
+  }
+
+  drawStageIntroBanner() {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    const progress = Math.min(1.0, this.stageBannerTimer / 2.4);
+    const alpha = Math.min(1.0, progress * 1.6);
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    ctx.fillStyle = "rgba(4, 9, 24, 0.88)";
+    ctx.fillRect(w * 0.08, h * 0.35, w * 0.84, 88);
+    ctx.strokeStyle = "#00f3ff";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(w * 0.08, h * 0.35, w * 0.84, 88);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "bold 23px Orbitron, monospace";
+    ctx.shadowColor = "#00f3ff";
+    ctx.shadowBlur = 14;
+    ctx.fillText(`🚀 ÁREA ${this.currentStage} · DESPLIEGUE`, w / 2, h * 0.35 + 38);
+
+    const stageNames = {
+      1: "Travesía Continental: Norteamérica a la Antártida",
+      2: "Pacífico Oceánico: De Isla en Isla a Australia",
+      3: "Excursión Orbital: Rumbo a Júpiter",
+      4: "Sector Criogénico: Glaciares y Tempestad de Hielo",
+      5: "Jungla Devastada: Asalto al Cuartel General"
+    };
+    ctx.font = "12px Orbitron, monospace";
+    ctx.fillStyle = "#34d399";
+    ctx.shadowBlur = 8;
+    ctx.fillText(stageNames[this.currentStage] || "Misión de Incursión Táctica", w / 2, h * 0.35 + 68);
+
+    ctx.restore();
+  }
+
+  drawBossDefeatedCinematicBanner() {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+
+    ctx.save();
+    const pulse = 0.85 + Math.sin(performance.now() * 0.008) * 0.15;
+    ctx.globalAlpha = pulse;
+
+    ctx.fillStyle = "rgba(5, 12, 8, 0.92)";
+    ctx.fillRect(w * 0.08, h * 0.38, w * 0.84, 86);
+    ctx.strokeStyle = "#10b981";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(w * 0.08, h * 0.38, w * 0.84, 86);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "bold 24px Orbitron, monospace";
+    ctx.shadowColor = "#f59e0b";
+    ctx.shadowBlur = 20;
+    ctx.fillText(`🏆 ¡ÁREA ${this.currentStage} SUPERADA!`, w / 2, h * 0.38 + 38);
+
+    ctx.font = "bold 13px Orbitron, monospace";
+    ctx.fillStyle = "#34d399";
+    ctx.shadowColor = "#10b981";
+    ctx.shadowBlur = 10;
+    const nextSt = this.currentStage < 5 ? `DESBLOQUEADA FASE ${this.currentStage + 1} ➔` : "CAMPAÑA CONQUISTADA AL 100%";
+    ctx.fillText(`JEFE PRINCIPAL ANIQUILADO · ${nextSt}`, w / 2, h * 0.38 + 66);
+
+    ctx.restore();
   }
 
   drawBossBattleBanner(boss) {

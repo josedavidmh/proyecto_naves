@@ -472,10 +472,10 @@ canvas#game-canvas {
 }
 
 /* Soporte Nativo y Clase para Pantalla Completa Sin Scroll */
-:fullscreen .battle-wrapper,
-.battle-wrapper:fullscreen,
-.battle-wrapper.is-fullscreen,
-body.theater-mode-active #battle-container {
+:fullscreen .battle-wrapper:not(.hidden),
+.battle-wrapper:fullscreen:not(.hidden),
+.battle-wrapper.is-fullscreen:not(.hidden),
+body.theater-mode-active #battle-container:not(.hidden) {
   width: 100vw !important;
   height: 100vh !important;
   max-width: 100vw !important;
@@ -483,7 +483,7 @@ body.theater-mode-active #battle-container {
   padding: 0.6rem 1.25rem !important;
   position: fixed !important;
   inset: 0 !important;
-  z-index: 9999 !important;
+  z-index: 800 !important;
   background: #030712 !important;
   display: flex !important;
   flex-direction: column !important;
@@ -491,6 +491,28 @@ body.theater-mode-active #battle-container {
   align-items: center !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+}
+
+/* Reglas estrictas de ocultamiento prioritario */
+.hidden,
+#battle-container.hidden,
+.battle-wrapper.hidden,
+body.theater-mode-active #battle-container.hidden,
+:fullscreen #battle-container.hidden,
+body.theater-mode-active .hidden,
+:fullscreen .hidden {
+  display: none !important;
+}
+
+/* Adaptación de cartas y vistas cuando se está en pantalla completa/modo teatro */
+body.theater-mode-active .cyber-card:not(.hidden),
+:fullscreen .cyber-card:not(.hidden) {
+  max-width: 1200px !important;
+  width: 95vw !important;
+  margin: 1.5rem auto !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  z-index: 50 !important;
 }
 
 :fullscreen .hud-bar,
@@ -592,15 +614,16 @@ button#btn-floating-fullscreen ~ button#btn-floating-fullscreen {
 
 /* Modales */
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  display: flex;
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.88) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex !important;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  z-index: 1000;
+  z-index: 999999 !important;
 }
 
 .modal-box {
