@@ -96,6 +96,14 @@ export const ApiService = {
     });
   },
 
+  // Darse de baja voluntariamente de la flota (Ruta protegida JWT con confirmación)
+  async deleteAccount(password) {
+    return this.request("/api/auth/delete-account", {
+      method: "POST",
+      body: JSON.stringify({ password })
+    });
+  },
+
   // Chequeo de salud del backend
   async checkHealth() {
     return this.request("/api/health", {

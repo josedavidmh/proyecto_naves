@@ -376,8 +376,8 @@ export class GameEngine {
     if (this.player.health <= 0) {
       this.handleGameOver();
     }
-    // Condición de victoria: superó la distancia y abatió al Jefe Final de la fase
-    else if (this.finalBossSpawned && this.enemies.filter(e => e.isBoss).length === 0 && distanceRatio >= 0.95) {
+    // Condición de victoria de respaldo si no se activó por el jefe
+    else if (!this.mainBossDefeated && this.finalBossSpawned && this.enemies.filter(e => e.isBoss).length === 0 && distanceRatio >= 0.95) {
       this.handleStageVictory();
     }
   }

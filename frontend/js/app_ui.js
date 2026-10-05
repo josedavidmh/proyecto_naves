@@ -227,28 +227,29 @@ document.addEventListener("DOMContentLoaded", () => {
       const elTitle = document.getElementById("vic-title");
       const elUnlocked = document.getElementById("vic-unlocked-msg");
       const elEpilogue = document.getElementById("vic-epilogue-box");
+      const nextStageNum = stats.stageCompleted + 1;
+      selectedStage = stats.stageCompleted; // Registrar fase superada
 
-      document.getElementById("vic-stage").textContent = isFinal 
-        ? "CAMPAÑA MILITAR CONQUISTADA" 
-        : `FASE ${stats.stageCompleted} SUPERADA`;
       document.getElementById("vic-score").textContent = stats.score.toLocaleString();
       document.getElementById("vic-enemies").textContent = stats.enemies;
       document.getElementById("vic-bosses").textContent = stats.bosses;
 
       if (isFinal) {
         if (elTitle) elTitle.textContent = "🏆 ¡VICTORIA TOTAL: CAMPAÑA CONQUISTADA!";
-        if (elUnlocked) elUnlocked.textContent = "✔ Campaña completada al 100%. Victoria de Piloto guardada en SQLite.";
+        document.getElementById("vic-stage").textContent = "GENERAL VEKTOR DERROTADO · TODAS LAS ÁREAS SUPERADAS AL 100%";
+        if (elUnlocked) elUnlocked.textContent = "✔ ¡Felicidades comandante! Campaña militar completada y guardada en SQLite.";
         if (elEpilogue) elEpilogue.classList.remove("hidden");
         btnNextStageVictory.style.display = "none";
         btnHangarVictory.textContent = "🎖️ REGRESAR AL HANGAR CON HONORES";
         btnHangarVictory.className = "btn-cyber-primary";
       } else {
-        if (elTitle) elTitle.textContent = "¡VICTORIA EN COMBATE!";
-        if (elUnlocked) elUnlocked.textContent = "✔ Siguiente fase desbloqueada en SQLite.";
+        if (elTitle) elTitle.textContent = `🎖️ ¡ÁREA ${stats.stageCompleted} SUPERADA!`;
+        document.getElementById("vic-stage").textContent = `¡JEFE PRINCIPAL ABATIDO! ÁREA ${stats.stageCompleted} DESPEJADA ➔ LISTO PARA FASE ${nextStageNum}`;
+        if (elUnlocked) elUnlocked.textContent = `✔ Área ${stats.stageCompleted} superada con éxito. Fase ${nextStageNum} desbloqueada en SQLite.`;
         if (elEpilogue) elEpilogue.classList.add("hidden");
         btnNextStageVictory.style.display = "block";
-        btnNextStageVictory.textContent = "SIGUIENTE FASE ➔";
-        btnHangarVictory.textContent = "HANGAR";
+        btnNextStageVictory.textContent = `🚀 DESPLEGAR A LA FASE ${nextStageNum} ➔`;
+        btnHangarVictory.textContent = "MAPA DE OPERACIONES";
         btnHangarVictory.className = "btn-cyber-outline";
       }
 
@@ -336,22 +337,24 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPilotStats();
   });
 
-  // Continuar tras victoria
-  btnNextStageVictory.addEventListener("click", async () => {
+  // Continuar y ubicar directamente en la siguiente fase tras victoria
+  btnNextStageVictory.addEventListener("click", () => {
     victoryModal.classList.add("hidden");
     if (selectedStage < 5) {
       selectedStage++;
       startMission(selectedShip, selectedStage);
     } else {
       battleContainer.classList.add("hidden");
-      lobbyContainer.classList.remove("hidden");
+      stageSelectContainer.classList.remove("hidden");
+      loadStages();
     }
   });
 
   btnHangarVictory.addEventListener("click", () => {
     victoryModal.classList.add("hidden");
     battleContainer.classList.add("hidden");
-    lobbyContainer.classList.remove("hidden");
+    stageSelectContainer.classList.remove("hidden");
+    loadStages();
   });
 
   // Cargar las 5 naves desde SQLite mediante API

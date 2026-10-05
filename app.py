@@ -32,10 +32,11 @@ def create_app(config_override: dict = None) -> Flask:
     app.register_blueprint(auth_bp)
     app.register_blueprint(game_bp)
 
-    # Crear tablas y sembrar naves iniciales en SQLite
+    # Crear tablas, sembrar naves iniciales y restaurar usuarios persistentes
     with app.app_context():
         db.create_all()
         Ship.seed_default_ships()
+        User.restore_backup_if_empty()
 
     # Rutas para servir la aplicación Frontend
     @app.route("/")

@@ -59,6 +59,16 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
+        # Asignar progreso inicial al piloto
+        from backend.models.progress import PlayerProgress
+        if not PlayerProgress.query.filter_by(user_id=new_user.id).first():
+            prog = PlayerProgress(user_id=new_user.id)
+            db.session.add(prog)
+            db.session.commit()
+
+        # Guardar en archivo JSON de respaldo para persistencia ante reinicios
+        User.save_backup()
+
         token = generate_jwt_token(new_user.id)
 
         return jsonify({
@@ -160,9 +170,51 @@ def change_password(current_user: User):
 
     current_user.set_password(new_password)
     db.session.commit()
+    User.save_backup()
 
     return jsonify({
         "success": True,
         "message": "Contraseña de acceso actualizada con éxito."
     }), 200
+
+@auth_bp.route("/delete-account", methods=["POST", "DELETE"])
+@token_required
+def delete_account(current_user: User):
+    """
+    Permite al usuario autenticado darse de baja voluntariamente.
+    Elimina su cuenta, progresos y marcas solo previa confirmación de contraseña.
+    """
+    data = request.get_json() or {}
+    password = data.get("password", "").strip()
+    if not password:
+        return jsonify({
+            "success": False,
+            "error": "Debe ingresar su contraseña para confirmar la baja voluntaria de su cuenta."
+        }), 400
+
+    if not current_user.check_password(password):
+        return jsonify({
+            "success": False,
+            "error": "Contraseña incorrecta. Operación de baja cancelada por seguridad."
+        }), 401
+
+    try:
+        username = current_user.username
+        from backend.models.score import GameScore
+        from backend.models.progress import PlayerProgress
+
+        GameScore.query.filter_by(user_id=current_user.id).delete()
+        PlayerProgress.query.filter_by(user_id=current_user.id).delete()
+        db.session.delete(current_user)
+        db.session.commit()
+
+        User.save_backup()
+
+        return jsonify({
+            "success": True,
+            "message": f"La cuenta del piloto '{username}' ha sido dada de baja satisfactoriamente de la flota."
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": f"Error al procesar la baja de usuario: {str(e)}"}), 500
 

@@ -100,6 +100,7 @@ def complete_stage(current_user: User):
         }), 400
 
     db.session.commit()
+    User.save_backup()
 
     next_stage = stage_number + 1 if stage_number < 5 else None
     return jsonify({
@@ -158,6 +159,7 @@ def submit_score(current_user: User):
 
     db.session.add(score_record)
     db.session.commit()
+    User.save_backup()
 
     return jsonify({
         "success": True,

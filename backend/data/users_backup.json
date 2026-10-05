@@ -1,0 +1,45 @@
+{
+  "users": [
+    {
+      "username": "starshoulder",
+      "email": "josedavidmontesino@gmail.com",
+      "password_hash": "scrypt:32768:8:1$vmdxH8n5dWjNNNIQ$22d48dd29ca778e120aae35c7911e19990cdb7108839c99517e571de628236abd7dc37f0d5c13c7dac41f28c466a00dd7ecf9058a4dae7778fd3e180051e7b31",
+      "created_at": "2026-10-05T01:01:34.880678"
+    }
+  ],
+  "progress": [
+    {
+      "username": "starshoulder",
+      "current_max_stage": 1,
+      "stage_1_unlocked": true,
+      "stage_2_unlocked": false,
+      "stage_3_unlocked": false,
+      "stage_4_unlocked": false,
+      "stage_5_unlocked": false,
+      "campaign_completed": false,
+      "updated_at": "2026-10-05T01:10:05.204745"
+    }
+  ],
+  "scores": [
+    {
+      "pilot": "starshoulder",
+      "ship_slug": "phoenix-vanguard",
+      "stage_reached": 1,
+      "score": 2160,
+      "enemies_destroyed": 12,
+      "bosses_defeated": 0,
+      "victory": false,
+      "created_at": "2026-10-05T01:11:41.618975"
+    },
+    {
+      "pilot": "starshoulder",
+      "ship_slug": "valkyrie-specter",
+      "stage_reached": 1,
+      "score": 16140,
+      "enemies_destroyed": 84,
+      "bosses_defeated": 1,
+      "victory": false,
+      "created_at": "2026-10-05T01:28:27.291302"
+    }
+  ]
+}

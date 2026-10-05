@@ -310,6 +310,74 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Modal y Formulario de Darse de Baja Voluntaria
+  const btnOpenDeleteAcc = document.getElementById("btn-open-delete-account");
+  const deleteAccountModal = document.getElementById("delete-account-modal");
+  const btnCloseDeleteAcc = document.getElementById("btn-close-delete-acc");
+  const btnCancelDeleteAcc = document.getElementById("btn-cancel-delete-acc");
+  const formDeleteAccount = document.getElementById("form-delete-account");
+  const deleteAccAlert = document.getElementById("delete-acc-alert");
+
+  function openDeleteAccountModal() {
+    if (!deleteAccountModal) return;
+    if (deleteAccAlert) deleteAccAlert.classList.add("hidden");
+    if (formDeleteAccount) formDeleteAccount.reset();
+    deleteAccountModal.classList.remove("hidden");
+  }
+
+  function closeDeleteAccountModal() {
+    if (!deleteAccountModal) return;
+    deleteAccountModal.classList.add("hidden");
+  }
+
+  if (btnOpenDeleteAcc) {
+    btnOpenDeleteAcc.addEventListener("click", openDeleteAccountModal);
+  }
+  if (btnCloseDeleteAcc) {
+    btnCloseDeleteAcc.addEventListener("click", closeDeleteAccountModal);
+  }
+  if (btnCancelDeleteAcc) {
+    btnCancelDeleteAcc.addEventListener("click", closeDeleteAccountModal);
+  }
+
+  if (formDeleteAccount) {
+    formDeleteAccount.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const password = document.getElementById("input-del-acc-pwd").value.trim();
+      const submitBtn = document.getElementById("btn-submit-delete-acc");
+
+      if (!password) {
+        deleteAccAlert.className = "p-2 rounded text-xs font-mono bg-red-950/80 text-red-300 border border-red-500";
+        deleteAccAlert.textContent = "Error: Debes ingresar tu contraseña para confirmar.";
+        deleteAccAlert.classList.remove("hidden");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "PROCESANDO BAJA...";
+
+      const res = await ApiService.deleteAccount(password);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "CONFIRMAR BAJA ✕";
+
+      if (res.ok && res.data.success) {
+        deleteAccAlert.className = "p-2 rounded text-xs font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-500";
+        deleteAccAlert.textContent = "✔ Cuenta eliminada satisfactoriamente.";
+        deleteAccAlert.classList.remove("hidden");
+        setTimeout(() => {
+          closeDeleteAccountModal();
+          ApiService.clearToken();
+          showUnauthenticatedUI();
+          showAlert("Tu cuenta de piloto ha sido dada de baja de la flota.", "info");
+        }, 1200);
+      } else {
+        deleteAccAlert.className = "p-2 rounded text-xs font-mono bg-red-950/80 text-red-300 border border-red-500";
+        deleteAccAlert.textContent = res.data.error || "No se pudo procesar la baja de usuario.";
+        deleteAccAlert.classList.remove("hidden");
+      }
+    });
+  }
+
   // Inicializar
   checkInitialSession();
 });
