@@ -637,6 +637,8 @@ button#btn-floating-fullscreen ~ button#btn-floating-fullscreen {
 }
 
 /* Modales */
+:fullscreen .modal-overlay,
+body.theater-mode-active .modal-overlay,
 .modal-overlay {
   position: fixed !important;
   inset: 0 !important;
@@ -647,11 +649,13 @@ button#btn-floating-fullscreen ~ button#btn-floating-fullscreen {
   align-items: center;
   justify-content: center;
   padding: 1.5rem 1rem;
-  z-index: 999999 !important;
+  z-index: 9999999 !important;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
+:fullscreen .modal-overlay.hidden,
+body.theater-mode-active .modal-overlay.hidden,
 .modal-overlay.hidden {
   display: none !important;
   visibility: hidden !important;

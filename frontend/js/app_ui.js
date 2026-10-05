@@ -150,6 +150,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Exponer a nivel global para que el motor y atajos de teclado siempre usen la misma lógica
+  window.toggleFullscreen = toggleFullscreen;
+
   // Eventos de botones
   if (btnFullscreenHeader) btnFullscreenHeader.addEventListener("click", toggleFullscreen);
   if (btnBattleFullscreen) btnBattleFullscreen.addEventListener("click", toggleFullscreen);
@@ -263,6 +266,13 @@ document.addEventListener("DOMContentLoaded", () => {
         btnHangarVictory.className = "btn-cyber-outline";
       }
 
+      // Si el navegador tenía fullscreen en un elemento inferior, normalizar a pantalla completa de documento
+      if (document.fullscreenElement && document.fullscreenElement !== document.documentElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+
       victoryModal.classList.remove("hidden");
       loadPilotStats();
     }
@@ -352,7 +362,16 @@ document.addEventListener("DOMContentLoaded", () => {
     victoryModal.classList.add("hidden");
     if (selectedStage < 5) {
       selectedStage++;
-      startMission(selectedShip, selectedStage);
+      const shipToDeploy = selectedShip || (availableShips && availableShips.length > 0 ? availableShips[0] : null);
+      if (shipToDeploy) {
+        startMission(shipToDeploy, selectedStage);
+      } else {
+        // En caso de no tener nave en memoria, cargarla desde el catálogo
+        loadShips().then(() => {
+          const fallback = availableShips && availableShips.length > 0 ? availableShips[0] : null;
+          if (fallback) startMission(fallback, selectedStage);
+        });
+      }
     } else {
       battleContainer.classList.add("hidden");
       stageSelectContainer.classList.remove("hidden");

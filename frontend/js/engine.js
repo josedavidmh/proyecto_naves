@@ -188,14 +188,18 @@ export class GameEngine {
   }
 
   toggleFullscreen() {
-    const battle = document.getElementById("battle-container") || document.documentElement;
+    if (typeof window !== "undefined" && window.toggleFullscreen) {
+      window.toggleFullscreen();
+      return;
+    }
+    const root = document.documentElement;
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      if (battle.requestFullscreen) {
-        battle.requestFullscreen().catch(err => {
+      if (root.requestFullscreen) {
+        root.requestFullscreen().catch(err => {
           console.warn("[Pantalla Completa]", err);
         });
-      } else if (battle.webkitRequestFullscreen) {
-        battle.webkitRequestFullscreen();
+      } else if (root.webkitRequestFullscreen) {
+        root.webkitRequestFullscreen();
       }
     } else {
       if (document.exitFullscreen) {
@@ -794,17 +798,17 @@ export class GameEngine {
       if (enemy.isFinalBoss) {
         this.mainBossDefeated = true;
         this.enemyProjectiles = []; // Proteger al jugador limpiando todos los proyectiles hostiles
+        this.enemies = []; // Despejar enemigos residuales
+        this.player.isInvulnerable = true; // Inmunidad tras triunfo
 
         // Anuncio cinemático en pantalla
         this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 35, `🏆 ¡JEFE DE ÁREA DERROTADO!`, "#fbbf24");
         this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 + 5, `ÁREA ${this.currentStage} SUPERADA CON ÉXITO`, "#10b981");
 
-        // Breve ventana de 1.8 segundos para recoger el Gran Premio antes de abrir la pantalla de victoria
+        // Ventana ágil de 1.1 segundos para apreciar la victoria antes de desplegar modal
         setTimeout(() => {
-          if (this.isRunning) {
-            this.handleStageVictory();
-          }
-        }, 1800);
+          this.handleStageVictory();
+        }, 1100);
       } else {
         // ¡Sublíder de fase derrotado!
         this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 35, `⚡ ¡SUBLÍDER ${enemy.name} DERROTADO!`, "#38bdf8");
@@ -1729,16 +1733,14 @@ export class GameEngine {
     const bonusScore = isCampaignVictory ? 15000 : 5000;
     const finalScore = this.score + bonusScore;
 
-    await ApiService.completeStage(this.currentStage);
-    await ApiService.submitScore({
-      ship_id: this.ship.id,
-      stage_reached: this.currentStage,
-      score: finalScore,
-      enemies_destroyed: this.enemiesDestroyed,
-      bosses_defeated: this.bossesDefeated,
-      victory: isCampaignVictory
-    });
+    // Si el contenedor de batalla estaba en fullscreen exclusivo de elemento, liberar para visualización universal de modales
+    if (document.fullscreenElement && document.fullscreenElement !== document.documentElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
 
+    // 1. Desplegar pantalla de victoria INMEDIATAMENTE (Cero retrasos ni pantalla congelada)
     if (this.hud && this.hud.onStageVictory) {
       this.hud.onStageVictory({
         stageCompleted: this.currentStage,
@@ -1747,6 +1749,21 @@ export class GameEngine {
         bosses: this.bossesDefeated,
         isCampaignVictory
       });
+    }
+
+    // 2. Persistir en SQLite en segundo plano de manera no bloqueante
+    try {
+      await ApiService.completeStage(this.currentStage);
+      await ApiService.submitScore({
+        ship_id: this.ship.id,
+        stage_reached: this.currentStage,
+        score: finalScore,
+        enemies_destroyed: this.enemiesDestroyed,
+        bosses_defeated: this.bossesDefeated,
+        victory: isCampaignVictory
+      });
+    } catch (err) {
+      console.warn("[Progreso SQLite] Error en background sync tras victoria:", err);
     }
   }
 }
