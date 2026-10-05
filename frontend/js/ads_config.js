@@ -1,6 +1,6 @@
 /**
  * CONFIGURACIÓN CENTRALIZADA DE GOOGLE ADSENSE
- * Proyecto Naves - Tactical Aerial & Space Assault
+ * Space Assault - Tactical Aerial & Space Assault
  * 
  * Instrucciones:
  * 1. Accede a tu consola de Google AdSense (https://adsense.google.com).

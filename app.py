@@ -52,7 +52,7 @@ def create_app(config_override: dict = None) -> Flask:
         return {
             "success": True,
             "status": "online",
-            "service": "Proyecto Naves API - Arquitectura Pro",
+            "service": "Space Assault API - Arquitectura Pro",
             "database": "SQLite (SQLAlchemy)",
             "auth": "JWT HS256"
         }, 200
