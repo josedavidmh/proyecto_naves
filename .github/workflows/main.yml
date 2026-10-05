@@ -1,0 +1,10 @@
+name: Mantener Render Despierto
+on:
+  schedule:
+    - cron: '*/14 * * * *' # Se ejecuta cada 14 minutos
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar petición de actividad
+        run: curl -s https://space-assault.onrender.com/
