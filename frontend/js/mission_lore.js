@@ -31,14 +31,14 @@ export const MissionLore = {
   },
 
   3: {
-    operation: "OPERACIÓN ÉXODO JOVIANO",
-    stageName: "Fase 3: De la Tierra hacia Júpiter",
-    classification: "COMBATE EXTRA-ATMOSFÉRICO DE SUPREMACÍA",
-    lore: "Los datos capturados en el Pacífico revelan una amenaza letal: Vektor construyó una estación de guerra orbital en la atmósfera de Júpiter. Esta mega-estructura extrae hidrógeno y plasma joviano para alimentar un cañón de aniquilación subespacial capaz de arrasar la Tierra desde el espacio profundo. No podemos atacar la selva terrestre mientras este cañón orbital apunte a nuestras espaldas. Despega de la Tierra, viaja al gigante gaseoso y destruye el núcleo Ganymede Titan antes de que cargue el rayo de juicio.",
-    objective: "Viajar a Júpiter, destruir la estación extractora y desmantelar el cañón de aniquilación.",
+    operation: "OPERACIÓN TRAVESÍA A SATURNO",
+    stageName: "Fase 3: De la Tierra a Marte, Júpiter y Saturno",
+    classification: "COMBATE EXTRA-ATMOSFÉRICO DE SUPREMACÍA INTERPLANETARIA",
+    lore: "Los datos capturados en el Pacífico revelan una amenaza titánica: el General Vektor instaló una mega-estación de guerra orbital en los majestuosos anillos de Saturno, alimentada por plasma extraído de Júpiter. Despega de la Tierra, rebasa la órbita roja de Marte, navega a través del peligroso Cinturón de Asteroides y neutraliza a la sonda sublíder Jovian Core frente a Júpiter. Luego, acelera a máxima potencia hacia los anillos de Saturno para destruir la estación Ganymede Titan antes de que cargue su cañón de aniquilación.",
+    objective: "Superar Marte y el cinturón de asteroides, abatir a Jovian Core en Júpiter y destruir al titán en los anillos de Saturno.",
     intel: {
-      subBoss: "Jovian Core — Sonda orbital giratoria con pulsos de distorsión gravitatoria.",
-      finalBoss: "Ganymede Titan — Estación de combate armada con haces de plasma giratorios."
+      subBoss: "Jovian Core — Sonda orbital de plasma frente a Júpiter con vórtice espiral cuádruple.",
+      finalBoss: "Ganymede Titan — Fortaleza imperial en los anillos de Saturno armada con corona solar y railgun hiperdenso."
     },
     threatLevel: "AMENAZA: CRÍTICA"
   },

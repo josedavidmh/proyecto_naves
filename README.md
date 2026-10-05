@@ -1,6 +1,8 @@
-# PROYECTO NAVES: Tactical Aerial & Space Assault
+# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.1`
 
 Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combate únicas, 5 fases progresivas con desbloqueo secuencial persistente, sublíderes y jefes de fase, mapa continental de América en alta resolución y backend SQLite con autenticación JWT sin mocks.
+
+> **Política de Versiones:** A partir de la versión inicial **v1.0**, cada mejora o actualización del juego incrementará la versión, la cual se despliega en tamaño reducido junto al título del juego en toda la interfaz (`frontend/js/version.js`).
 
 ---
 

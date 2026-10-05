@@ -34,8 +34,11 @@ body {
 }
 
 /* Regla crítica para visibilidad de pantallas */
-.hidden {
+.hidden,
+.modal-overlay.hidden,
+[hidden] {
   display: none !important;
+  visibility: hidden !important;
 }
 
 /* Tipografías */
@@ -144,6 +147,27 @@ body {
 .brand-title:hover {
   filter: drop-shadow(0 0 24px rgba(0, 243, 255, 0.8)) drop-shadow(0 0 35px rgba(244, 63, 94, 0.4));
   transform: translateY(-1px);
+}
+
+/* Badge de Versión del Juego (pequeño al lado del nombre) */
+.game-version-badge {
+  display: inline-block;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #00f3ff !important;
+  -webkit-text-fill-color: #00f3ff !important;
+  background: rgba(0, 243, 255, 0.12);
+  border: 1px solid rgba(0, 243, 255, 0.5);
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.18);
+  vertical-align: middle;
+  margin-left: 6px;
+  line-height: normal;
+  text-transform: uppercase;
 }
 
 .brand-subtitle {
@@ -619,11 +643,18 @@ button#btn-floating-fullscreen ~ button#btn-floating-fullscreen {
   background: rgba(0, 0, 0, 0.88) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  display: flex !important;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
   z-index: 999999 !important;
+}
+
+.modal-overlay.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .modal-box {

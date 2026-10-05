@@ -183,7 +183,7 @@ export const BossCatalog = {
         return {
           slug: "boss_ganymede_titan",
           name: "GANYMEDE TITAN (BOSS FASE 3)",
-          title: "Estación de Batalla Orbital Joviana",
+          title: "Estación de Batalla de los Anillos de Saturno",
           abilityName: "Corona Solar & Railgun Hiperdenso",
           abilityDesc: "Erupción radial de plasma solar en 360° y salva de railgun central",
           health: 1250,

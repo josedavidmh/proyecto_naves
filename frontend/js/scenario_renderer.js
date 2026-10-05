@@ -17,23 +17,141 @@ export class ScenarioRenderer {
     this.pacificIslands = [];
     this.jungleTrees = [];
     this.groundCraters = [];
+    this.spaceStars = [];
+    this.spaceAsteroids = [];
 
     this.initIslands();
     this.initSnow();
     this.initJungle();
+    this.initSpaceStars();
+    this.initSpaceAsteroids();
+  }
+
+  initSpaceStars() {
+    this.spaceStars = [];
+    for (let i = 0; i < 95; i++) {
+      const isTwinkle = Math.random() < 0.22; // Pocas estrellitas aleatorias que titilan (~20 de 95)
+      this.spaceStars.push({
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height,
+        size: Math.random() * 1.8 + 0.8,
+        baseAlpha: Math.random() * 0.45 + 0.25,
+        isTwinkle,
+        twinkleSpeed: Math.random() * 0.003 + 0.002,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        hasGlint: isTwinkle && Math.random() < 0.45,
+        color: Math.random() > 0.8 ? "#93c5fd" : (Math.random() > 0.6 ? "#fef08a" : "#ffffff")
+      });
+    }
+  }
+
+  initSpaceAsteroids() {
+    this.spaceAsteroids = [];
+    for (let i = 0; i < 28; i++) {
+      const rad = Math.random() * 16 + 8; // 8 a 24px
+      const numPts = 10;
+      const pts = [];
+      for (let p = 0; p < numPts; p++) {
+        const ang = (p / numPts) * Math.PI * 2;
+        const r = rad * (0.75 + Math.random() * 0.5);
+        pts.push({ x: Math.cos(ang) * r, y: Math.sin(ang) * r });
+      }
+      this.spaceAsteroids.push({
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height * 2.2 - 150,
+        radius: rad,
+        poly: pts,
+        speedY: Math.random() * 26 + 32,
+        speedX: (Math.random() - 0.5) * 12,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.025,
+        color: Math.random() > 0.5 ? "#475569" : "#334155"
+      });
+    }
   }
 
   initIslands() {
     this.pacificIslands = [];
-    for (let i = 0; i < 14; i++) {
-      this.pacificIslands.push({
-        x: Math.random() * (this.canvas.width - 140) + 70,
-        y: Math.random() * this.canvas.height * 2.5,
-        radius: Math.random() * 35 + 25,
-        reefs: Math.random() * 15 + 10,
-        hasPalms: Math.random() > 0.3
+    const count = 16;
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * (this.canvas.width - 120) + 60;
+      const y = (i / count) * this.canvas.height * 2.2 - 150;
+      this.pacificIslands.push(this.createPacificIsland(x, y));
+    }
+  }
+
+  createPacificIsland(x, y) {
+    const types = ["volcanic", "atoll", "archipelago", "cay"];
+    const type = types[Math.floor(Math.random() * types.length)];
+    const baseRadius = Math.random() * 26 + 22; // 22 a 48px
+    const roughness = type === "cay" ? 0.25 : 0.42;
+
+    const generatePoly = (rad, rough, numPts = 16) => {
+      const pts = [];
+      const s1 = Math.random() * 6;
+      const s2 = Math.random() * 6;
+      for (let i = 0; i < numPts; i++) {
+        const ang = (i / numPts) * Math.PI * 2;
+        const harmonic = Math.sin(ang * 2 + s1) * 0.22 + Math.cos(ang * 3 + s2) * 0.16;
+        const r = rad * (1.0 + harmonic + (Math.random() - 0.5) * rough);
+        pts.push({ x: Math.cos(ang) * r, y: Math.sin(ang) * r });
+      }
+      return pts;
+    };
+
+    const reefPoly = generatePoly(baseRadius * 1.58, roughness * 0.8, 16);
+    const sandPoly = generatePoly(baseRadius * 1.15, roughness, 16);
+    const junglePoly = generatePoly(baseRadius * 0.78, roughness * 1.1, 14);
+    const corePoly = generatePoly(baseRadius * 0.42, roughness * 0.7, 12);
+
+    const palms = [];
+    const numPalms = Math.floor(Math.random() * 4) + 2;
+    for (let p = 0; p < numPalms; p++) {
+      const pAng = Math.random() * Math.PI * 2;
+      const pDist = baseRadius * (0.82 + Math.random() * 0.22);
+      palms.push({
+        x: Math.cos(pAng) * pDist,
+        y: Math.sin(pAng) * pDist,
+        trunkAngle: (Math.random() - 0.5) * 0.65,
+        size: Math.random() * 3 + 4.5
       });
     }
+
+    const lagoonPoly = type === "atoll" ? generatePoly(baseRadius * 0.45, 0.25, 12) : null;
+
+    const satellites = [];
+    if (type === "archipelago") {
+      const count = Math.random() > 0.4 ? 2 : 1;
+      for (let s = 0; s < count; s++) {
+        const sAng = s * Math.PI + (Math.random() - 0.5) * 0.8;
+        const sDist = baseRadius * (1.75 + Math.random() * 0.45);
+        const sRad = baseRadius * (0.32 + Math.random() * 0.22);
+        satellites.push({
+          x: Math.cos(sAng) * sDist,
+          y: Math.sin(sAng) * sDist,
+          reefPoly: generatePoly(sRad * 1.55, 0.3, 12),
+          sandPoly: generatePoly(sRad * 1.15, 0.35, 12),
+          junglePoly: generatePoly(sRad * 0.72, 0.4, 10),
+          radius: sRad
+        });
+      }
+    }
+
+    return {
+      x,
+      y,
+      type,
+      radius: baseRadius,
+      reefPoly,
+      sandPoly,
+      junglePoly,
+      corePoly,
+      palms,
+      lagoonPoly,
+      satellites,
+      rotation: Math.random() * Math.PI * 2,
+      surfPhase: Math.random() * Math.PI * 2
+    };
   }
 
   initSnow() {
@@ -91,12 +209,24 @@ export class ScenarioRenderer {
     this.scrollY += scrollSpeed;
 
     if (stageNumber === 2) {
-      // Mover islas hacia abajo
-      for (const island of this.pacificIslands) {
-        island.y += scrollSpeed * 0.9;
-        if (island.y > this.canvas.height + 100) {
-          island.y = -100;
-          island.x = Math.random() * (this.canvas.width - 140) + 70;
+      // Mover islas hacia abajo con velocidad orgánica y oleaje
+      for (let i = 0; i < this.pacificIslands.length; i++) {
+        const island = this.pacificIslands[i];
+        island.y += scrollSpeed * 0.92;
+        if (island.y > this.canvas.height + 120) {
+          const newX = Math.random() * (this.canvas.width - 120) + 60;
+          this.pacificIslands[i] = this.createPacificIsland(newX, -120);
+        }
+      }
+    } else if (stageNumber === 3) {
+      // Movimiento y rotación de asteroides del cinturón entre Marte y Júpiter
+      for (const a of this.spaceAsteroids) {
+        a.y += a.speedY * dt;
+        a.x += a.speedX * dt;
+        a.rotation += a.rotSpeed;
+        if (a.y > this.canvas.height + 60) {
+          a.y = -60;
+          a.x = Math.random() * this.canvas.width;
         }
       }
     } else if (stageNumber === 4) {
@@ -532,126 +662,1278 @@ export class ScenarioRenderer {
   // ESCENARIO 2: OCÉANO PACÍFICO A AUSTRALIA
   // ==========================================
   renderStage2_PacificToAustralia(ctx, w, h, distanceRatio) {
-    // Mar profundo del Pacífico
-    ctx.fillStyle = "#022c43";
+    // 1. Mar profundo del Pacífico con gradiente batimétrico
+    const oceanGrad = ctx.createLinearGradient(0, 0, 0, h);
+    oceanGrad.addColorStop(0, "#011627");
+    oceanGrad.addColorStop(0.5, "#022c43");
+    oceanGrad.addColorStop(1, "#033b5c");
+    ctx.fillStyle = oceanGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // Olas sutiles
-    ctx.strokeStyle = "rgba(14, 165, 233, 0.15)";
-    ctx.lineWidth = 2;
-    for (let y = (this.scrollY * 0.3) % 40; y < h; y += 40) {
+    // Ondas y corrientes marinas profundas
+    ctx.strokeStyle = "rgba(14, 165, 233, 0.14)";
+    ctx.lineWidth = 2.2;
+    const waveOffset = (this.scrollY * 0.35) % 48;
+    for (let wy = waveOffset; wy < h; wy += 48) {
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y + 10);
+      ctx.moveTo(0, wy);
+      ctx.bezierCurveTo(w * 0.25, wy + 12, w * 0.75, wy - 10, w, wy + 4);
       ctx.stroke();
     }
 
-    // Archipiélagos e Islas Polinesias
-    for (const island of this.pacificIslands) {
-      // Arrecife turquesa
-      ctx.fillStyle = "rgba(20, 184, 166, 0.35)";
-      ctx.beginPath();
-      ctx.arc(island.x, island.y, island.radius + island.reefs, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Playa de arena
-      ctx.fillStyle = "#fef08a";
-      ctx.beginPath();
-      ctx.arc(island.x, island.y, island.radius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Vegetación interior
-      ctx.fillStyle = "#15803d";
-      ctx.beginPath();
-      ctx.arc(island.x, island.y, island.radius * 0.7, 0, Math.PI * 2);
-      ctx.fill();
+    // 2. Islas Orgánicas del Pacífico (Solo visibles antes de llegar a tierra firme profunda)
+    const islandAlpha = distanceRatio > 0.82 ? Math.max(0, 1.0 - (distanceRatio - 0.82) / 0.12) : 1.0;
+    if (islandAlpha > 0) {
+      ctx.save();
+      ctx.globalAlpha = islandAlpha;
+      for (const island of this.pacificIslands) {
+        this.drawOrganicIsland(ctx, island);
+      }
+      ctx.restore();
     }
 
-    // Aparición de la masa continental de Australia hacia el final de la fase
-    if (distanceRatio > 0.6) {
-      const enterProgress = (distanceRatio - 0.6) / 0.4;
-      const coastY = h - (enterProgress * h * 0.7);
+    // 3. Masa Continental de Australia y Gran Barrera de Coral acercándose
+    if (distanceRatio >= 0.35) {
+      this.drawAustraliaContinent(ctx, w, h, distanceRatio);
+    }
 
-      ctx.fillStyle = "#b45309"; // Tierra roja australiana
+    // 4. Cartela Táctica de Posición Geográfica
+    this.renderPacificPositionBanner(ctx, w, h, distanceRatio);
+
+    // 5. Radar Táctico de Aproximación Continental en la esquina inferior izquierda
+    this.renderPacificAustraliaRadar(ctx, distanceRatio);
+  }
+
+  /**
+   * Dibuja una isla orgánica con arrecifes, rompientes, playas de arena,
+   * jungla en capas, lagunas coralinas y palmeras tropicales.
+   */
+  drawOrganicIsland(ctx, island) {
+    ctx.save();
+    ctx.translate(island.x, island.y);
+    ctx.rotate(island.rotation);
+
+    // A. Halo de aguas someras y arrecife de coral exterior
+    ctx.fillStyle = "rgba(45, 212, 191, 0.26)"; // Turquesa translúcido
+    ctx.beginPath();
+    this.drawPathFromPoints(ctx, island.reefPoly);
+    ctx.closePath();
+    ctx.fill();
+
+    // Rompientes de surf y espuma marina en el arrecife
+    const surfPulse = 1.0 + Math.sin(performance.now() * 0.003 + island.surfPhase) * 0.06;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.42)";
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([4, 6]);
+    ctx.beginPath();
+    ctx.scale(surfPulse, surfPulse);
+    this.drawPathFromPoints(ctx, island.reefPoly);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.scale(1 / surfPulse, 1 / surfPulse);
+
+    // B. Bajíos coralinos intermedios
+    ctx.fillStyle = "rgba(20, 184, 166, 0.48)";
+    ctx.beginPath();
+    this.drawPathFromPoints(ctx, island.sandPoly, 1.12);
+    ctx.closePath();
+    ctx.fill();
+
+    // C. Si es archipiélago, dibujar islotes satélites conectados
+    if (island.type === "archipelago" && island.satellites) {
+      for (const sat of island.satellites) {
+        // Bajío de arena que conecta los islotes
+        ctx.strokeStyle = "rgba(254, 240, 138, 0.35)";
+        ctx.lineWidth = Math.max(3, sat.radius * 0.7);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(sat.x, sat.y);
+        ctx.stroke();
+
+        // Arrecife satélite
+        ctx.fillStyle = "rgba(45, 212, 191, 0.3)";
+        ctx.beginPath();
+        this.drawOffsetPath(ctx, sat.reefPoly, sat.x, sat.y);
+        ctx.fill();
+
+        // Playa satélite
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        this.drawOffsetPath(ctx, sat.sandPoly, sat.x, sat.y);
+        ctx.fill();
+
+        // Vegetación satélite
+        ctx.fillStyle = "#15803d";
+        ctx.beginPath();
+        this.drawOffsetPath(ctx, sat.junglePoly, sat.x, sat.y);
+        ctx.fill();
+      }
+    }
+
+    // D. Playa de arena tropical dorada
+    ctx.fillStyle = "#fef08a"; // Arena fina
+    ctx.strokeStyle = "#fde047";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    this.drawPathFromPoints(ctx, island.sandPoly);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // E. Vegetación y geografía interior
+    if (island.type === "atoll") {
+      // Atolón: anillo de vegetación con laguna interior
+      ctx.fillStyle = "#16a34a";
       ctx.beginPath();
-      ctx.moveTo(0, coastY + 100);
-      ctx.bezierCurveTo(w * 0.3, coastY, w * 0.7, coastY + 60, w, coastY);
-      ctx.lineTo(w, h);
-      ctx.lineTo(0, h);
+      this.drawPathFromPoints(ctx, island.junglePoly);
       ctx.closePath();
       ctx.fill();
 
-      ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = 4;
-      ctx.stroke();
+      // Laguna interior turquesa cristalina
+      if (island.lagoonPoly) {
+        ctx.fillStyle = "#2dd4bf"; // Agua de laguna
+        ctx.beginPath();
+        this.drawPathFromPoints(ctx, island.lagoonPoly);
+        ctx.closePath();
+        ctx.fill();
 
-      // Letrero táctico
-      ctx.fillStyle = "#00f3ff";
-      ctx.font = "10px Orbitron";
-      ctx.fillText("AVISTANDO COSTA DE AUSTRALIA", w / 2 - 100, coastY + 30);
+        // Pozo profundo central
+        ctx.fillStyle = "#0284c7";
+        ctx.beginPath();
+        ctx.arc(0, 0, island.radius * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      // Isla volcánica o cayo: dosel de selva en capas
+      ctx.fillStyle = "#16a34a"; // Borde exterior
+      ctx.beginPath();
+      this.drawPathFromPoints(ctx, island.junglePoly);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#15803d"; // Selva densa
+      ctx.beginPath();
+      this.drawPathFromPoints(ctx, island.corePoly);
+      ctx.closePath();
+      ctx.fill();
+
+      // Pico volcánico rocoso si es volcánica
+      if (island.type === "volcanic") {
+        ctx.fillStyle = "#334155";
+        ctx.beginPath();
+        ctx.moveTo(-island.radius * 0.22, island.radius * 0.15);
+        ctx.lineTo(0, -island.radius * 0.35);
+        ctx.lineTo(island.radius * 0.25, island.radius * 0.2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Faceta iluminada
+        ctx.fillStyle = "#64748b";
+        ctx.beginPath();
+        ctx.moveTo(0, -island.radius * 0.35);
+        ctx.lineTo(island.radius * 0.25, island.radius * 0.2);
+        ctx.lineTo(island.radius * 0.05, 0);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    // F. Palmeras tropicales realistas con frondas verdes
+    for (const palm of island.palms) {
+      this.drawPalmTree(ctx, palm.x, palm.y, palm.size, palm.trunkAngle);
+    }
+
+    ctx.restore();
+  }
+
+  drawPathFromPoints(ctx, points, scale = 1.0) {
+    if (!points || points.length === 0) return;
+    ctx.moveTo(points[0].x * scale, points[0].y * scale);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x * scale, points[i].y * scale);
     }
   }
 
-  // ==========================================
-  // ESCENARIO 3: DE LA TIERRA HACIA JÚPITER
-  // ==========================================
-  renderStage3_EarthToJupiter(ctx, w, h, distanceRatio) {
-    // Fondo de vacío cósmico
-    ctx.fillStyle = "#030712";
-    ctx.fillRect(0, 0, w, h);
+  drawOffsetPath(ctx, points, ox, oy, scale = 1.0) {
+    if (!points || points.length === 0) return;
+    ctx.moveTo(ox + points[0].x * scale, oy + points[0].y * scale);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(ox + points[i].x * scale, oy + points[i].y * scale);
+    }
+    ctx.closePath();
+  }
 
-    // Tierra alejándose abajo al inicio de la fase
-    if (distanceRatio < 0.4) {
-      const earthRadius = (1.0 - (distanceRatio / 0.4)) * 260 + 120;
-      const earthY = h + earthRadius * 0.6;
+  drawPalmTree(ctx, x, y, size, trunkAngle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(trunkAngle);
 
-      const earthGlow = ctx.createRadialGradient(w / 2, earthY, earthRadius * 0.8, w / 2, earthY, earthRadius);
-      earthGlow.addColorStop(0, "#0284c7");
-      earthGlow.addColorStop(0.8, "#0369a1");
-      earthGlow.addColorStop(1, "rgba(56, 189, 248, 0)");
+    // Tronco curvo marrón
+    ctx.strokeStyle = "#78350f";
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(size * 0.35, -size * 0.5, size * 0.2, -size * 1.25);
+    ctx.stroke();
 
-      ctx.fillStyle = earthGlow;
+    // Frondas verdes (corona de hojas)
+    const topX = size * 0.2;
+    const topY = -size * 1.25;
+    ctx.strokeStyle = "#22c55e";
+    ctx.lineWidth = 1.2;
+    for (let f = 0; f < 5; f++) {
+      const fAng = (f / 5) * Math.PI * 2;
       ctx.beginPath();
-      ctx.arc(w / 2, earthY, earthRadius, 0, Math.PI * 2);
+      ctx.moveTo(topX, topY);
+      ctx.quadraticCurveTo(
+        topX + Math.cos(fAng) * size * 0.65,
+        topY + Math.sin(fAng) * size * 0.35,
+        topX + Math.cos(fAng) * size * 1.05,
+        topY + Math.sin(fAng) * size * 0.85
+      );
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Renderiza la masa continental de Australia con su geografía inconfundible:
+   * Península de Cabo York, Golfo de Carpentaria, Gran Barrera de Coral,
+   * Tierra de Arnhem, Gran Bahía Australiana, Outback rojo y bases costeras.
+   * Se acerca y amplía dinámicamente según distanceRatio.
+   */
+  drawAustraliaContinent(ctx, w, h, distanceRatio) {
+    // enterProgress va de 0.0 (35% de fase) a 1.0 (100% de fase)
+    const enterProgress = Math.min(1.0, (distanceRatio - 0.35) / 0.65);
+
+    // Dimensiones y escalado de la masa continental
+    const baseW = Math.min(w * 1.6, 1150);
+    const baseH = baseW * 0.78;
+    const currentScale = 0.85 + enterProgress * 0.55;
+
+    // A medida que se avanza en la fase, Australia asciende hacia el centro de la pantalla
+    const targetY = h + 120 - enterProgress * (h * 1.08 + 240);
+    const centerX = w * 0.5;
+
+    ctx.save();
+    ctx.translate(centerX, targetY);
+    ctx.scale(currentScale, currentScale);
+
+    // Contorno vectorial geográfico oficial de Australia (centrado)
+    const australiaOutline = [
+      // 1. Península de Cabo York (Punta norte extrema hacia el Estrecho de Torres)
+      { x: 0.16, y: -0.42 }, // Punta de Cabo York
+      { x: 0.14, y: -0.32 }, // Costa este de Cabo York (Cooktown)
+      { x: 0.11, y: -0.22 }, // Base de Cabo York (Cairns)
+
+      // 2. Costa Este de Queensland y Nueva Gales del Sur (hacia el Sureste)
+      { x: 0.18, y: -0.12 }, // Townsville / Mackay
+      { x: 0.28, y: 0.02 },  // Rockhampton / Bundaberg
+      { x: 0.38, y: 0.16 },  // Sunshine Coast / Brisbane
+      { x: 0.36, y: 0.30 },  // Gold Coast / Byron Bay (Punto más oriental)
+      { x: 0.31, y: 0.44 },  // Sydney / Wollongong
+      { x: 0.25, y: 0.54 },  // Costa sur de Nueva Gales del Sur
+      { x: 0.20, y: 0.62 },  // Cabo Howe (Esquina sureste)
+
+      // 3. Costa de Victoria (Melbourne)
+      { x: 0.10, y: 0.64 },  // Wilson's Promontory
+      { x: 0.02, y: 0.58 },  // Melbourne / Bahía Port Phillip
+      { x: -0.08, y: 0.56 }, // Costa de los Doce Apóstoles
+
+      // 4. Gran Bahía Australiana y Costa Sur
+      { x: -0.16, y: 0.50 }, // Golfo de Spencer / Adelaida
+      { x: -0.24, y: 0.46 }, // Península de Eyre
+      { x: -0.34, y: 0.48 }, // Gran Bahía Australiana (Cóncava hacia el norte)
+      { x: -0.44, y: 0.49 }, // Llanura de Nullarbor
+      { x: -0.56, y: 0.50 }, // Esperance / Costa sur de WA
+      { x: -0.66, y: 0.46 }, // Albany / Cabo Leeuwin (Esquina suroeste)
+
+      // 5. Costa Oeste de Australia Occidental (hacia el Norte)
+      { x: -0.68, y: 0.32 }, // Perth / Fremantle
+      { x: -0.70, y: 0.16 }, // Geraldton
+      { x: -0.74, y: 0.00 }, // Bahía Shark / Steep Point (Punto más occidental)
+      { x: -0.68, y: -0.14 }, // Ningaloo Reef / Exmouth / Cabo Noroeste
+      { x: -0.58, y: -0.24 }, // Pilbara / Port Hedland
+      { x: -0.44, y: -0.30 }, // Eighty Mile Beach / Broome
+
+      // 6. Kimberleys y Costa Norte
+      { x: -0.32, y: -0.34 }, // Región de Kimberley
+      { x: -0.20, y: -0.32 }, // Golfo de Cambridge
+      { x: -0.12, y: -0.36 }, // Darwin / Top End
+      { x: -0.04, y: -0.34 }, // Península de Cobourg
+      { x: 0.02, y: -0.32 },  // Tierra de Arnhem
+
+      // 7. Golfo de Carpentaria (Gran bahía rectangular hacia el interior)
+      { x: 0.03, y: -0.24 },  // Entrada occidental del Golfo
+      { x: 0.00, y: -0.12 },  // Fondo oeste del Golfo
+      { x: 0.06, y: -0.06 },  // Fondo sur del Golfo de Carpentaria
+      { x: 0.12, y: -0.14 },  // Costa este del Golfo
+      { x: 0.13, y: -0.26 },  // Entrada este del Golfo (Costa oeste de Cabo York)
+      { x: 0.16, y: -0.42 }   // Cierre en la punta de Cabo York
+    ];
+
+    // Multiplicadores a escala del lienzo
+    const scalePoints = (pts, mult = 1.0) => {
+      return pts.map(p => ({ x: p.x * baseW * mult, y: p.y * baseH * mult }));
+    };
+
+    const scaledOutline = scalePoints(australiaOutline, 1.0);
+    const shelfOutline = scalePoints(australiaOutline, 1.045);
+
+    // 1. Plataforma continental submarina (Aguas someras turquesa resplandeciente)
+    ctx.fillStyle = "rgba(20, 184, 166, 0.4)";
+    ctx.strokeStyle = "rgba(45, 212, 191, 0.65)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(shelfOutline[0].x, shelfOutline[0].y);
+    for (let i = 1; i < shelfOutline.length; i++) {
+      ctx.lineTo(shelfOutline[i].x, shelfOutline[i].y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 2. Masa de tierra continental con gradiente de Biomas:
+    // Costa verde fértil exterior + Desierto rojo (Outback) interior
+    const landGrad = ctx.createRadialGradient(0, 0.05 * baseH, baseW * 0.1, 0, 0.05 * baseH, baseW * 0.55);
+    landGrad.addColorStop(0, "#9a3412"); // Rojo óxido / Uluru central
+    landGrad.addColorStop(0.35, "#b45309"); // Tierra ocre del Outback
+    landGrad.addColorStop(0.72, "#4d7c0f"); // Transición a sabana / eucaliptos
+    landGrad.addColorStop(0.92, "#15803d"); // Costa fértil verde esmeralda
+    landGrad.addColorStop(1, "#14532d"); // Selva costera densa
+
+    ctx.fillStyle = landGrad;
+    ctx.strokeStyle = "#fef08a"; // Costa de arena dorada
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(scaledOutline[0].x, scaledOutline[0].y);
+    for (let i = 1; i < scaledOutline.length; i++) {
+      ctx.lineTo(scaledOutline[i].x, scaledOutline[i].y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 3. Isla de Tasmania al Sureste
+    const tasX = 0.20 * baseW;
+    const tasY = 0.74 * baseH;
+    ctx.fillStyle = "rgba(20, 184, 166, 0.4)";
+    ctx.beginPath();
+    ctx.arc(tasX, tasY, 26, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#15803d";
+    ctx.strokeStyle = "#fef08a";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(tasX, tasY - 14);
+    ctx.lineTo(tasX + 16, tasY + 12);
+    ctx.lineTo(tasX - 16, tasY + 10);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 4. Lago Eyre (Kati Thanda) - Depresión salina interior
+    ctx.fillStyle = "rgba(254, 243, 199, 0.55)";
+    ctx.beginPath();
+    ctx.ellipse(-0.04 * baseW, 0.28 * baseH, 24, 15, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 5. Gran Cordillera Divisoria (Relieve montañoso paralelo a la costa este)
+    ctx.strokeStyle = "rgba(120, 53, 15, 0.55)";
+    ctx.lineWidth = 4.5;
+    ctx.beginPath();
+    ctx.moveTo(0.12 * baseW, -0.20 * baseH);
+    ctx.quadraticCurveTo(0.25 * baseW, 0.10 * baseH, 0.28 * baseW, 0.48 * baseH);
+    ctx.stroke();
+
+    // 6. Monolito Uluru en el corazón del Outback
+    ctx.fillStyle = "#dc2626";
+    ctx.shadowColor = "#ef4444";
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.ellipse(-0.10 * baseW, 0.12 * baseH, 8, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // 7. LA GRAN BARRERA DE CORAL (Great Barrier Reef)
+    // Cadena de arrecifes bioluminiscentes turquesa a lo largo de Queensland
+    ctx.save();
+    ctx.strokeStyle = "#2dd4bf";
+    ctx.lineWidth = 4.0;
+    ctx.shadowColor = "#5eead4";
+    ctx.shadowBlur = 10;
+    ctx.setLineDash([8, 5]);
+
+    ctx.beginPath();
+    ctx.moveTo(0.20 * baseW, -0.38 * baseH); // Inicio en Cabo York
+    ctx.quadraticCurveTo(0.22 * baseW, -0.16 * baseH, 0.36 * baseW, 0.04 * baseH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Manchas individuales de atolones y cayos de coral
+    const reefNodes = [
+      { x: 0.19 * baseW, y: -0.35 * baseH, r: 8 },
+      { x: 0.17 * baseW, y: -0.26 * baseH, r: 11 },
+      { x: 0.20 * baseW, y: -0.18 * baseH, r: 14 },
+      { x: 0.24 * baseW, y: -0.10 * baseH, r: 12 },
+      { x: 0.31 * baseW, y: -0.02 * baseH, r: 15 },
+      { x: 0.37 * baseW, y: 0.08 * baseH, r: 10 }
+    ];
+
+    for (const node of reefNodes) {
+      ctx.fillStyle = "rgba(45, 212, 191, 0.75)";
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cayo de arena blanca central
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.r * 0.35, 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.restore();
 
-    // Júpiter acercándose y aumentando dinámicamente de escala
-    const jupiterScale = 25 + distanceRatio * 170; // Crece de 25px a casi 200px de radio
-    const jupiterX = w / 2 + Math.sin(distanceRatio * 3) * 40;
-    const jupiterY = 120 + distanceRatio * 60;
+    // 8. Instalaciones y Ciudades Defensivas Estratégicas
+    const militaryBases = [
+      { name: "BASE AÉREA DARWIN", x: -0.12 * baseW, y: -0.35 * baseH, color: "#38bdf8", isAirbase: true },
+      { name: "CAIRNS / PUERTO DEL CORAL", x: 0.13 * baseW, y: -0.22 * baseH, color: "#fbbf24", isAirbase: true },
+      { name: "ESTACIÓN NAVAL BRISBANE", x: 0.36 * baseW, y: 0.17 * baseH, color: "#34d399", isAirbase: false },
+      { name: "COMANDO CENTRAL SYDNEY", x: 0.31 * baseW, y: 0.44 * baseH, color: "#00f3ff", isAirbase: false }
+    ];
 
-    // Resplandor de Júpiter
-    const jupGlow = ctx.createRadialGradient(jupiterX, jupiterY, jupiterScale * 0.6, jupiterX, jupiterY, jupiterScale * 1.3);
-    jupGlow.addColorStop(0, "rgba(249, 115, 22, 0.4)");
+    const radarAngle = performance.now() * 0.003;
+    for (const base of militaryBases) {
+      // Pistas de aterrizaje iluminadas para bases aéreas
+      if (base.isAirbase) {
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(base.x - 12, base.y - 4);
+        ctx.lineTo(base.x + 12, base.y + 4);
+        ctx.stroke();
+      }
+
+      // Baliza de radar de defensa
+      ctx.fillStyle = base.color;
+      ctx.beginPath();
+      ctx.arc(base.x, base.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Haz rotatorio de radar
+      ctx.strokeStyle = base.color;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(base.x, base.y, 14, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(base.x, base.y);
+      ctx.lineTo(base.x + Math.cos(radarAngle) * 14, base.y + Math.sin(radarAngle) * 14);
+      ctx.stroke();
+
+      // Rótulo táctico
+      ctx.font = "bold 8px 'Orbitron', monospace";
+      ctx.fillStyle = base.color;
+      ctx.fillText(base.name, base.x + 18, base.y + 3);
+    }
+
+    // 9. Rótulos Holográficos Geográficos en el Mapa
+    ctx.font = "bold 9px 'Orbitron', monospace";
+    ctx.fillStyle = "#38bdf8";
+
+    // Cabo York
+    ctx.fillText("📍 PENÍNSULA DE CABO YORK", 0.18 * baseW, -0.42 * baseH);
+
+    // Golfo de Carpentaria
+    ctx.fillStyle = "#2dd4bf";
+    ctx.fillText("📍 GOLFO DE CARPENTARIA", 0.02 * baseW, -0.16 * baseH);
+
+    // Gran Barrera de Coral
+    ctx.fillStyle = "#5eead4";
+    ctx.fillText("🛡️ GRAN BARRERA DE CORAL", 0.28 * baseW, -0.12 * baseH);
+
+    // Outback central
+    ctx.fillStyle = "#fbbf24";
+    ctx.fillText("📍 DESIERTO CENTRAL (OUTBACK)", -0.12 * baseW, 0.05 * baseH);
+
+    ctx.restore();
+  }
+
+  /**
+   * Cartela táctica inferior de región y avance continental
+   */
+  renderPacificPositionBanner(ctx, w, h, distanceRatio) {
+    let regionText = "SOBREVOLANDO: OCÉANO PACÍFICO [ISLAS POLINESIAS & MICRONESIA]";
+    let subText = "Ruta marítima de alta velocidad - Neutralizando puestos flotantes";
+
+    if (distanceRatio > 0.35 && distanceRatio <= 0.55) {
+      regionText = "APROXIMACIÓN: MAR DEL CORAL & ATOLONES TROPICALES";
+      subText = "Detección de perturbaciones hidromagnéticas y torpedos abisales";
+    } else if (distanceRatio > 0.55 && distanceRatio <= 0.75) {
+      regionText = "AVISTANDO CONTINENTE: PENÍNSULA DE CABO YORK & GRAN BARRERA DE CORAL";
+      subText = "Espacio aéreo australiano a la vista - Aproximación a costa de Queensland";
+    } else if (distanceRatio > 0.75 && distanceRatio <= 0.88) {
+      regionText = "¡ALERTA MÁXIMA! COSTA DE AUSTRALIA [SECTOR DE COMBATE LEVIATHAN]";
+      subText = "Acorazado Leviathan Colossus emergiendo en las aguas costeras";
+    } else if (distanceRatio > 0.88) {
+      regionText = "COSTA AUSTRALIANA ASEGURADA · BASE REBELDE ALCANCE CONFIRMADO";
+      subText = "Generadores de energía neutralizados - Escudos de Vektor vulnerados";
+    }
+
+    ctx.save();
+    ctx.fillStyle = "rgba(7, 10, 24, 0.78)";
+    ctx.fillRect(w / 2 - 210, h - 38, 420, 30);
+    ctx.strokeStyle = distanceRatio > 0.75 ? "#ff0055" : "rgba(20, 184, 166, 0.6)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(w / 2 - 210, h - 38, 420, 30);
+
+    ctx.font = "9px 'Orbitron', monospace";
+    ctx.fillStyle = distanceRatio > 0.75 ? "#ff0055" : "#2dd4bf";
+    ctx.textAlign = "center";
+    ctx.fillText(regionText, w / 2, h - 22);
+
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText(subText, w / 2, h - 11);
+    ctx.restore();
+  }
+
+  /**
+   * Radar táctico en la esquina inferior izquierda:
+   * Muestra la silueta de Australia, la Gran Barrera de Coral y la posición del caza.
+   */
+  renderPacificAustraliaRadar(ctx, distanceRatio) {
+    const rx = 15;
+    const ry = this.canvas.height - 145;
+    const rw = 100;
+    const rh = 135;
+
+    ctx.save();
+    // Caja del radar
+    ctx.fillStyle = "rgba(7, 12, 26, 0.88)";
+    ctx.strokeStyle = "#14b8a6";
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(rx, ry, rw, rh);
+    ctx.strokeRect(rx, ry, rw, rh);
+
+    // Título
+    ctx.fillStyle = "#2dd4bf";
+    ctx.font = "bold 8px 'Orbitron', monospace";
+    ctx.fillText("RADAR PACÍFICO", rx + 8, ry + 12);
+
+    // Líneas de cuadrícula
+    ctx.strokeStyle = "rgba(20, 184, 166, 0.18)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(rx + 5, ry + rh / 2);
+    ctx.lineTo(rx + rw - 5, ry + rh / 2);
+    ctx.moveTo(rx + rw / 2, ry + 18);
+    ctx.lineTo(rx + rw / 2, ry + rh - 18);
+    ctx.stroke();
+
+    // Silueta vectorial esquemática de Australia en el radar
+    const radarCenterY = ry + 82;
+    const radarCenterX = rx + 50;
+    const rScale = 52;
+
+    ctx.strokeStyle = "rgba(52, 211, 153, 0.65)";
+    ctx.fillStyle = "rgba(21, 128, 61, 0.25)";
+    ctx.lineWidth = 1.3;
+
+    ctx.beginPath();
+    // Cabo York
+    ctx.moveTo(radarCenterX + 0.16 * rScale, radarCenterY - 0.42 * rScale);
+    ctx.lineTo(radarCenterX + 0.28 * rScale, radarCenterY + 0.02 * rScale); // Queensland
+    ctx.lineTo(radarCenterX + 0.36 * rScale, radarCenterY + 0.30 * rScale); // Brisbane
+    ctx.lineTo(radarCenterX + 0.25 * rScale, radarCenterY + 0.54 * rScale); // Sydney
+    ctx.lineTo(radarCenterX + 0.10 * rScale, radarCenterY + 0.64 * rScale); // Victoria
+    ctx.lineTo(radarCenterX - 0.16 * rScale, radarCenterY + 0.50 * rScale); // Gran Bahía
+    ctx.lineTo(radarCenterX - 0.66 * rScale, radarCenterY + 0.46 * rScale); // Suroeste
+    ctx.lineTo(radarCenterX - 0.74 * rScale, radarCenterY + 0.00 * rScale); // Shark Bay
+    ctx.lineTo(radarCenterX - 0.44 * rScale, radarCenterY - 0.30 * rScale); // Broome
+    ctx.lineTo(radarCenterX - 0.12 * rScale, radarCenterY - 0.36 * rScale); // Darwin
+    ctx.lineTo(radarCenterX + 0.02 * rScale, radarCenterY - 0.32 * rScale); // Arnhem
+    ctx.lineTo(radarCenterX + 0.03 * rScale, radarCenterY - 0.24 * rScale); // Golfo oeste
+    ctx.lineTo(radarCenterX + 0.06 * rScale, radarCenterY - 0.06 * rScale); // Golfo sur
+    ctx.lineTo(radarCenterX + 0.13 * rScale, radarCenterY - 0.26 * rScale); // Golfo este
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Gran Barrera de Coral en el radar (Línea punteada cian)
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(radarCenterX + 0.22 * rScale, radarCenterY - 0.38 * rScale);
+    ctx.quadraticCurveTo(radarCenterX + 0.25 * rScale, radarCenterY - 0.16 * rScale, radarCenterX + 0.38 * rScale, radarCenterY + 0.04 * rScale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Línea de vector de vuelo desde el Pacífico hacia Australia
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(rx + 82, ry + 20);
+    ctx.lineTo(radarCenterX + 0.22 * rScale, radarCenterY - 0.20 * rScale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Marcador de posición del jugador
+    const flightProgress = Math.min(1.0, distanceRatio);
+    const planeX = (rx + 82) + ((radarCenterX + 0.22 * rScale) - (rx + 82)) * flightProgress;
+    const planeY = (ry + 20) + ((radarCenterY - 0.20 * rScale) - (ry + 20)) * flightProgress;
+
+    ctx.fillStyle = "#ff0055";
+    ctx.beginPath();
+    ctx.arc(planeX, planeY, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(planeX, planeY, 6, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Coordenadas tácticas en tiempo real
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#34d399";
+    const lat = Math.floor(6 + distanceRatio * 24);
+    const lon = Math.floor(168 - distanceRatio * 24);
+    ctx.fillText(`LAT: ${lat}°S`, rx + 10, ry + rh - 13);
+    ctx.fillText(`LON: ${lon}°E`, rx + 10, ry + rh - 3);
+
+    ctx.restore();
+  }
+
+  // ==========================================
+  // ESCENARIO 3: DE LA TIERRA A SATURNO (VÍA MARTE, ASTEROIDES Y JÚPITER)
+  // ==========================================
+  renderStage3_EarthToJupiter(ctx, w, h, distanceRatio) {
+    const now = performance.now();
+
+    // 1. Fondo de vacío cósmico profundo con sutiles nebulosas interestelares
+    const spaceGrad = ctx.createLinearGradient(0, 0, 0, h);
+    spaceGrad.addColorStop(0, "#01030a");
+    spaceGrad.addColorStop(0.5, "#030714");
+    spaceGrad.addColorStop(1, "#02050e");
+    ctx.fillStyle = spaceGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Velo nebular cósmico tenue (gases interestelares en violeta y cian)
+    ctx.fillStyle = "rgba(99, 102, 241, 0.04)";
+    ctx.beginPath();
+    ctx.arc(w * 0.3, h * 0.4, 180, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(244, 63, 94, 0.035)";
+    ctx.beginPath();
+    ctx.arc(w * 0.75, h * 0.65, 220, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Estrellas del cosmos y pocas estrellitas titilantes a lo lejos
+    this.drawTwinklingStars(ctx, now);
+
+    // 3. SECUENCIA PLANETARIA INTERPLANETARIA:
+
+    // A. La Tierra alejándose por la parte inferior al inicio de la misión
+    if (distanceRatio < 0.28) {
+      this.drawLeavingEarth(ctx, w, h, distanceRatio);
+    }
+
+    // B. Paso cercano por Marte (se ve a un lado, ni muy cerca ni diminuto)
+    if (distanceRatio >= 0.12 && distanceRatio <= 0.38) {
+      this.drawPassingMars(ctx, w, h, distanceRatio);
+    }
+
+    // C. Cinturón de Asteroides entre Marte y Júpiter
+    if (distanceRatio >= 0.26 && distanceRatio <= 0.50) {
+      this.drawAsteroidBelt(ctx, w, h, distanceRatio);
+    }
+
+    // D. Júpiter visible a lo lejos con sus bandas y satélites (aquí aparece el Sublíder)
+    if (distanceRatio >= 0.32 && distanceRatio <= 0.65) {
+      this.drawDistantJupiter(ctx, w, h, distanceRatio);
+    }
+
+    // E. Llegada a Saturno con sus majestuosos anillos 3D (aquí aparece el Jefe Final)
+    if (distanceRatio >= 0.60) {
+      this.drawApproachingSaturn(ctx, w, h, distanceRatio);
+    }
+
+    // 4. Cartela Táctica Espacial de Posición
+    this.renderSolarPositionBanner(ctx, w, h, distanceRatio);
+
+    // 5. Radar Táctico del Sistema Solar en la esquina inferior izquierda
+    this.renderSolarSystemRadar(ctx, distanceRatio);
+  }
+
+  /**
+   * Dibuja el campo de estrellas cósmico con pocas estrellas que titilan
+   * aleatoriamente con destellos ópticos de difracción.
+   */
+  drawTwinklingStars(ctx, now) {
+    for (const star of this.spaceStars) {
+      let alpha = star.baseAlpha;
+      if (star.isTwinkle) {
+        // Suave onda sinusoidal independiente para cada estrella
+        alpha = 0.2 + 0.75 * (0.5 + 0.5 * Math.sin(now * star.twinkleSpeed + star.twinkleOffset));
+      }
+
+      ctx.fillStyle = star.color;
+      ctx.globalAlpha = Math.max(0.1, Math.min(1.0, alpha));
+      ctx.fillRect(star.x, star.y, star.size, star.size);
+
+      // Destello de 4 puntas en las estrellas titilantes más brillantes
+      if (star.hasGlint && alpha > 0.65) {
+        ctx.strokeStyle = star.color;
+        ctx.lineWidth = 0.8;
+        const glintLen = star.size * 2.8;
+        ctx.beginPath();
+        ctx.moveTo(star.x - glintLen, star.y + star.size / 2);
+        ctx.lineTo(star.x + star.size + glintLen, star.y + star.size / 2);
+        ctx.moveTo(star.x + star.size / 2, star.y - glintLen);
+        ctx.lineTo(star.x + star.size / 2, star.y + star.size + glintLen);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1.0;
+  }
+
+  /**
+   * La Tierra alejándose hacia abajo durante el despegue orbital
+   */
+  drawLeavingEarth(ctx, w, h, distanceRatio) {
+    const p = distanceRatio / 0.28;
+    const earthRadius = (1.0 - p) * 220 + 70;
+    const earthY = h + earthRadius * 0.75 + p * 120;
+    const earthX = w / 2;
+
+    // Resplandor de la atmósfera terrestre
+    const earthGlow = ctx.createRadialGradient(earthX, earthY, earthRadius * 0.85, earthX, earthY, earthRadius * 1.18);
+    earthGlow.addColorStop(0, "rgba(56, 189, 248, 0.45)");
+    earthGlow.addColorStop(0.5, "rgba(14, 165, 233, 0.2)");
+    earthGlow.addColorStop(1, "transparent");
+    ctx.fillStyle = earthGlow;
+    ctx.beginPath();
+    ctx.arc(earthX, earthY, earthRadius * 1.18, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Globo de la Tierra
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+    ctx.clip();
+
+    // Océanos profundos
+    ctx.fillStyle = "#0369a1";
+    ctx.fillRect(earthX - earthRadius, earthY - earthRadius, earthRadius * 2, earthRadius * 2);
+
+    // Masas continentales verdes y ocres
+    ctx.fillStyle = "#15803d";
+    ctx.beginPath();
+    ctx.ellipse(earthX - earthRadius * 0.3, earthY - earthRadius * 0.4, earthRadius * 0.5, earthRadius * 0.35, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#166534";
+    ctx.beginPath();
+    ctx.ellipse(earthX + earthRadius * 0.35, earthY - earthRadius * 0.2, earthRadius * 0.45, earthRadius * 0.3, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Nubes atmosféricas blancas
+    ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+    ctx.beginPath();
+    ctx.arc(earthX - earthRadius * 0.2, earthY - earthRadius * 0.35, earthRadius * 0.3, 0, Math.PI * 2);
+    ctx.arc(earthX + earthRadius * 0.25, earthY - earthRadius * 0.15, earthRadius * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Paso cercano por Marte: el planeta rojo se ve a un lado, ni muy cerca ni diminuto
+   */
+  drawPassingMars(ctx, w, h, distanceRatio) {
+    const p = (distanceRatio - 0.12) / 0.26;
+    const marsRadius = 38; // Escala perfecta para no estorbar el juego
+    const marsX = w * 0.82 - p * 45;
+    const marsY = -40 + p * (h + 100);
+
+    ctx.save();
+
+    // Halo atmosférico marciano tenue en rojo óxido
+    const marsGlow = ctx.createRadialGradient(marsX, marsY, marsRadius * 0.8, marsX, marsY, marsRadius * 1.35);
+    marsGlow.addColorStop(0, "rgba(239, 68, 68, 0.35)");
+    marsGlow.addColorStop(0.7, "rgba(185, 28, 28, 0.12)");
+    marsGlow.addColorStop(1, "transparent");
+    ctx.fillStyle = marsGlow;
+    ctx.beginPath();
+    ctx.arc(marsX, marsY, marsRadius * 1.35, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Esfera del Planeta Rojo
+    ctx.beginPath();
+    ctx.arc(marsX, marsY, marsRadius, 0, Math.PI * 2);
+    ctx.clip();
+
+    // Superficie roja oxidada
+    const marsGrad = ctx.createRadialGradient(marsX - marsRadius * 0.3, marsY - marsRadius * 0.3, marsRadius * 0.1, marsX, marsY, marsRadius);
+    marsGrad.addColorStop(0, "#ea580c"); // Iluminación solar
+    marsGrad.addColorStop(0.4, "#c2410c"); // Tierras altas de Tharsis
+    marsGrad.addColorStop(0.85, "#991b1b"); // Basalto oxidado
+    marsGrad.addColorStop(1, "#450a0a"); // Sombra nocturna
+    ctx.fillStyle = marsGrad;
+    ctx.fillRect(marsX - marsRadius, marsY - marsRadius, marsRadius * 2, marsRadius * 2);
+
+    // Marcas oscuras de terreno (Syrtis Major y Valles Marineris)
+    ctx.fillStyle = "rgba(69, 10, 10, 0.65)";
+    ctx.beginPath();
+    ctx.ellipse(marsX + marsRadius * 0.15, marsY + marsRadius * 0.1, marsRadius * 0.45, marsRadius * 0.2, 0.25, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Fisura de Valles Marineris
+    ctx.strokeStyle = "#450a0a";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(marsX - marsRadius * 0.4, marsY + marsRadius * 0.05);
+    ctx.lineTo(marsX + marsRadius * 0.2, marsY + marsRadius * 0.15);
+    ctx.stroke();
+
+    // Casquete polar de hielo de CO2 en el norte
+    ctx.fillStyle = "#f8fafc";
+    ctx.beginPath();
+    ctx.ellipse(marsX, marsY - marsRadius * 0.82, marsRadius * 0.35, marsRadius * 0.14, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+
+    // Pequeñas lunas Fobos y Deimos como puntos celestiales
+    ctx.fillStyle = "#cbd5e1";
+    ctx.beginPath();
+    ctx.arc(marsX - marsRadius * 1.5, marsY - marsRadius * 0.5, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.beginPath();
+    ctx.arc(marsX + marsRadius * 1.6, marsY + marsRadius * 0.8, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Rótulo táctico
+    ctx.font = "bold 8px 'Orbitron', monospace";
+    ctx.fillStyle = "#f87171";
+    ctx.fillText("🔴 MARTE [1.5 UA]", marsX - 25, marsY + marsRadius + 14);
+  }
+
+  /**
+   * Cinturón de Asteroides entre Marte y Júpiter:
+   * Rocas espaciales con polígonos irregulares, rotación procedural y sombreado 3D.
+   */
+  drawAsteroidBelt(ctx, w, h, distanceRatio) {
+    // Opacidad en campana que alcanza el máximo en el centro del cinturón
+    const beltProgress = (distanceRatio - 0.26) / 0.24;
+    const beltAlpha = Math.sin(beltProgress * Math.PI);
+    if (beltAlpha <= 0) return;
+
+    ctx.save();
+    ctx.globalAlpha = beltAlpha * 0.85;
+
+    for (const a of this.spaceAsteroids) {
+      ctx.save();
+      ctx.translate(a.x, a.y);
+      ctx.rotate(a.rotation);
+
+      // Sombra proyectada del asteroide
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.moveTo(a.poly[0].x + 2, a.poly[0].y + 2);
+      for (let i = 1; i < a.poly.length; i++) {
+        ctx.lineTo(a.poly[i].x + 2, a.poly[i].y + 2);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // Cuerpo rocoso del asteroide
+      ctx.fillStyle = a.color;
+      ctx.strokeStyle = "#64748b";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(a.poly[0].x, a.poly[0].y);
+      for (let i = 1; i < a.poly.length; i++) {
+        ctx.lineTo(a.poly[i].x, a.poly[i].y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Cráteres de impacto en la superficie rocosa
+      ctx.fillStyle = "rgba(15, 23, 42, 0.6)";
+      ctx.beginPath();
+      ctx.arc(a.radius * 0.25, a.radius * 0.2, a.radius * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    ctx.restore();
+  }
+
+  /**
+   * Júpiter visible a lo lejos con sus bandas atmosféricas de gas y la Gran Mancha Roja.
+   * Aquí en la órbita joviana (40% de fase) es donde intercepta el Sublíder JOVIAN CORE.
+   */
+  drawDistantJupiter(ctx, w, h, distanceRatio) {
+    const p = (distanceRatio - 0.32) / 0.33;
+    // Júpiter se ve a lo lejos (no colosal para dejar espacio a la aproximación de Saturno)
+    const jupRadius = 48 + Math.sin(p * Math.PI) * 26; // Radio elegante de 48 a 74px
+    const jupX = w * 0.38 + Math.sin(p * 2) * 20;
+    const jupY = 85 + p * 130;
+
+    ctx.save();
+
+    // Resplandor de hidrógeno joviano
+    const jupGlow = ctx.createRadialGradient(jupX, jupY, jupRadius * 0.75, jupX, jupY, jupRadius * 1.32);
+    jupGlow.addColorStop(0, "rgba(249, 115, 22, 0.35)");
+    jupGlow.addColorStop(0.65, "rgba(234, 88, 12, 0.1)");
     jupGlow.addColorStop(1, "transparent");
     ctx.fillStyle = jupGlow;
     ctx.beginPath();
-    ctx.arc(jupiterX, jupiterY, jupiterScale * 1.3, 0, Math.PI * 2);
+    ctx.arc(jupX, jupY, jupRadius * 1.32, 0, Math.PI * 2);
     ctx.fill();
 
-    // Esfera y franjas atmosféricas de Júpiter
-    ctx.save();
+    // Esfera y franjas de nubes de Júpiter
     ctx.beginPath();
-    ctx.arc(jupiterX, jupiterY, jupiterScale, 0, Math.PI * 2);
+    ctx.arc(jupX, jupY, jupRadius, 0, Math.PI * 2);
     ctx.clip();
 
     ctx.fillStyle = "#c2410c";
-    ctx.fillRect(jupiterX - jupiterScale, jupiterY - jupiterScale, jupiterScale * 2, jupiterScale * 2);
+    ctx.fillRect(jupX - jupRadius, jupY - jupRadius, jupRadius * 2, jupRadius * 2);
 
-    // Franjas de nubes de gas
-    const bands = ["#ea580c", "#fed7aa", "#9a3412", "#fdba74", "#7c2d12", "#f97316"];
-    const bandHeight = (jupiterScale * 2) / bands.length;
+    // Franjas de nubes atmosféricas
+    const bands = ["#ea580c", "#fed7aa", "#9a3412", "#fdba74", "#7c2d12", "#f97316", "#fed7aa", "#c2410c"];
+    const bandHeight = (jupRadius * 2) / bands.length;
     bands.forEach((color, i) => {
       ctx.fillStyle = color;
-      ctx.fillRect(jupiterX - jupiterScale, (jupiterY - jupiterScale) + i * bandHeight, jupiterScale * 2, bandHeight * 0.7);
+      ctx.fillRect(jupX - jupRadius, (jupY - jupRadius) + i * bandHeight, jupRadius * 2, bandHeight * 0.72);
     });
 
-    // Gran Mancha Roja
+    // Gran Mancha Roja (torbellino ciclónico)
     ctx.fillStyle = "#7f1d1d";
     ctx.beginPath();
-    ctx.ellipse(jupiterX + jupiterScale * 0.3, jupiterY + jupiterScale * 0.2, jupiterScale * 0.25, jupiterScale * 0.15, 0, 0, Math.PI * 2);
+    ctx.ellipse(jupX + jupRadius * 0.32, jupY + jupRadius * 0.22, jupRadius * 0.24, jupRadius * 0.14, -0.1, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.restore();
+
+    // Lunas Galileanas (Ío, Europa, Ganímedes, Calisto)
+    const moons = [
+      { name: "Ío", dist: -1.45, yOff: -0.2, r: 2.2, color: "#fef08a" },
+      { name: "Europa", dist: -1.9, yOff: 0.1, r: 1.8, color: "#e0f2fe" },
+      { name: "Ganímedes", dist: 1.5, yOff: -0.15, r: 2.5, color: "#cbd5e1" },
+      { name: "Calisto", dist: 2.05, yOff: 0.25, r: 2.3, color: "#94a3b8" }
+    ];
+
+    for (const m of moons) {
+      ctx.fillStyle = m.color;
+      ctx.beginPath();
+      ctx.arc(jupX + jupRadius * m.dist, jupY + jupRadius * m.yOff, m.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Rótulo táctico
+    ctx.font = "bold 8px 'Orbitron', monospace";
+    ctx.fillStyle = "#fb923c";
+    ctx.fillText("🟠 JÚPITER [5.2 UA] · ÓRBITA DE SUBLÍDER", jupX - 60, jupY + jupRadius + 14);
+
+    ctx.restore();
+  }
+
+  /**
+   * Saturno aproximándose con sus majestuosos anillos 3D inclinados,
+   * división de Cassini, sombra proyectada del planeta y Titán.
+   * Aquí en los anillos (85% de avance) es donde intercepta el Jefe Final.
+   */
+  drawApproachingSaturn(ctx, w, h, distanceRatio) {
+    const p = Math.min(1.0, (distanceRatio - 0.60) / 0.40);
+    // Saturno crece majestuosamente de 45px hasta 112px de radio
+    const satRadius = 45 + p * 67;
+    const satX = w * 0.52 + Math.sin(p * 1.5) * 20;
+    const satY = 110 + p * 75;
+
+    const ringTilt = 0.38; // Inclinación en perspectiva
+    const ringAngle = -0.22; // Ángulo de rotación del plano orbital de los anillos
+
+    ctx.save();
+    ctx.translate(satX, satY);
+    ctx.rotate(ringAngle);
+
+    // Resplandor dorado de Saturno
+    const satGlow = ctx.createRadialGradient(0, 0, satRadius * 0.8, 0, 0, satRadius * 2.2);
+    satGlow.addColorStop(0, "rgba(253, 230, 138, 0.35)");
+    satGlow.addColorStop(0.65, "rgba(245, 158, 11, 0.12)");
+    satGlow.addColorStop(1, "transparent");
+    ctx.fillStyle = satGlow;
+    ctx.beginPath();
+    ctx.arc(0, 0, satRadius * 2.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ----------------------------------------------------
+    // PASO 1: MITAD TRASERA DE LOS ANILLOS (DETRÁS DEL PLANETA)
+    // ----------------------------------------------------
+    this.drawSaturnRingArc(ctx, satRadius, ringTilt, Math.PI, Math.PI * 2);
+
+    // Sombra del planeta proyectada sobre la mitad trasera del anillo (a la derecha)
+    ctx.fillStyle = "rgba(1, 3, 10, 0.85)";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(satRadius * 0.85, -satRadius * 2.2 * ringTilt);
+    ctx.lineTo(satRadius * 2.1, -satRadius * 1.4 * ringTilt);
+    ctx.lineTo(satRadius * 0.9, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // ----------------------------------------------------
+    // PASO 2: GLOBO PLANETARIO DE SATURNO
+    // ----------------------------------------------------
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, 0, satRadius, 0, Math.PI * 2);
+    ctx.clip();
+
+    // Base de gas ámbar dorado
+    const satGrad = ctx.createRadialGradient(-satRadius * 0.25, -satRadius * 0.25, satRadius * 0.1, 0, 0, satRadius);
+    satGrad.addColorStop(0, "#fef08a"); // Punto subsolar brillante
+    satGrad.addColorStop(0.35, "#fde68a");
+    satGrad.addColorStop(0.7, "#f59e0b");
+    satGrad.addColorStop(0.95, "#b45309");
+    satGrad.addColorStop(1, "#78350f"); // Limbo oscuro
+    ctx.fillStyle = satGrad;
+    ctx.fillRect(-satRadius, -satRadius, satRadius * 2, satRadius * 2);
+
+    // Franjas de nubes de Saturno (sutiles y elegantes)
+    const satBands = [
+      { y: -0.6, h: 0.18, col: "rgba(253, 230, 138, 0.35)" },
+      { y: -0.35, h: 0.14, col: "rgba(245, 158, 11, 0.25)" },
+      { y: -0.1, h: 0.12, col: "rgba(217, 119, 6, 0.3)" },
+      { y: 0.15, h: 0.16, col: "rgba(254, 240, 138, 0.3)" },
+      { y: 0.45, h: 0.22, col: "rgba(180, 83, 9, 0.25)" }
+    ];
+
+    for (const b of satBands) {
+      ctx.fillStyle = b.col;
+      ctx.fillRect(-satRadius, b.y * satRadius, satRadius * 2, b.h * satRadius);
+    }
+
+    // Sombra oscura de los anillos proyectada sobre el ecuador de Saturno
+    ctx.fillStyle = "rgba(15, 23, 42, 0.65)";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, satRadius * 0.98, satRadius * 0.14, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Vórtice polar hexagonal de Saturno en el norte
+    ctx.fillStyle = "rgba(163, 230, 53, 0.45)";
+    ctx.beginPath();
+    ctx.ellipse(0, -satRadius * 0.85, satRadius * 0.24, satRadius * 0.1, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+
+    // ----------------------------------------------------
+    // PASO 3: MITAD DELANTERA DE LOS ANILLOS (DELANTE DEL PLANETA)
+    // ----------------------------------------------------
+    this.drawSaturnRingArc(ctx, satRadius, ringTilt, 0, Math.PI);
+
+    // Luna Titán orbitando cerca de los anillos
+    const titanX = satRadius * 2.45;
+    const titanY = -satRadius * 0.6;
+    ctx.fillStyle = "#fbbf24";
+    ctx.shadowColor = "#f59e0b";
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.arc(titanX, titanY, 3.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Rótulo táctico
+    ctx.font = "bold 9px 'Orbitron', monospace";
+    ctx.fillStyle = "#fde047";
+    ctx.fillText("🪐 SATURNO [9.5 UA] · SECTOR JEFE FINAL", -90, satRadius + 32);
+
+    ctx.restore();
+  }
+
+  /**
+   * Traza los arcos concéntricos de los anillos de Saturno (con División de Cassini)
+   */
+  drawSaturnRingArc(ctx, satRadius, ringTilt, startAngle, endAngle) {
+    const rxOuter = satRadius * 2.35;
+    const ryOuter = rxOuter * ringTilt;
+
+    const rxCassiniOut = satRadius * 1.95;
+    const ryCassiniOut = rxCassiniOut * ringTilt;
+
+    const rxCassiniIn = satRadius * 1.82;
+    const ryCassiniIn = rxCassiniIn * ringTilt;
+
+    const rxInner = satRadius * 1.35;
+    const ryInner = rxInner * ringTilt;
+
+    // 1. Anillo A (Exterior)
+    ctx.fillStyle = "rgba(253, 230, 138, 0.72)";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rxOuter, ryOuter, 0, startAngle, endAngle, false);
+    ctx.ellipse(0, 0, rxCassiniOut, ryCassiniOut, 0, endAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fill();
+
+    // 2. División de Cassini (Brecha oscura realista en los anillos)
+    ctx.fillStyle = "rgba(2, 6, 18, 0.88)";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rxCassiniOut, ryCassiniOut, 0, startAngle, endAngle, false);
+    ctx.ellipse(0, 0, rxCassiniIn, ryCassiniIn, 0, endAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fill();
+
+    // 3. Anillo B (Principal brillante)
+    ctx.fillStyle = "rgba(254, 240, 138, 0.85)";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rxCassiniIn, ryCassiniIn, 0, startAngle, endAngle, false);
+    ctx.ellipse(0, 0, rxInner, ryInner, 0, endAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fill();
+
+    // 4. Anillo C (Velo semitranslúcido interior / Anillo Crepé)
+    ctx.fillStyle = "rgba(217, 119, 6, 0.3)";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rxInner, ryInner, 0, startAngle, endAngle, false);
+    ctx.ellipse(0, 0, satRadius * 1.08, satRadius * 1.08 * ringTilt, 0, endAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  /**
+   * Cartela táctica inferior de avance por el sistema solar
+   */
+  renderSolarPositionBanner(ctx, w, h, distanceRatio) {
+    let regionText = "DESPEGUE ORBITAL: DEJANDO LA TIERRA · RUMBO AL SISTEMA SOLAR EXTERIOR";
+    let subText = "Aceleración de escape gravitatorio - Motores de iones al 100%";
+
+    if (distanceRatio > 0.20 && distanceRatio <= 0.35) {
+      regionText = "PASANDO ÓRBITA DE MARTE [1.5 UA] · APROXIMACIÓN A ZONA DE ASTEROIDES";
+      subText = "Escaneando superficie marciana - Sin hostiles detectados en la órbita roja";
+    } else if (distanceRatio > 0.35 && distanceRatio <= 0.52) {
+      regionText = "CRUCE DEL CINTURÓN DE ASTEROIDES & JÚPITER A LO LEJOS · INTERCEPCIÓN SUBLÍDER";
+      subText = "Navegando campo de rocas espaciales - Sublíder Jovian Core detectado";
+    } else if (distanceRatio > 0.52 && distanceRatio <= 0.75) {
+      regionText = "SUPERANDO JÚPITER · ACELERACIÓN SUBESPACIAL RUMBO A SATURNO";
+      subText = "Trayectoria hiperbólica hacia los anillos del gigante gaseoso";
+    } else if (distanceRatio > 0.75) {
+      regionText = "LLEGADA A SATURNO [9.5 UA] · ANILLOS EN RANGO VISUAL · ALERTA DE JEFE FINAL";
+      subText = "Estación Titán de Vektor interceptada en los anillos exteriores";
+    }
+
+    ctx.save();
+    ctx.fillStyle = "rgba(7, 10, 24, 0.82)";
+    ctx.fillRect(w / 2 - 215, h - 38, 430, 30);
+    ctx.strokeStyle = distanceRatio > 0.75 ? "#f59e0b" : "rgba(56, 189, 248, 0.6)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(w / 2 - 215, h - 38, 430, 30);
+
+    ctx.font = "9px 'Orbitron', monospace";
+    ctx.fillStyle = distanceRatio > 0.75 ? "#fbbf24" : "#38bdf8";
+    ctx.textAlign = "center";
+    ctx.fillText(regionText, w / 2, h - 22);
+
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText(subText, w / 2, h - 11);
+    ctx.restore();
+  }
+
+  /**
+   * Radar táctico del Sistema Solar en la esquina inferior izquierda:
+   * Muestra las órbitas de Tierra, Marte, Cinturón, Júpiter y Saturno con telemetría en UA.
+   */
+  renderSolarSystemRadar(ctx, distanceRatio) {
+    const rx = 15;
+    const ry = this.canvas.height - 145;
+    const rw = 100;
+    const rh = 135;
+
+    ctx.save();
+    // Caja del radar
+    ctx.fillStyle = "rgba(7, 12, 26, 0.88)";
+    ctx.strokeStyle = "#f59e0b";
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(rx, ry, rw, rh);
+    ctx.strokeRect(rx, ry, rw, rh);
+
+    // Título
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "bold 8px 'Orbitron', monospace";
+    ctx.fillText("RADAR SOLAR", rx + 8, ry + 12);
+
+    // Cuadrícula y órbitas concéntricas (Tierra, Marte, Asteroides, Júpiter, Saturno)
+    const centerX = rx + rw / 2;
+    const sunY = ry + rh - 16; // El Sol en la parte inferior
+
+    // Sol
+    ctx.fillStyle = "#fef08a";
+    ctx.beginPath();
+    ctx.arc(centerX, sunY, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    const orbits = [
+      { r: 24, col: "rgba(56, 189, 248, 0.35)", name: "Tierra" },
+      { r: 42, col: "rgba(239, 68, 68, 0.35)", name: "Marte" },
+      { r: 62, col: "rgba(148, 163, 184, 0.25)", isDash: true, name: "Cinturón" },
+      { r: 84, col: "rgba(249, 115, 22, 0.35)", name: "Júpiter" },
+      { r: 108, col: "rgba(253, 230, 138, 0.45)", name: "Saturno" }
+    ];
+
+    for (const orb of orbits) {
+      ctx.strokeStyle = orb.col;
+      ctx.lineWidth = 1;
+      if (orb.isDash) ctx.setLineDash([2, 3]);
+      ctx.beginPath();
+      ctx.ellipse(centerX, sunY, orb.r, orb.r * 0.72, 0, Math.PI, Math.PI * 2);
+      ctx.stroke();
+      if (orb.isDash) ctx.setLineDash([]);
+    }
+
+    // Trayectoria del jugador hacia Saturno
+    ctx.strokeStyle = "#38bdf8";
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(centerX, sunY - 24); // Desde la Tierra
+    ctx.lineTo(centerX, sunY - 108); // Hasta Saturno
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Marcador dinámico del caza del jugador
+    const currentDist = 24 + distanceRatio * (108 - 24);
+    const shipY = sunY - currentDist;
+
+    ctx.fillStyle = "#ff0055";
+    ctx.beginPath();
+    ctx.arc(centerX, shipY, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(centerX, shipY, 6.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Telemetría astronómica en Unidades Astronómicas (UA)
+    ctx.font = "8px monospace";
+    ctx.fillStyle = "#34d399";
+    const au = (1.0 + distanceRatio * 8.5).toFixed(1);
+    ctx.fillText(`DIST: ${au} UA`, rx + 10, ry + rh - 13);
+    ctx.fillText(`DEST: SATURNO`, rx + 10, ry + rh - 3);
 
     ctx.restore();
   }

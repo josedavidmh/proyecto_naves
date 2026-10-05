@@ -7,8 +7,16 @@ import { Sound } from "./sound_fx.js";
 import { EnemyCatalog } from "./enemies.js";
 import { BossCatalog } from "./bosses.js";
 import { ADS_CONFIG, renderGoogleAd } from "./ads_config.js";
+import { GAME_VERSION } from "./version.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Sincronización automática de versión en badges y pestaña del navegador
+  document.querySelectorAll(".game-version-badge").forEach(badge => {
+    badge.textContent = `v${GAME_VERSION}`;
+  });
+  if (!document.title.includes(`v${GAME_VERSION}`)) {
+    document.title = `Space Assault v${GAME_VERSION} - Tactical Aerial & Space Combat`;
+  }
   // Contenedores principales de vistas
   const lobbyContainer = document.getElementById("lobby-container");
   const shipSelectContainer = document.getElementById("ship-select-container");
