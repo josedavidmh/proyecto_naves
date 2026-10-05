@@ -34,6 +34,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnFullscreenHeader = document.getElementById("btn-fullscreen-header");
   const btnBattleFullscreen = document.getElementById("btn-battle-fullscreen");
   const btnFloatingFullscreen = document.getElementById("btn-floating-fullscreen");
+
+  // Control estricto anti-duplicados: asegurar que exista únicamente 1 botón flotante en todo el DOM
+  const allFloatingBtns = document.querySelectorAll(".floating-fullscreen-btn, #btn-floating-fullscreen");
+  if (allFloatingBtns.length > 1) {
+    for (let i = 1; i < allFloatingBtns.length; i++) {
+      allFloatingBtns[i].remove();
+    }
+  }
+
   const btnAudioToggle = document.getElementById("btn-audio-toggle");
   const btnMusicToggle = document.getElementById("btn-music-toggle");
 
@@ -77,6 +86,12 @@ document.addEventListener("DOMContentLoaded", () => {
       btnBattleFullscreen.textContent = isFs ? "🗗 SALIR [F]" : "⛶ PANTALLA COMPLETA [F]";
     }
     if (btnFloatingFullscreen) {
+      // Remover cualquier botón flotante duplicado residual
+      const extraFloating = document.querySelectorAll(".floating-fullscreen-btn, #btn-floating-fullscreen");
+      if (extraFloating.length > 1) {
+        for (let i = 1; i < extraFloating.length; i++) extraFloating[i].remove();
+      }
+
       btnFloatingFullscreen.innerHTML = isFs ? "<span>🗗</span> SALIR PANTALLA [F]" : "<span>⛶</span> EXPANDIR JUEGO [F]";
       if (isFs) {
         btnFloatingFullscreen.classList.add("is-active");

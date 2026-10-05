@@ -528,6 +528,12 @@ body.theater-mode-active #battle-container canvas#game-canvas {
 }
 
 /* Botón Flotante Permanente de Pantalla Completa */
+.floating-fullscreen-btn ~ .floating-fullscreen-btn,
+.floating-fullscreen-btn:not(:first-of-type),
+button#btn-floating-fullscreen ~ button#btn-floating-fullscreen {
+  display: none !important;
+}
+
 .floating-fullscreen-btn {
   position: fixed;
   bottom: 1.5rem;
