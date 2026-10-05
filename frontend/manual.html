@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual Táctico y Arquitectura - Proyecto Naves</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --border: rgba(56, 189, 248, 0.2);
+      --border-hover: rgba(56, 189, 248, 0.45);
+      --primary: #38bdf8;
+      --accent: #00f3ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      background-image: 
+        radial-gradient(ellipse at 20% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(217, 70, 239, 0.06) 0%, transparent 60%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    /* Header Minimalista */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.6rem;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--border);
+      color: var(--primary);
+    }
+
+    .btn-return {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.25rem;
+      border-radius: 6px;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-return:hover {
+      background: var(--primary);
+      color: #000;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Píldoras de Navegación */
+    .nav-pills {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      position: sticky;
+      top: 1rem;
+      z-index: 50;
+      background: rgba(9, 13, 22, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-pill {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.85rem;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .nav-pill:hover, .nav-pill.active {
+      color: #ffffff;
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--border-hover);
+    }
+
+    /* Tarjetas y Secciones */
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.25rem;
+      color: #ffffff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 1.25rem 0 0.5rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p, li {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      margin-bottom: 0.75rem;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      position: relative;
+      padding-left: 1.35rem;
+      margin-bottom: 0.5rem;
+    }
+
+    li::before {
+      content: "▹";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* Tablas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    th {
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.08);
+      font-weight: 600;
+    }
+
+    td {
+      color: #e2e8f0;
+    }
+
+    tr:hover td {
+      background: rgba(56, 189, 248, 0.04);
+    }
+
+    .key-badge {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #f8fafc;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    /* Callout Boxes */
+    .callout {
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 3px solid var(--success);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+    }
+
+    .callout.warning {
+      background: rgba(245, 158, 11, 0.08);
+      border-left-color: var(--warning);
+    }
+
+    .callout.danger {
+      background: rgba(239, 68, 68, 0.08);
+      border-left-color: var(--danger);
+    }
+
+    .callout-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .callout.warning .callout-title { color: var(--warning); }
+    .callout.danger .callout-title { color: var(--danger); }
+    .callout .callout-title { color: var(--success); }
+
+    /* Grid de Naves */
+    .ships-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .ship-card {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .ship-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .ship-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.95rem;
+      color: #ffffff;
+      margin-bottom: 0.25rem;
+    }
+
+    .ship-stats {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      margin-top: 3rem;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div>
+        <div class="brand-title">
+          <span>🚀 PROYECTO NAVES</span>
+          <span class="brand-badge">MANUAL TÁCTICO & ARQUITECTURA</span>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+          Documentación técnica, dinámica de combate, especificaciones y ayuda para pilotos.
+        </p>
+      </div>
+      <div>
+        <a href="./index.html" class="btn-return">⬅ VOLVER AL JUEGO</a>
+      </div>
+    </header>
+
+    <!-- Navegación Rápida -->
+    <nav class="nav-pills">
+      <a href="#dinamica" class="nav-pill active">🎮 Dinámica de Combate</a>
+      <a href="#armas-bombas" class="nav-pill">💣 Armas & Bombas</a>
+      <a href="#naves" class="nav-pill">🛸 Catálogo de Naves</a>
+      <a href="#fases" class="nav-pill">🗺️ Campaña & Lore</a>
+      <a href="#arquitectura" class="nav-pill">🏛️ Arquitectura del Sistema</a>
+      <a href="#consejos" class="nav-pill">💡 Consejos Tácticos</a>
+    </nav>
+
+    <!-- SECCIÓN 1: Dinámica de Combate -->
+    <section id="dinamica">
+      <h2>🎮 1. Dinámica de Combate y Reglas de Vuelo</h2>
+      <p>
+        Proyecto Naves es un shooter táctico 2D vertical que premia la anticipación de trayectorias, la gestión del tiempo de recarga y la precisión de tiro frente a oleadas continuas de cazas hostiles y fortalezas orbitales comandadas por el General Vektor.
+      </p>
+
+      <h3>Controles Oficiales</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Acción</th>
+            <th>Teclas de Teclado</th>
+            <th>Dispositivo Ratón</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Desplazamiento</td>
+            <td><span class="key-badge">W</span> <span class="key-badge">A</span> <span class="key-badge">S</span> <span class="key-badge">D</span> / <span class="key-badge">Flechas</span></td>
+            <td>Mover cursor en el área de combate</td>
+          </tr>
+          <tr>
+            <td>Fuego Principal</td>
+            <td><span class="key-badge">Espacio</span></td>
+            <td>Clic Izquierdo sostenido</td>
+          </tr>
+          <tr>
+            <td>Habilidad Especial</td>
+            <td><span class="key-badge">E</span> o <span class="key-badge">Shift Izquierdo</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Bomba Táctica Masiva</td>
+            <td><span class="key-badge">B</span> o <span class="key-badge">X</span></td>
+            <td>Botón HUD [BOMBAS]</td>
+          </tr>
+          <tr>
+            <td>Pantalla Completa Híbrida</td>
+            <td><span class="key-badge">F</span> o <span class="key-badge">F11</span></td>
+            <td>Botón Flotante ⛶</td>
+          </tr>
+          <tr>
+            <td>Pausa Táctica</td>
+            <td><span class="key-badge">P</span></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Power-Ups y Cápsulas de Suministro</h3>
+      <p>
+        Al destruir cazas enemigos existe una probabilidad de que desprendan cápsulas de alta tecnología que flotan hacia el jugador:
+      </p>
+      <ul>
+        <li><b style="color: #38bdf8;">🚀 Cápsula de Armamento:</b> Sube de nivel tu potencia de fuego (NV 1 ➔ NV 2 ➔ NV 3) y renueva tu escudo de mejora.</li>
+        <li><b style="color: #f43f5e;">💣 Cápsula de Bomba:</b> Añade 1 carga de detonación táctica a tu inventario (hasta 5 máximo).</li>
+        <li><b style="color: #10b981;">🟢 Kit de Reparación (+30 HP):</b> Restaura inmediatamente la integridad estructural del casco.</li>
+        <li><b style="color: #00f3ff;">🔵 Celda Especial:</b> Acelera 8 segundos el enfriamiento de la habilidad propia de tu nave.</li>
+        <li><b style="color: #fbbf24;">🟡 Cristal de Datos (+650 PTS):</b> Bonificación directa para el ranking mundial.</li>
+      </ul>
+    </section>
+
+    <!-- SECCIÓN 2: Armas, Bombas y Regla de 2 Golpes -->
+    <section id="armas-bombas">
+      <h2>💣 2. Sistema de Armamento, Bombas y Regla de 2 Golpes</h2>
+
+      <div class="callout danger">
+        <div class="callout-title">⚠️ REGLA CRÍTICA: PÉRDIDA DE MEJORA TRAS 2 IMPACTOS</div>
+        <p>
+          Las mejoras de armamento (Nivel 2 y Nivel 3) cuentan con un escudo de inducción reactivo que absorbe impactos menores, pero <b>se desestabiliza si recibes dos golpes de enemigos o proyectiles</b>:
+        </p>
+        <ul style="margin-top: 0.5rem;">
+          <li><b>Primer Golpe (1/2):</b> El escudo se agrieta. Aparece la advertencia visual y el HUD muestra <code>NV X ⚠️ [1/2 DAÑADO]</code>.</li>
+          <li><b>Segundo Golpe (2/2):</b> El blindaje colapsa y la potencia de armas se reduce un nivel (o vuelve a estándar), emitiendo una alarma acústica descendente.</li>
+          <li><b>Restauración:</b> Recoger cualquier nueva cápsula de armas o Gran Premio restaura el blindaje a 2 impactos intactos.</li>
+        </ul>
+      </div>
+
+      <h3>Escalado de Niveles de Armamento</h3>
+      <ul>
+        <li><b>Nivel 1 (Estándar):</b> Cadencia y daño base de la nave elegida.</li>
+        <li><b>Nivel 2 (+35% Daño / +15% Cadencia):</b> Disparos cuádruples, ráfagas pesadas duales o abanico de 5 vías.</li>
+        <li><b>Nivel 3 (+75% Daño / +28% Cadencia):</b> Fuego concentrado de 6 cañones, triple plasma titánico o abanico masivo de 7 vías.</li>
+      </ul>
+
+      <h3>Bomba Táctica de Pantalla Completa (Tecla B)</h3>
+      <p>
+        La Bomba Táctica es el arma de emergencia definitiva del piloto:
+      </p>
+      <ul>
+        <li><b>Limpieza Total:</b> Desintegra al 100% todos los proyectiles hostiles en pantalla.</li>
+        <li><b>Aniquilación de Escuadrones:</b> Destruye instantáneamente a todos los cazas menores presentes.</li>
+        <li><b>380 Daño Crítico a Jefes:</b> Inflige una descarga concentrada directa a Sublíderes y Jefes Finales.</li>
+      </ul>
+
+      <h3>👑 Gran Premio de Jefes (Boss Grand Prize)</h3>
+      <p>
+        Al abatir a cualquier Sublíder (al 50% de la fase) o Jefe de Fase (al 90%), se genera una cápsula dorada con corona que otorga:
+        <b>Mejora de Armas + 2 Bombas Tácticas + 50 HP de reparación + 2,500 Puntos</b>.
+      </p>
+    </section>
+
+    <!-- SECCIÓN 3: Catálogo de Naves -->
+    <section id="naves">
+      <h2>🛸 3. Catálogo de las 5 Naves de Combate</h2>
+      <p>Cada nave cuenta con un chasis aerodinámico único, cadencia de fuego adaptada y una habilidad especial exclusiva:</p>
+
+      <div class="ships-grid">
+        <div class="ship-card">
+          <div class="ship-name" style="color: #38bdf8;">1. Phoenix Vanguard</div>
+          <div class="ship-stats">100 HP · 6.2x Velocidad · Caza de Equilibrio</div>
+          <p><b>Arma:</b> Láser Gemelo de Iones (15 DMG, 130ms cadencia).</p>
+          <p><b>Especial:</b> <i>Escudo de Sobrecarga</i> (5s de invulnerabilidad absoluta).</p>
+        </div>
+
+        <div class="ship-card">
+          <div class="ship-name" style="color: #10b981;">2. Titan Fortress</div>
+          <div class="ship-stats">180 HP · 4.4x Velocidad · Acorazado Pesado</div>
+          <p><b>Arma:</b> Cañón de Plasma Pesado (38 DMG, destruye suelo selvático).</p>
+          <p><b>Especial:</b> <i>Matriz Reflectante</i> (6s de escudo reflector de fuego hostil).</p>
+        </div>
+
+        <div class="ship-card">
+          <div class="ship-name" style="color: #e879f9;">3. Quantum Phantom</div>
+          <div class="ship-stats">85 HP · 7.8x Velocidad · Interceptor Ultrarrápido</div>
+          <p><b>Arma:</b> Emisor Dispersor Triple (14 DMG x 3 proyectiles en abanico).</p>
+          <p><b>Especial:</b> <i>Overdrive Fantasma</i> (Velocidad 1.6x y doble cadencia de tiro por 5s).</p>
+        </div>
+
+        <div class="ship-card">
+          <div class="ship-name" style="color: #fbbf24;">4. Valkyrie Interceptor</div>
+          <div class="ship-stats">110 HP · 6.0x Velocidad · Caza Táctico</div>
+          <p><b>Arma:</b> Cañón de Ondas Perforantes (28 DMG oscilante).</p>
+          <p><b>Especial:</b> <i>Enjambre de Micro-Misiles</i> (Ráfaga de misiles guiados automáticos por 4.5s).</p>
+        </div>
+
+        <div class="ship-card">
+          <div class="ship-name" style="color: #f43f5e;">5. Nebula Sorceress</div>
+          <div class="ship-stats">95 HP · 5.8x Velocidad · Plataforma Experimental</div>
+          <p><b>Arma:</b> Haz de Partículas Continuo (45 DMG de alta penetración).</p>
+          <p><b>Especial:</b> <i>Pulso Electromagnético Táctico (EMP)</i> (Aniquila proyectiles y daña a todos los enemigos).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: Fases y Lore -->
+    <section id="fases">
+      <h2>🗺️ 4. Campaña Militar y Lore Coherente</h2>
+      <p>
+        La Federación Aérea despliega a tu escuadrón a lo largo del continente americano para desmantelar la red de satélites orbitales del <b>General Vektor</b>, quien ha sitiado el planeta:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Fase</th>
+            <th>Nombre y Entorno</th>
+            <th>Sublíder (50%)</th>
+            <th>Jefe de Fase (90%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Fase 1</b></td>
+            <td>Travesía Continental: Costa Este / Caribe</td>
+            <td>Bombardero Hydra</td>
+            <td>Acorazado Eclipse</td>
+          </tr>
+          <tr>
+            <td><b>Fase 2</b></td>
+            <td>Pacífico Oceánico: Andes y Selva Amazónica</td>
+            <td>Crucero Chimera</td>
+            <td>Portanaves Leviatán</td>
+          </tr>
+          <tr>
+            <td><b>Fase 3</b></td>
+            <td>Excursión Orbital: Cabo de Hornos / Antártida</td>
+            <td>Estación Aegis</td>
+            <td>Fortaleza Némesis</td>
+          </tr>
+          <tr>
+            <td><b>Fase 4</b></td>
+            <td>Sector Criogénico: Glaciares Estratosféricos</td>
+            <td>Fragata Celeris</td>
+            <td>Superdestructor Ragnarok</td>
+          </tr>
+          <tr>
+            <td><b>Fase 5</b></td>
+            <td>Jungla Devastada / Cuartel General de Vektor</td>
+            <td>Dreadnought Caronte</td>
+            <td><b>Goliath Titán (General Vektor)</b></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-title">🏆 Epílogo y Condecoración de Campaña</div>
+        <p>
+          Al completar la Fase 5 y abatir al General Vektor, la red de satélites colapsa, liberando la Tierra. El piloto recibe +15,000 puntos de bonificación, la medalla <b>Cruz Suprema de Victoria</b> y se registra la victoria final permanente en SQLite.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: Arquitectura del Sistema -->
+    <section id="arquitectura">
+      <h2>🏛️ 5. Arquitectura del Sistema</h2>
+      <p>
+        Proyecto Naves está diseñado siguiendo los más altos estándares de ingeniería de software, desacoplamiento modular y tolerancia a fallos:
+      </p>
+
+      <h3>Stack Tecnológico</h3>
+      <ul>
+        <li><b>Backend:</b> Python 3.12 + Flask 3.1 estructurado en Blueprints modulares (<code>auth_bp</code>, <code>game_bp</code>).</li>
+        <li><b>Base de Datos Persistente:</b> SQLite gestionado a través de SQLAlchemy 2.0 ORM (<code>game.db</code>). Aislamiento total en pruebas mediante base de datos SQLite en memoria (<code>:memory:</code>) que nunca toca los datos de producción.</li>
+        <li><b>Criptografía y Autenticación:</b> Passwords hasheadas con salt PBKDF2 (Werkzeug) y tokens de sesión JWT firmados con algoritmo HS256.</li>
+        <li><b>Motor Gráfico:</b> HTML5 Canvas 2D nativo a 60 FPS con física vectorial, sacudida de pantalla (Screen Shake), ondas de choque neón y renderizado procedural.</li>
+        <li><b>Motor de Audio (Web Audio API):</b> Sintetizador de audio en tiempo real en [sound_fx.js](file:///d:/Cowork/Proyecto%20naves/frontend/js/sound_fx.js). No depende de archivos externos .mp3 ni .wav, eliminando latencia y errores 404.</li>
+        <li><b>Monetización (Google AdSense):</b> Integración oficial del SDK de AdSense con contenedor pre-misión, modo seguro de pruebas (<code>data-adtest="on"</code>) y archivo digital <a href="/ads.txt" style="color: var(--primary);">ads.txt</a> verificado.</li>
+      </ul>
+    </section>
+
+    <!-- SECCIÓN 6: Consejos Tácticos -->
+    <section id="consejos">
+      <h2>💡 6. Consejos Tácticos para Nuevos Pilotos</h2>
+      <ul>
+        <li><b>Conserva las Bombas para los Jefes:</b> Si te ves acorralado por cortinas de balas o el jefe activa su ráfaga triple, presiona <span class="key-badge">B</span> para limpiar la pantalla e infligirle 380 de daño crítico de inmediato.</li>
+        <li><b>Protege tu Nivel de Armas:</b> Cuando alcances el Nivel 2 o 3 de armas, evita las colisiones directas. Recuerda que con dos impactos perderás la mejora.</li>
+        <li><b>Aprovecha la Habilidad Especial:</b> Las habilidades como el <i>Escudo de Sobrecarga</i> o la <i>Matriz Reflectante</i> te permiten atravesar ráfagas hostiles sin perder tu mejora de armas.</li>
+        <li><b>Usa Pantalla Completa:</b> Pulsa <span class="key-badge">F</span> para eliminar barras de desplazamiento y maximizar tu campo de visión táctico.</li>
+      </ul>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      PROYECTO NAVES · SISTEMA TÁCTICO DE DEFENSA AEROESPACIAL · FEDERACIÓN DE AMÉRICA · PYTHON FLASK & SQLITE
+    </footer>
+  </div>
+
+</body>
+</html>

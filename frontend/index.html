@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyecto Naves - Tactical Aerial & Space Assault</title>
+  
+  <!-- Estilos Sci-Fi Arcade 100% autosuficientes y fuentes Google -->
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- Google AdSense SDK Oficial (Monetización de Misiones) -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <!-- Header / Barra Superior -->
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-icon">🚀</div>
+        <div>
+          <h1 class="brand-title">PROYECTO NAVES</h1>
+          <p class="brand-subtitle">TACTICAL AERIAL & SPACE ASSAULT</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-fullscreen-header" class="btn-cyber-outline" style="border-color: #00f3ff; color: #00f3ff; font-weight: 800; background: rgba(0, 243, 255, 0.1);" title="Alternar Pantalla Completa (Tecla F o F11)">
+          ⛶ PANTALLA COMPLETA [F]
+        </button>
+        <button id="btn-audio-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Activar/Silenciar Efectos de Sonido">
+          🔊 SFX: ON
+        </button>
+        <button id="btn-music-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Activar/Silenciar Música Synthwave">
+          🎵 MÚSICA: ON
+        </button>
+        <button id="btn-play-intro" class="btn-cyber-outline" style="border-color: #ff0055; color: #ff0055;">
+          🎬 INTRO (BOSS)
+        </button>
+        <button id="btn-open-leaderboard" class="btn-cyber-outline">
+          🏆 RANKING
+        </button>
+        <button id="btn-open-help" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8;" title="Ver Manual Táctico y Arquitectura del Juego">
+          📖 AYUDA
+        </button>
+        <span id="server-status-badge" class="badge-status">
+          ONLINE [SQLITE LISTO]
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Central -->
+  <main class="main-content">
+
+    <!-- Notificador de Alertas -->
+    <div id="alert-box" class="alert-box alert-error hidden">
+      <span style="font-size: 1.25rem;">⚠️</span>
+      <span id="alert-message">Mensaje del sistema</span>
+    </div>
+
+    <!-- VISTA 1: Formularios de Login y Registro -->
+    <section id="auth-container" class="cyber-card cyber-card-auth">
+      <div class="tabs-header">
+        <button id="tab-login" class="tab-btn active">Acceso de Piloto</button>
+        <button id="tab-register" class="tab-btn">Alistamiento de Piloto</button>
+      </div>
+
+      <!-- Formulario Login -->
+      <form id="form-login">
+        <div class="form-group">
+          <label class="form-label" for="login-identifier">Piloto o Correo Electrónico</label>
+          <input 
+            type="text" 
+            id="login-identifier" 
+            class="form-input" 
+            required 
+            placeholder="ej. Maverick o piloto@naves.com"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Código de Acceso (Contraseña)</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            class="form-input" 
+            required 
+            placeholder="••••••••"
+          >
+        </div>
+
+        <button type="submit" class="btn-cyber-primary" style="margin-top: 0.5rem;">
+          INICIAR MISIÓN (LOGIN)
+        </button>
+        <p style="text-align: center; margin-top: 1.15rem; font-size: 0.82rem; color: #94a3b8;">
+          ¿No tienes piloto registrado? 
+          <a href="javascript:void(0)" id="link-goto-register" style="color: #00f3ff; text-decoration: underline; font-weight: 700; cursor: pointer;">
+            Alista tu nuevo piloto aquí
+          </a>
+        </p>
+      </form>
+
+      <!-- Formulario Registro -->
+      <form id="form-register" class="hidden">
+        <div class="form-group">
+          <label class="form-label" for="reg-username">Identificador de Combate (Piloto)</label>
+          <input 
+            type="text" 
+            id="reg-username" 
+            class="form-input" 
+            required 
+            minlength="3"
+            placeholder="ej. starshoulder o Maverick"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Frecuencia de Correo (Opcional)</label>
+          <input 
+            type="email" 
+            id="reg-email" 
+            class="form-input" 
+            placeholder="piloto@naves.space (opcional)"
+          >
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Contraseña</label>
+            <input 
+              type="password" 
+              id="reg-password" 
+              class="form-input" 
+              required 
+              minlength="6" 
+              placeholder="Mínimo 6 caracteres"
+            >
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-password-confirm">Confirmar</label>
+            <input 
+              type="password" 
+              id="reg-password-confirm" 
+              class="form-input" 
+              required 
+              minlength="6" 
+              placeholder="Repite contraseña"
+            >
+          </div>
+        </div>
+
+        <button type="submit" class="btn-cyber-secondary" style="margin-top: 0.5rem;">
+          COMPLETAR ALISTAMIENTO (CREAR PILOTO)
+        </button>
+        <p style="text-align: center; margin-top: 1.15rem; font-size: 0.82rem; color: #94a3b8;">
+          ¿Ya tienes piloto registrado? 
+          <a href="javascript:void(0)" id="link-goto-login" style="color: #ec4899; text-decoration: underline; font-weight: 700; cursor: pointer;">
+            Accede al hangar aquí
+          </a>
+        </p>
+      </form>
+    </section>
+
+    <!-- VISTA 2: Hangar / Lobby Autenticado -->
+    <section id="lobby-container" class="cyber-card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span style="font-size: 0.72rem; color: #34d399; font-family: monospace; letter-spacing: 1px;">● SESIÓN ACTIVA EN BASE DE DATOS SQLITE</span>
+          <h2 style="font-family: 'Orbitron', monospace; font-size: 1.75rem; color: #ffffff; margin-top: 0.25rem;">HANGAR CENTRAL DE COMBATE</h2>
+        </div>
+        <button id="btn-logout" class="btn-cyber-danger">
+          CERRAR SESIÓN
+        </button>
+      </div>
+
+      <!-- Tarjetas de datos del piloto -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem;">
+          <p style="font-size: 0.7rem; color: #64748b; font-family: monospace;">INDICATIVO DE PILOTO</p>
+          <p id="pilot-name" style="font-size: 1.25rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #00f3ff; margin-top: 0.25rem;">CARGANDO...</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem;">
+          <p style="font-size: 0.7rem; color: #64748b; font-family: monospace;">FRECUENCIA DE ENLACE</p>
+          <p id="pilot-email" style="font-size: 0.95rem; font-family: monospace; color: #cbd5e1; margin-top: 0.5rem; overflow: hidden; text-overflow: ellipsis;">CARGANDO...</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem;">
+          <p style="font-size: 0.7rem; color: #64748b; font-family: monospace;">FECHA DE ALTA EN BD</p>
+          <p id="pilot-joined" style="font-size: 0.95rem; font-family: monospace; color: #34d399; margin-top: 0.5rem;">CARGANDO...</p>
+        </div>
+      </div>
+
+      <!-- Resumen Estadístico de Carrera Militar en SQLite -->
+      <div id="pilot-stats-panel" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.75rem;">
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">MISIONES</p>
+          <p id="stat-missions" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #38bdf8; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">RÉCORD PUNTOS</p>
+          <p id="stat-best-score" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #34d399; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">ENEMIGOS ABATIDOS</p>
+          <p id="stat-enemies" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #f43f5e; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">JEFES DESTRUIDOS</p>
+          <p id="stat-bosses" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #fbbf24; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">VICTORIAS FINALES</p>
+          <p id="stat-victories" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #d946ef; margin-top: 0.2rem;">0</p>
+        </div>
+      </div>
+
+      <!-- Banner de despliegue a la selección de nave -->
+      <div style="background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(7, 9, 19, 0.8)); border: 1px solid rgba(0, 243, 255, 0.4); border-radius: 12px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+        <div>
+          <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #38bdf8; font-weight: bold;">SELECCIÓN DE NAVE Y PREPARACIÓN DE MISIÓN</h3>
+          <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem;">Elige una de las 5 naves de combate con sus armas personalizadas y habilidades únicas para iniciar la campaña.</p>
+        </div>
+        <button id="btn-go-to-ships" class="btn-cyber-primary" style="width: auto; padding: 0.85rem 1.75rem;">
+          SELECCIONAR NAVE ➔
+        </button>
+      </div>
+
+      <!-- Verificación JWT -->
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem; font-size: 0.8rem; font-family: monospace; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="color: #94a3b8;">Verificación criptográfica de token JWT contra SQLite:</span>
+          <button id="btn-verify-session" class="btn-cyber-outline" style="padding: 0.35rem 0.85rem; font-size: 0.75rem;">
+            Verificar /api/auth/me
+          </button>
+        </div>
+        <div id="verify-result" style="color: #64748b;"></div>
+      </div>
+    </section>
+
+    <!-- VISTA 3: Selector de las 5 Naves -->
+    <section id="ship-select-container" class="cyber-card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="font-family: 'Orbitron', monospace; font-size: 1.5rem; color: #ffffff;">CATÁLOGO DE NAVES DE COMBATE</h2>
+          <p style="font-size: 0.75rem; color: #64748b; font-family: monospace; margin-top: 0.25rem;">SELECCIONA TU VEHÍCULO SEGÚN SU ARMA Y HABILIDAD ESPECIAL</p>
+        </div>
+        <button id="btn-back-to-lobby" class="btn-cyber-outline">
+          ⬅ VOLVER AL HANGAR
+        </button>
+      </div>
+
+      <div id="ships-grid" class="ships-grid">
+        <!-- Renderizado dinámico desde SQLite vía API -->
+      </div>
+    </section>
+
+    <!-- VISTA 4: Selector de las 5 Fases -->
+    <section id="stage-select-container" class="cyber-card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="font-family: 'Orbitron', monospace; font-size: 1.5rem; color: #ffffff;">MAPA DE OPERACIONES (5 FASES)</h2>
+          <p style="font-size: 0.75rem; color: #64748b; font-family: monospace; margin-top: 0.25rem;">DESBLOQUEO SECUENCIAL OBLIGATORIO: DERROTA AL JEFE PREVIO PARA AVANZAR</p>
+        </div>
+        <button id="btn-back-to-ships" class="btn-cyber-outline">
+          ⬅ CAMBIAR DE NAVE
+        </button>
+      </div>
+
+      <div id="stages-list" style="display: flex; flex-direction: column; gap: 1rem;">
+        <!-- Renderizado dinámico según progreso del piloto -->
+      </div>
+    </section>
+
+    <!-- VISTA 5: Puesto de Combate (Canvas 60 FPS + HUD) -->
+    <section id="battle-container" class="battle-wrapper hidden">
+      <!-- HUD Táctico Superior -->
+      <div class="hud-bar">
+        <!-- Salud y Nave -->
+        <div style="width: 140px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.65rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.25rem;">
+            <span id="hud-ship-name" style="color: #38bdf8; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">NAVE</span>
+            <span id="hud-health-text" style="color: #34d399;">100 / 100</span>
+          </div>
+          <div style="width: 100%; height: 10px; background: #0f172a; border-radius: 9999px; overflow: hidden; border: 1px solid #334155;">
+            <div id="hud-health-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, #10b981, #00f3ff); transition: width 0.15s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Nivel de Armas y Escudo de Mejora -->
+        <div style="text-align: center;">
+          <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">POTENCIA ARMAS</span>
+          <span id="hud-weapon-level" style="font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: bold; color: #38bdf8;">NV 1</span>
+        </div>
+
+        <!-- Bombas Tácticas de Pantalla Completa -->
+        <div>
+          <button id="btn-hud-bomb" class="btn-cyber-outline" style="padding: 0.28rem 0.65rem; font-size: 0.72rem; border-color: #f43f5e; color: #fda4af; display: flex; align-items: center; gap: 0.35rem;" title="Lanzar Bomba Táctica (Tecla B)">
+            <span>💣 BOMBAS:</span>
+            <span id="hud-bombs-count" style="font-family: 'Orbitron', monospace; font-weight: bold; color: #ffffff;">1</span>
+            <span style="font-size: 0.62rem; color: #f43f5e; border: 1px solid rgba(244,63,94,0.4); padding: 1px 4px; border-radius: 3px;">[B]</span>
+          </button>
+        </div>
+
+        <!-- Habilidad Especial -->
+        <div style="text-align: center;">
+          <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">HABILIDAD ESPECIAL</span>
+          <span id="hud-special-status" style="font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: bold; color: #34d399;">LISTO [E / SHIFT]</span>
+        </div>
+
+        <!-- Puntuación y Progreso -->
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="text-align: right;">
+            <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">PUNTUACIÓN</span>
+            <span id="hud-score-text" style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: bold; color: #38bdf8;">0</span>
+          </div>
+
+          <div style="width: 90px;">
+            <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">PROGRESO</span>
+            <div style="width: 100%; height: 8px; background: #0f172a; border-radius: 9999px; overflow: hidden; border: 1px solid #334155; margin-top: 2px;">
+              <div id="hud-stage-progress" style="height: 100%; width: 0%; background: #d946ef; transition: width 0.2s ease;"></div>
+            </div>
+          </div>
+
+          <button id="btn-battle-fullscreen" class="btn-cyber-outline" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;" title="Alternar Pantalla Completa (Tecla F)">
+            ⛶ PANTALLA COMPLETA [F]
+          </button>
+
+          <button id="btn-exit-battle" class="btn-cyber-danger" style="padding: 0.35rem 0.75rem;">
+            ABORTAR
+          </button>
+        </div>
+      </div>
+
+      <!-- Pantalla Canvas del Juego -->
+      <div class="canvas-container">
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+      </div>
+
+      <!-- Consejos de Control -->
+      <div style="margin-top: 0.75rem; display: flex; justify-content: center; gap: 1.25rem; font-size: 0.72rem; font-family: monospace; color: #64748b; flex-wrap: wrap;">
+        <span>🎮 <b>WASD / Flechas / Ratón:</b> Mover</span>
+        <span>🔥 <b>Espacio / Clic Izq:</b> Disparar</span>
+        <span>⚡ <b>Tecla E / Shift:</b> Habilidad Especial</span>
+        <span>💣 <b>Tecla B:</b> Bomba Táctica</span>
+        <span>⭐ <b>Mejora Armas:</b> Se pierde tras 2 golpes</span>
+        <span>⛶ <b>Tecla F:</b> Pantalla Completa</span>
+        <span>⏸️ <b>Tecla P:</b> Pausa</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: Leaderboard Mundial (SQLite) -->
+  <div id="leaderboard-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #ffffff;">🏆 TABLA DE CLASIFICACIÓN MUNDIAL</h3>
+        <button id="btn-close-leaderboard" style="background: none; border: none; color: #64748b; font-size: 1.25rem; cursor: pointer;">✕</button>
+      </div>
+      <div style="overflow-x: auto; max-height: 380px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; font-family: monospace;">
+          <thead>
+            <tr style="border-bottom: 1px solid #1e293b; color: #94a3b8;">
+              <th style="padding: 0.5rem;">POS</th>
+              <th style="padding: 0.5rem;">PILOTO</th>
+              <th style="padding: 0.5rem;">NAVE</th>
+              <th style="padding: 0.5rem;">PUNTUACIÓN</th>
+              <th style="padding: 0.5rem;">ALCANCE</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Manual Táctico y Arquitectura Desplegable -->
+  <div id="help-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width: 920px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; border-color: #38bdf8; box-shadow: 0 0 50px rgba(56, 189, 248, 0.35); padding: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 0.75rem; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.35rem;">📖</span>
+          <div>
+            <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #38bdf8; font-weight: bold; letter-spacing: 1px;">
+              MANUAL TÁCTICO & ARQUITECTURA
+            </h3>
+            <p style="font-size: 0.68rem; color: #94a3b8; font-family: monospace;">GUÍA OFICIAL DE PILOTAJE, ARMAS, NAVEGACIÓN Y TECNOLOGÍA</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <a href="./manual.html" target="_blank" class="btn-cyber-outline" style="font-size: 0.72rem; padding: 0.3rem 0.75rem; text-decoration: none; border-color: #38bdf8; color: #38bdf8;">
+            ⛶ ABRIR EN OTRA PESTAÑA
+          </a>
+          <button id="btn-close-help" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0 0.4rem;">✕</button>
+        </div>
+      </div>
+
+      <!-- Lector de Manual Integrado -->
+      <div style="flex: 1; min-height: 520px; border-radius: 8px; border: 1px solid #1e293b; overflow: hidden; background: #090d16;">
+        <iframe src="./manual.html" style="width: 100%; height: 100%; min-height: 520px; border: none; display: block;" title="Manual Táctico del Juego"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Game Over -->
+  <div id="game-over-modal" class="modal-overlay hidden">
+    <div class="modal-box modal-gameover">
+      <h3 style="font-family: 'Orbitron', monospace; font-size: 1.85rem; color: #ef4444; font-weight: 900; letter-spacing: 2px;">MISIÓN FALLIDA</h3>
+      <p style="font-size: 0.75rem; font-family: monospace; color: #94a3b8; margin-top: 0.25rem;">TU NAVE HA SIDO DERRIBADA EN COMBATE</p>
+
+      <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; font-family: monospace; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Puntuación Final:</span>
+          <span id="go-score" style="color: #38bdf8; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Enemigos Destruidos:</span>
+          <span id="go-enemies" style="color: #ffffff; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Jefes Derrotados:</span>
+          <span id="go-bosses" style="color: #ec4899; font-weight: bold;">0</span>
+        </div>
+        <p style="font-size: 0.7rem; color: #34d399; margin-top: 0.5rem;">✔ Puntuación registrada exitosamente en SQLite.</p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="btn-restart-gameover" class="btn-cyber-primary" style="flex: 1; padding: 0.75rem;">
+          REINTENTAR
+        </button>
+        <button id="btn-hangar-gameover" class="btn-cyber-outline" style="flex: 1; padding: 0.75rem;">
+          HANGAR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Victoria de Fase -->
+  <div id="victory-modal" class="modal-overlay hidden">
+    <div class="modal-box modal-victory" style="max-width: 580px;">
+      <h3 id="vic-title" style="font-family: 'Orbitron', monospace; font-size: 1.85rem; color: #10b981; font-weight: 900; letter-spacing: 2px;">¡VICTORIA EN COMBATE!</h3>
+      <p id="vic-stage" style="font-size: 0.75rem; font-family: monospace; color: #38bdf8; margin-top: 0.25rem; font-weight: bold;">FASE SUPERADA</p>
+
+      <!-- Epílogo de Campaña (Solo visible al superar Fase 5) -->
+      <div id="vic-epilogue-box" class="hidden" style="margin: 1.25rem 0; padding: 1.2rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(15, 23, 42, 0.85)); border: 1px solid #10b981; border-radius: 10px; text-align: left;">
+        <span style="font-size: 0.72rem; font-family: 'Orbitron', monospace; color: #fbbf24; font-weight: bold; letter-spacing: 1px;">
+          🎖️ TRANSMISIÓN DEL ALTO MANDO DE LA FEDERACIÓN:
+        </span>
+        <p style="font-size: 0.88rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: #f8fafc; line-height: 1.5; margin-top: 0.5rem;">
+          ¡Comandante, hazaña legendaria! Con la aniquilación del Super-Dreadnought 'Goliath Titán' y la caída del General Vektor, la red satelital de subyugación ha colapsado. Los cielos de América y el planeta entero están libres. Tu nombre queda inscrito como el As Definitivo en los anales de la historia.
+        </p>
+        <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem; color: #34d399; font-size: 0.75rem; font-family: monospace; font-weight: bold;">
+          <span>⭐ CONDECORACIÓN OTORGADA: CRUZ SUPREMA DE VICTORIA</span>
+        </div>
+      </div>
+
+      <div style="margin: 1.25rem 0; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; font-family: monospace; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Puntos de Batalla:</span>
+          <span id="vic-score" style="color: #34d399; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Bajas Hostiles:</span>
+          <span id="vic-enemies" style="color: #ffffff; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Jefes Neutralizados:</span>
+          <span id="vic-bosses" style="color: #ec4899; font-weight: bold;">0</span>
+        </div>
+        <p id="vic-unlocked-msg" style="font-size: 0.7rem; color: #34d399; margin-top: 0.5rem;">✔ Siguiente fase desbloqueada en SQLite.</p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="btn-next-victory" class="btn-cyber-primary" style="flex: 1; padding: 0.75rem;">
+          SIGUIENTE FASE ➔
+        </button>
+        <button id="btn-hangar-victory" class="btn-cyber-outline" style="flex: 1; padding: 0.75rem;">
+          HANGAR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Briefing Táctico de Misión y Lore Coherente -->
+  <div id="briefing-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="border-color: #00f3ff; box-shadow: 0 0 45px rgba(0, 243, 255, 0.35); max-width: 720px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 243, 255, 0.3); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <div>
+          <span id="briefing-classification" style="font-size: 0.7rem; font-family: monospace; color: #34d399; letter-spacing: 1px; font-weight: bold;">
+            CLASIFICACIÓN MILITAR DE COMBATE
+          </span>
+          <h3 id="briefing-operation-title" style="font-family: 'Orbitron', monospace; font-size: 1.35rem; color: #00f3ff; font-weight: bold; margin-top: 0.2rem;">
+            OPERACIÓN MILITAR
+          </h3>
+        </div>
+        <span id="briefing-threat-level" style="padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.72rem; font-family: monospace; font-weight: bold; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #f87171;">
+          AMENAZA: ALTA
+        </span>
+      </div>
+
+      <!-- Lore y Justificación Táctica -->
+      <div style="background: rgba(0,0,0,0.6); padding: 1.25rem; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 1.25rem;">
+        <span style="font-size: 0.72rem; font-family: 'Orbitron', monospace; color: #38bdf8; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 0.4rem;">
+          📜 CONTEXTO ESTRATÉGICO Y LORE DE CAMPAÑA:
+        </span>
+        <p id="briefing-lore-text" style="font-size: 0.92rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: #f1f5f9; line-height: 1.55;">
+          Cargando justificación táctica...
+        </p>
+      </div>
+
+      <!-- Objetivo Principal -->
+      <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.85rem 1.25rem; border-radius: 10px; margin-bottom: 1.25rem;">
+        <span style="font-size: 0.7rem; font-family: monospace; color: #34d399; text-transform: uppercase; font-weight: bold;">
+          🎯 OBJETIVO PRIMARIO:
+        </span>
+        <p id="briefing-objective" style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #ffffff; margin-top: 0.2rem;">
+          Objetivo de la misión...
+        </p>
+      </div>
+
+      <!-- Inteligencia sobre Jefes -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1.5rem; font-family: monospace; font-size: 0.75rem;">
+        <div style="background: rgba(0,0,0,0.4); border: 1px solid #1e293b; padding: 0.75rem; border-radius: 8px;">
+          <span style="color: #38bdf8; font-weight: bold; display: block; margin-bottom: 0.25rem;">SUBLÍDER DETECTADO (50%):</span>
+          <p id="briefing-subboss-intel" style="color: #cbd5e1; font-family: sans-serif; font-size: 0.78rem;">Intel...</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.4); border: 1px solid #1e293b; padding: 0.75rem; border-radius: 8px;">
+          <span style="color: #ec4899; font-weight: bold; display: block; margin-bottom: 0.25rem;">BOSS DE FASE (90%):</span>
+          <p id="briefing-finalboss-intel" style="color: #cbd5e1; font-family: sans-serif; font-size: 0.78rem;">Intel...</p>
+        </div>
+      </div>
+
+      <!-- ESPACIO DE PUBLICIDAD GOOGLE ADSENSE (INICIO DE MISIÓN) -->
+      <div id="ad-briefing-slot" class="ad-slot-box" style="margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-family: monospace; font-size: 0.65rem; color: #64748b;">
+          <span>📢 PUBLICIDAD PATROCINADA · GOOGLE ADSENSE</span>
+          <span id="ad-launch-countdown" style="color: #38bdf8; display: none; font-weight: bold;">🚀 DESPEGUE EN <b id="ad-seconds-left">3</b>s...</span>
+        </div>
+
+        <!-- Contenedor Oficial Google AdSense -->
+        <div class="ad-content-wrapper" style="min-height: 90px; background: rgba(15, 23, 42, 0.7); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4px;">
+          <ins class="adsbygoogle"
+               style="display:inline-block;width:100%;max-width:680px;height:90px;"
+               data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+               data-ad-slot="1234567890"
+               data-ad-format="horizontal"
+               data-adtest="on"
+               data-full-width-responsive="true"></ins>
+
+          <!-- Banner de previsualización mientras se configura el Client ID real -->
+          <div class="ad-preview-banner" style="text-align: center; padding: 0.75rem;">
+            <p style="font-family: 'Orbitron', monospace; font-size: 0.75rem; color: #38bdf8; font-weight: bold; letter-spacing: 1px;">
+              [ESPACIO RESERVADO PARA ANUNCIO DE GOOGLE ADSENSE (728×90 / RESPONSIVO)]
+            </p>
+            <p style="font-size: 0.7rem; color: #94a3b8; font-family: 'Rajdhani', sans-serif; margin-top: 0.2rem;">
+              Para monetizar tus misiones: ingresa tu <code>ca-pub-XXXXXXXXXXXXXXXX</code> en <code>frontend/js/ads_config.js</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <button id="btn-briefing-cancel" class="btn-cyber-outline" style="font-size: 0.8rem; padding: 0.75rem 1.5rem;">
+          VOLVER AL MAPA
+        </button>
+        <button id="btn-briefing-launch" class="btn-cyber-primary" style="width: auto; padding: 0.85rem 2.25rem; font-size: 0.9rem;">
+          🚀 CONFIRMAR Y DESPEGAR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Cinemática de Intro con General Vektor -->
+  <div id="intro-cinema-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="border-color: #ff0055; box-shadow: 0 0 45px rgba(255, 0, 85, 0.4); max-width: 680px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 0, 85, 0.3); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.25rem;">📡</span>
+          <span style="font-family: 'Orbitron', monospace; font-size: 0.85rem; color: #ff0055; font-weight: bold; letter-spacing: 1px;">INTERCEPCIÓN HOLOGRAMÁTICA DE EMERGENCIA</span>
+        </div>
+        <span id="intro-counter" style="font-family: monospace; font-size: 0.75rem; color: #94a3b8;">1 / 5</span>
+      </div>
+
+      <div style="display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.5rem; background: rgba(0,0,0,0.6); padding: 1.25rem; border-radius: 12px; border: 1px solid #1e293b;">
+        <div id="intro-avatar" style="font-size: 2.75rem; min-width: 65px; height: 65px; border-radius: 12px; background: rgba(255, 0, 85, 0.15); border: 1px solid rgba(255, 0, 85, 0.4); display: flex; align-items: center; justify-content: center;">
+          👾
+        </div>
+        <div style="flex: 1;">
+          <h4 id="intro-speaker-name" style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: bold; color: #ff0055; letter-spacing: 1px;">
+            GENERAL VEKTOR
+          </h4>
+          <p id="intro-speaker-role" style="font-size: 0.7rem; font-family: monospace; color: #94a3b8; text-transform: uppercase; margin-bottom: 0.6rem;">
+            SUPREMO SEÑOR DE LA GUERRA (BOSS FINAL)
+          </p>
+          <p id="intro-dialogue-text" style="font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: #f1f5f9; line-height: 1.5;">
+            Cargando transmisión...
+          </p>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <button id="btn-intro-skip" class="btn-cyber-outline" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
+          SALTAR INTRO
+        </button>
+        <button id="btn-intro-next" class="btn-cyber-primary" style="width: auto; padding: 0.75rem 2rem; font-size: 0.85rem;">
+          CONTINUAR ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    PROYECTO NAVES • ARQUITECTURA DE SOFTWARE PRO • CERO MOCKS • 60 FPS CANVAS
+  </footer>
+
+  <!-- Botón Flotante Permanente de Pantalla Completa / Expandir -->
+  <button id="btn-floating-fullscreen" class="floating-fullscreen-btn" title="Alternar Pantalla Completa (Tecla F o F11)">
+    <span>⛶</span> EXPANDIR JUEGO [F]
+  </button>
+
+  <!-- Scripts Modulares -->
+  <script type="module" src="./js/auth.js"></script>
+  <script type="module" src="./js/app_ui.js"></script>
+</body>
+</html>
