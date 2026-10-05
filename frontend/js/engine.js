@@ -1163,8 +1163,8 @@ export class GameEngine {
     }
 
     // Actualizar botón e indicador táctil de habilidad especial
-    const touchSpecialBadge = document.getElementById("touch-special-badge");
-    const touchSpecialBtn = document.getElementById("btn-touch-special");
+    const touchSpecialBadge = (typeof document !== "undefined" && typeof document.getElementById === "function") ? document.getElementById("touch-special-badge") : null;
+    const touchSpecialBtn = (typeof document !== "undefined" && typeof document.getElementById === "function") ? document.getElementById("btn-touch-special") : null;
     if (touchSpecialBadge) {
       if (this.player.isSpecialActive) {
         touchSpecialBadge.textContent = `${this.player.specialTimer.toFixed(0)}s`;
@@ -1190,7 +1190,9 @@ export class GameEngine {
     if (this.hud.stageProgress) {
       const pct = Math.min(100, Math.floor(distanceRatio * 100));
       this.hud.stageProgress.style.width = `${pct}%`;
-      const pctEl = document.getElementById("hud-progress-pct");
+      const pctEl = (typeof document !== "undefined" && typeof document.getElementById === "function") 
+        ? document.getElementById("hud-progress-pct") 
+        : null;
       if (pctEl) {
         if (this.enemies.some(e => e.isFinalBoss)) {
           pctEl.innerHTML = "<span style='color: #ff0055;'>BOSS</span>";
@@ -1209,7 +1211,9 @@ export class GameEngine {
     if (!this.hud) return;
 
     // Actualizar badge táctil móvil de bombas
-    const touchBombBadge = document.getElementById("touch-bomb-badge");
+    const touchBombBadge = (typeof document !== "undefined" && typeof document.getElementById === "function") 
+      ? document.getElementById("touch-bomb-badge") 
+      : null;
     if (touchBombBadge) {
       touchBombBadge.textContent = this.bombs;
     }

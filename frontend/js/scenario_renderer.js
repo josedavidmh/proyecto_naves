@@ -218,6 +218,7 @@ export class ScenarioRenderer {
           const newX = Math.random() * (this.canvas.width - 120) + 60;
           this.pacificIslands[i] = this.createPacificIsland(newX, -120);
         }
+      }
     } else if (stageNumber === 3) {
       // 1. Desplazamiento estelar continuo cósmico (Parallax vertical 60 FPS)
       for (const star of this.spaceStars) {

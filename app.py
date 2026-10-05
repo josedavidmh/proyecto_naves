@@ -1,5 +1,5 @@
 import os
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 from flask_cors import CORS
 from backend.config import Config
 from backend.database import db
@@ -46,6 +46,14 @@ def create_app(config_override: dict = None) -> Flask:
     @app.route("/<path:path>")
     def static_files(path):
         return send_from_directory(app.static_folder, path)
+
+    @app.after_request
+    def set_cache_headers(response):
+        if request.path.endswith((".js", ".css", ".html")) or request.path == "/":
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+        return response
 
     # Endpoint de chequeo de salud del sistema
     @app.route("/api/health", methods=["GET"])
