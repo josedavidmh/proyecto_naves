@@ -1,4 +1,4 @@
-# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.6`
+# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.7`
 
 Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combate únicas, 5 fases progresivas con desbloqueo secuencial persistente, sublíderes y jefes de fase, mapa continental de América en alta resolución y backend SQLite con autenticación JWT sin mocks.
 
@@ -72,10 +72,10 @@ Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combat
   - Océano profundo con atolones e islas reflectantes.
   - Sublíder: *Hydra Frigate*.
   - Jefe: *Leviathan Carrier*.
-- **Fase 3: Éxodo Orbital Tierra-Júpiter:**
-  - Transición atmosférica de despegue con la curvatura terrestre alejándose y la escala gigante de Júpiter aproximándose con sus bandas gaseosas y la Gran Mancha Roja.
-  - Sublíder: *Orbital Interceptor Prime*.
-  - Jefe: *Jupiter Behemoth*.
+- **Fase 3: Travesía Interplanetaria a Saturno (Vía Marte y Júpiter):**
+  - Despegue desde la Tierra con el planeta alejándose, sobrevuelo orbital de Marte, navegación por el Cinturón de Asteroides en 3D, aproximación a Júpiter y asalto final a la mega-estación en los majestuosos anillos de Saturno.
+  - Sublíder al 40% (en Júpiter): *Jovian Core (Sonda de Fusión Gravitatoria)*.
+  - Jefe Final al 85% (en Saturno): *Ganymede Titan (Estación de Batalla de Saturno)*.
 - **Fase 4: Territorio Criogénico / Sector de Hielo:**
   - Vórtices de ventisca polar y partículas de nieve en tiempo real.
   - Sublíder: *Glacier Sentinel*.

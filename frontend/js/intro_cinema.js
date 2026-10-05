@@ -31,7 +31,7 @@ export const IntroCinema = {
       role: "SUPREMO SEÑOR DE LA GUERRA (BOSS FINAL)",
       avatar: "👾",
       color: "#ff0055",
-      text: "¡JAJAJAJA! ¿Acaso sueñan con cruzar el Pacífico y la tempestad de hielo? Jamás llegarán a mi estación en Júpiter ni a mi base en la Selva. ¡Mis sublíderes y acorazados los pulverizarán antes de que vean la luz del sol!"
+      text: "¡JAJAJAJA! ¿Acaso sueñan con cruzar el Pacífico y la tempestad de hielo? Jamás llegarán a mi estación en Saturno ni a mi base en la Selva. ¡Mis sublíderes y acorazados los pulverizarán antes de que vean la luz del sol!"
     },
     {
       speaker: "COMANDANTE DEL ESCUADRÓN",

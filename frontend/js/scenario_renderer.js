@@ -2,7 +2,7 @@
  * Renderizador Especializado para los 5 Escenarios Temáticos y Terreno Reactivo
  * 1. Norteamérica a la Antártida con radar de mapa continental
  * 2. Cruce del Pacífico con islas procedurales y costa de Australia
- * 3. Éxodo orbital de la Tierra a Júpiter con aproximación y escalado planetario
+ * 3. Travesía interplanetaria: Tierra, Marte, Cinturón de Asteroides, Júpiter (Sublíder) y Saturno (Jefe Final)
  * 4. Sector Criogénico de Hielo con ventiscas polares
  * 5. Territorio Selvático con árboles destruibles y cráteres por armas pesadas
  */

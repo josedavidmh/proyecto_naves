@@ -490,8 +490,8 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       {
         num: 3,
-        title: "Fase 3: Éxodo Orbital hacia Júpiter",
-        desc: "Despegue gravitatorio desde la Tierra observando la aproximación dimensional al gigante gaseoso.",
+        title: "Fase 3: Travesía a Saturno (Vía Marte y Júpiter)",
+        desc: "Despega de la Tierra, rebasa Marte y asteroides, vence a Jovian Core en Júpiter y asalta los anillos de Saturno contra Ganymede Titan.",
         unlocked: playerProgress.stages["3"].unlocked
       },
       {
