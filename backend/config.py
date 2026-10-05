@@ -12,12 +12,20 @@ class Config:
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "fallback_jwt_secret_key_change_in_production")
     
     # Soporte para PostgreSQL (ej. Render Database) o SQLite local
-    raw_db_url = os.getenv("DATABASE_URL", "sqlite:///game.db")
+    raw_db_url = (
+        os.getenv("DATABASE_URL") or 
+        os.getenv("INTERNAL_DATABASE_URL") or 
+        os.getenv("POSTGRES_URL") or 
+        os.getenv("POSTGRESQL_URL") or 
+        os.getenv("DB_URL") or 
+        "sqlite:///game.db"
+    ).strip().strip('"').strip("'")
+
     if raw_db_url.startswith("postgres://"):
         # Render provee URLs que inician con postgres://, SQLAlchemy 2.0 requiere postgresql://
         raw_db_url = raw_db_url.replace("postgres://", "postgresql://", 1)
         
-    if raw_db_url.startswith("postgresql://"):
+    if raw_db_url.startswith("postgresql://") or raw_db_url.startswith("postgresql+psycopg2://"):
         SQLALCHEMY_DATABASE_URI = raw_db_url
     else:
         db_filename = raw_db_url.replace("sqlite:///", "")

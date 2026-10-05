@@ -52,12 +52,14 @@ def create_app(config_override: dict = None) -> Flask:
     def health_check():
         db_engine_str = str(db.engine.url)
         is_postgres = "postgresql" in db_engine_str
+        detected_keys = [k for k in os.environ.keys() if any(term in k.upper() for term in ["DATA", "POSTGRES", "DB", "SQL"])]
         return {
             "success": True,
             "status": "online",
             "service": "Space Assault API - Arquitectura Pro",
             "database": "PostgreSQL (SQLAlchemy)" if is_postgres else "SQLite (SQLAlchemy)",
             "database_engine": "PostgreSQL" if is_postgres else "SQLite",
+            "detected_env_db_keys": detected_keys,
             "auth": "JWT HS256"
         }, 200
 
