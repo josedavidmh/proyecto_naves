@@ -40,6 +40,7 @@ export class ScenarioRenderer {
         twinkleSpeed: Math.random() * 0.003 + 0.002,
         twinkleOffset: Math.random() * Math.PI * 2,
         hasGlint: isTwinkle && Math.random() < 0.45,
+        speedY: (Math.random() * 1.8 + 0.8) * 36 + 24, // 52 a 120 px/s para sensación de vuelo cósmico continuo
         color: Math.random() > 0.8 ? "#93c5fd" : (Math.random() > 0.6 ? "#fef08a" : "#ffffff")
       });
     }
@@ -217,9 +218,17 @@ export class ScenarioRenderer {
           const newX = Math.random() * (this.canvas.width - 120) + 60;
           this.pacificIslands[i] = this.createPacificIsland(newX, -120);
         }
-      }
     } else if (stageNumber === 3) {
-      // Movimiento y rotación de asteroides del cinturón entre Marte y Júpiter
+      // 1. Desplazamiento estelar continuo cósmico (Parallax vertical 60 FPS)
+      for (const star of this.spaceStars) {
+        star.y += (star.speedY || 60) * dt;
+        if (star.y > this.canvas.height + 6) {
+          star.y = -6;
+          star.x = Math.random() * this.canvas.width;
+        }
+      }
+
+      // 2. Movimiento y rotación de asteroides del cinturón entre Marte y Júpiter
       for (const a of this.spaceAsteroids) {
         a.y += a.speedY * dt;
         a.x += a.speedX * dt;

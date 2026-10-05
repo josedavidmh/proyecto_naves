@@ -699,7 +699,22 @@ document.addEventListener("DOMContentLoaded", () => {
         renderGoogleAd(adSlotBox, ADS_CONFIG.SLOT_PRE_MISSION);
       }
 
+      const scrollBody = briefingModal.querySelector(".modal-scrollable-body");
+      if (scrollBody) {
+        scrollBody.scrollTop = 0;
+      }
+
       briefingModal.classList.remove("hidden");
+    }
+
+    // Permitir scrollear el contenido desde cualquier punto del modal de briefing sin trabas
+    const briefingScrollBody = briefingModal.querySelector(".modal-scrollable-body");
+    if (briefingModal && briefingScrollBody) {
+      briefingModal.addEventListener("wheel", (e) => {
+        if (!e.target.closest(".modal-scrollable-body")) {
+          briefingScrollBody.scrollTop += e.deltaY;
+        }
+      }, { passive: true });
     }
 
     document.querySelectorAll(".btn-launch-stage").forEach((btn) => {
@@ -753,37 +768,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnBriefingLaunch) {
       btnBriefingLaunch.addEventListener("click", () => {
-        if (isLaunching) {
-          // Si el jugador hace clic de nuevo durante la cuenta regresiva, salta inmediatamente
-          finalizeMissionLaunch();
-          return;
-        }
-
-        const countdownSeconds = ADS_CONFIG.COUNTDOWN_SECONDS || 0;
-        if (countdownSeconds <= 0) {
-          finalizeMissionLaunch();
-          return;
-        }
-
-        isLaunching = true;
-        let secondsLeft = countdownSeconds;
-        const countdownEl = document.getElementById("ad-launch-countdown");
-        const secondsEl = document.getElementById("ad-seconds-left");
-
-        if (countdownEl) countdownEl.style.display = "inline";
-        if (secondsEl) secondsEl.textContent = secondsLeft;
-        btnBriefingLaunch.textContent = `🚀 DESPEGANDO (${secondsLeft}s)... [SALTAR]`;
-        btnBriefingLaunch.style.background = "linear-gradient(135deg, #f59e0b, #d97706)";
-
-        launchTimer = setInterval(() => {
-          secondsLeft--;
-          if (secondsEl) secondsEl.textContent = secondsLeft;
-          if (secondsLeft > 0) {
-            btnBriefingLaunch.textContent = `🚀 DESPEGANDO (${secondsLeft}s)... [SALTAR]`;
-          } else {
-            finalizeMissionLaunch();
-          }
-        }, 1000);
+        // Despegue táctico inmediato sin retardo para experiencia fluida
+        finalizeMissionLaunch();
       });
     }
   }

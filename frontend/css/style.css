@@ -676,11 +676,20 @@ body.theater-mode-active .modal-overlay.hidden,
 }
 
 /* Scrollable body para modales ricos como el Briefing Táctico */
+.modal-box-briefing {
+  width: 95vw !important;
+  max-width: 760px !important;
+  max-height: 92vh !important;
+}
+
 .modal-scrollable-body {
-  overflow-y: auto;
+  overflow-y: auto !important;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   scrollbar-width: thin;
   scrollbar-color: #00f3ff rgba(15, 23, 42, 0.8);
+  scroll-behavior: smooth;
 }
 
 .modal-scrollable-body::-webkit-scrollbar {

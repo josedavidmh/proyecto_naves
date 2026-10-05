@@ -26,7 +26,7 @@ export const ADS_CONFIG = {
   TEST_MODE: true,
 
   // Tiempo en segundos de cuenta regresiva táctica antes de que el jugador despegue (0 para inmediato)
-  COUNTDOWN_SECONDS: 3
+  COUNTDOWN_SECONDS: 0
 };
 
 /**
