@@ -646,8 +646,10 @@ button#btn-floating-fullscreen ~ button#btn-floating-fullscreen {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1.5rem 1rem;
   z-index: 999999 !important;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modal-overlay.hidden {
@@ -665,6 +667,31 @@ button#btn-floating-fullscreen ~ button#btn-floating-fullscreen {
   width: 100%;
   padding: 2rem;
   box-shadow: 0 0 50px rgba(0, 243, 255, 0.25);
+  margin: auto;
+  max-height: calc(100vh - 2.5rem);
+}
+
+/* Scrollable body para modales ricos como el Briefing Táctico */
+.modal-scrollable-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #00f3ff rgba(15, 23, 42, 0.8);
+}
+
+.modal-scrollable-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scrollable-body::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 4px;
+}
+
+.modal-scrollable-body::-webkit-scrollbar-thumb {
+  background: #00f3ff;
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(0, 243, 255, 0.8);
 }
 
 .modal-gameover {
