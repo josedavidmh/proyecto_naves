@@ -37,6 +37,14 @@ export function renderGoogleAd(containerElement, slotId = ADS_CONFIG.SLOT_PRE_MI
   if (!containerElement) return;
 
   try {
+    const ins = containerElement.querySelector("ins.adsbygoogle");
+    if (!ins) return;
+
+    // Si ya fue procesado por Google AdSense, evitamos llamar push({}) duplicado
+    if (ins.getAttribute("data-adsbygoogle-status")) {
+      return;
+    }
+
     // Si Google AdSense está disponible en la ventana
     if (window.adsbygoogle) {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
