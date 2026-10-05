@@ -1536,7 +1536,7 @@ export class GameEngine {
     const stageNames = {
       1: "Travesía Continental: Norteamérica a la Antártida",
       2: "Pacífico Oceánico: De Isla en Isla a Australia",
-      3: "Excursión Orbital: Rumbo a Júpiter",
+      3: "Travesía Interplanetaria: Tierra, Marte, Júpiter y Saturno",
       4: "Sector Criogénico: Glaciares y Tempestad de Hielo",
       5: "Jungla Devastada: Asalto al Cuartel General"
     };
@@ -1617,12 +1617,17 @@ export class GameEngine {
   }
 
   drawMiniBossVector(ctx, boss) {
-    ctx.save();
-    ctx.translate(boss.x, boss.y);
-    const halfW = boss.width / 2;
-    const halfH = boss.height / 2;
-    BossCatalog.drawBossShip(ctx, boss, halfW, halfH);
-    ctx.restore();
+    try {
+      ctx.save();
+      ctx.translate(boss.x, boss.y);
+      const halfW = boss.width / 2;
+      const halfH = boss.height / 2;
+      BossCatalog.drawBossShip(ctx, boss, halfW, halfH);
+      ctx.restore();
+    } catch (err) {
+      console.warn("Error drawing mini boss vector:", err);
+      try { ctx.restore(); } catch (e) {}
+    }
   }
 
   drawBossDefeatedCinematicBanner() {

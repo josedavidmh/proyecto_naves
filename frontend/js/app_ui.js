@@ -597,8 +597,12 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.save();
       ctx.translate(c.width / 2, c.height / 2 + (bossData.isFinalBoss ? 4 : 2));
 
-      // Dibujar modelo vectorial exacto del Jefe / Subjefe
-      BossCatalog.drawBossShip(ctx, bossData, halfW, halfH);
+      // Dibujar modelo vectorial exacto del Jefe / Subjefe de forma protegida
+      try {
+        BossCatalog.drawBossShip(ctx, bossData, halfW, halfH);
+      } catch (err) {
+        console.warn("Error renderizando holograma de jefe:", err);
+      }
 
       ctx.restore();
     }

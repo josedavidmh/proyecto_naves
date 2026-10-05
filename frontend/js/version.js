@@ -5,4 +5,4 @@
  * se incrementará esta versión y se mostrará en pequeño al lado del nombre.
  * Punto de partida inicial: v1.0
  */
-export const GAME_VERSION = "1.4";
+export const GAME_VERSION = "1.5";

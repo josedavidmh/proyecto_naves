@@ -887,45 +887,81 @@ export const BossCatalog = {
       // MODELO 3: JOVIAN CORE (Sonda de Fusión Gravitatoria)
       // ----------------------------------------------------
       case "mid_jovian_core": {
-        const ringAngle = time * 0.0022;
+        const ringAngle = time * 0.0024;
+        const pulse = 1 + Math.sin(time * 0.006) * 0.08;
 
-        // Anillo giroscópico exterior (Giro en perspectiva 3D simulada)
+        // 1. Anillo giroscópico exterior 3D (radio Y siempre >= 3px para evitar errores en Canvas)
+        const rY1 = Math.max(3, Math.abs(halfH * 0.52 * Math.cos(ringAngle)));
         ctx.save();
         ctx.strokeStyle = "#ea580c";
-        ctx.lineWidth = 2.8;
+        ctx.lineWidth = Math.max(1.5, halfW * 0.04);
         ctx.shadowColor = "#f97316";
         ctx.shadowBlur = 14;
         ctx.beginPath();
-        ctx.ellipse(0, 0, halfW * 0.95, halfH * 0.45 * Math.cos(ringAngle), 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, halfW * 0.95, rY1, 0.15, 0, Math.PI * 2);
         ctx.stroke();
 
-        // 4 nodos gravitatorios en los polos del anillo
+        // 2. Anillo secundario contra-rotatorio ortogonal
+        const rY2 = Math.max(3, Math.abs(halfH * 0.44 * Math.sin(ringAngle * 0.85)));
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = Math.max(1.2, halfW * 0.03);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, halfW * 0.78, rY2, -0.35, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 3. Nodos gravitatorios de plasma en órbita
         for (let i = 0; i < 4; i++) {
           const ang = ringAngle + (i * Math.PI) / 2;
           const nx = Math.cos(ang) * (halfW * 0.95);
-          const ny = Math.sin(ang) * (halfH * 0.45 * Math.cos(ringAngle));
-          ctx.fillStyle = "#fbbf24";
+          const ny = Math.sin(ang) * rY1;
+          ctx.fillStyle = "#fef08a";
+          ctx.shadowColor = "#fb923c";
+          ctx.shadowBlur = 10;
           ctx.beginPath();
-          ctx.arc(nx, ny, 3.5, 0, Math.PI * 2);
+          ctx.arc(nx, ny, Math.max(2, halfW * 0.065), 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.restore();
 
-        // Núcleo esférico de plasma solar incandescente
+        // 4. Espículas de radiación solar en los 4 ejes
+        ctx.save();
+        ctx.strokeStyle = "rgba(251, 146, 60, 0.65)";
+        ctx.lineWidth = 1.5;
+        const flareLen = halfW * 0.75 * pulse;
+        ctx.beginPath();
+        ctx.moveTo(-flareLen, 0); ctx.lineTo(flareLen, 0);
+        ctx.moveTo(0, -flareLen * 0.65); ctx.lineTo(0, flareLen * 0.65);
+        ctx.stroke();
+        ctx.restore();
+
+        // 5. Núcleo esférico de plasma joviano incandescente concéntrico
+        ctx.save();
+        ctx.shadowColor = "#ea580c";
+        ctx.shadowBlur = 16;
+        // Corona exterior
         ctx.fillStyle = "#c2410c";
         ctx.beginPath();
-        ctx.arc(0, 0, halfW * 0.45, 0, Math.PI * 2);
+        ctx.arc(0, 0, halfW * 0.46 * pulse, 0, Math.PI * 2);
         ctx.fill();
 
+        // Manto medio de helio ionizado
         ctx.fillStyle = "#f97316";
         ctx.beginPath();
-        ctx.arc(0, 0, halfW * 0.32, 0, Math.PI * 2);
+        ctx.arc(0, 0, halfW * 0.33, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = "#fef08a";
+        // Núcleo de fusión de hidrógeno metálico
+        ctx.fillStyle = "#fbbf24";
         ctx.beginPath();
-        ctx.arc(0, 0, halfW * 0.18, 0, Math.PI * 2);
+        ctx.arc(0, 0, halfW * 0.20, 0, Math.PI * 2);
         ctx.fill();
+
+        // Corazón blanco supercrítico
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(0, 0, Math.max(2, halfW * 0.10), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
         break;
       }
 
@@ -1112,50 +1148,117 @@ export const BossCatalog = {
       }
 
       // ====================================================
-      // MODELO 8: GANYMEDE TITAN (Estación Orbital Joviana)
+      // MODELO 8: GANYMEDE TITAN (Estación Orbital Saturniana)
       // ====================================================
       case "boss_ganymede_titan": {
-        ctx.fillStyle = "#291307";
+        const pulse = 1 + Math.sin(time * 0.005) * 0.06;
+
+        ctx.save();
+        ctx.fillStyle = "#1e0e07";
         ctx.strokeStyle = "#ea580c";
-        ctx.lineWidth = 3.2;
+        ctx.lineWidth = Math.max(2.0, halfW * 0.05);
         ctx.shadowColor = "#f97316";
         ctx.shadowBlur = 18;
 
-        // Superestructura hexagonal acorazada
+        // 1. Superestructura hexagonal acorazada de fortaleza orbital
         ctx.beginPath();
-        ctx.moveTo(0, halfH * 0.85);
-        ctx.lineTo(halfW * 0.85, halfH * 0.4);
-        ctx.lineTo(halfW * 0.95, -halfH * 0.4);
-        ctx.lineTo(halfW * 0.5, -halfH * 0.9);
-        ctx.lineTo(-halfW * 0.5, -halfH * 0.9);
-        ctx.lineTo(-halfW * 0.95, -halfH * 0.4);
-        ctx.lineTo(-halfW * 0.85, halfH * 0.4);
+        ctx.moveTo(0, halfH * 0.92);
+        ctx.lineTo(halfW * 0.45, halfH * 0.65);
+        ctx.lineTo(halfW * 0.95, halfH * 0.25);
+        ctx.lineTo(halfW * 0.88, -halfH * 0.55);
+        ctx.lineTo(halfW * 0.55, -halfH * 0.92);
+        ctx.lineTo(-halfW * 0.55, -halfH * 0.92);
+        ctx.lineTo(-halfW * 0.88, -halfH * 0.55);
+        ctx.lineTo(-halfW * 0.95, halfH * 0.25);
+        ctx.lineTo(-halfW * 0.45, halfH * 0.65);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
 
-        // Reactores de fusión gemelos a los costados
-        [-halfW * 0.75, halfW * 0.75].forEach(rx => {
+        // 2. Blindaje interior con paneles de absorción de radiación
+        ctx.fillStyle = "rgba(194, 65, 12, 0.35)";
+        ctx.beginPath();
+        ctx.moveTo(0, halfH * 0.65);
+        ctx.lineTo(halfW * 0.7, halfH * 0.15);
+        ctx.lineTo(halfW * 0.45, -halfH * 0.65);
+        ctx.lineTo(-halfW * 0.45, -halfH * 0.65);
+        ctx.lineTo(-halfW * 0.7, halfH * 0.15);
+        ctx.closePath();
+        ctx.fill();
+
+        // 3. Reactores de fusión gemelos proporcionales a los costados
+        const reactorDistX = halfW * 0.72;
+        const rOuter = Math.max(5, halfW * 0.22);
+        const rMid = Math.max(3, halfW * 0.14);
+        const rCore = Math.max(1.5, halfW * 0.07);
+
+        [-reactorDistX, reactorDistX].forEach(rx => {
+          // Bobina magnética
+          ctx.strokeStyle = "#fb923c";
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.arc(rx, 0, rOuter, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Plasma reactivo
           ctx.fillStyle = "#c2410c";
           ctx.beginPath();
-          ctx.arc(rx, 0, 16, 0, Math.PI * 2);
+          ctx.arc(rx, 0, rOuter * 0.88, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = "#fb923c";
+
+          ctx.fillStyle = "#f97316";
           ctx.beginPath();
-          ctx.arc(rx, 0, 10, 0, Math.PI * 2);
+          ctx.arc(rx, 0, rMid, 0, Math.PI * 2);
           ctx.fill();
+
           ctx.fillStyle = "#fef08a";
           ctx.beginPath();
-          ctx.arc(rx, 0, 5, 0, Math.PI * 2);
+          ctx.arc(rx, 0, rCore, 0, Math.PI * 2);
           ctx.fill();
         });
 
-        // Acelerador magnético / Railgun central
-        ctx.fillStyle = "#7c2d12";
-        ctx.fillRect(-7, -halfH * 0.85, 14, halfH * 1.6);
+        // 4. Acelerador magnético / Cañón Railgun central colosal
+        const railHalfW = Math.max(3, halfW * 0.11);
+        const railTop = -halfH * 0.88;
+        const railHeight = halfH * 1.75;
+
+        ctx.fillStyle = "#431407";
+        ctx.fillRect(-railHalfW, railTop, railHalfW * 2, railHeight);
         ctx.strokeStyle = "#fef08a";
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(-7, -halfH * 0.85, 14, halfH * 1.6);
+        ctx.strokeRect(-railHalfW, railTop, railHalfW * 2, railHeight);
+
+        // Anillos magnéticos de aceleración a lo largo del cañón
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = 1.5;
+        const numRings = 4;
+        for (let r = 1; r <= numRings; r++) {
+          const ry = railTop + (railHeight * r) / (numRings + 1);
+          ctx.beginPath();
+          ctx.moveTo(-railHalfW - 2, ry);
+          ctx.lineTo(railHalfW + 2, ry);
+          ctx.stroke();
+        }
+
+        // Foco de ignición frontal del cañón
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "#fef08a";
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(0, halfH * 0.88, Math.max(2, halfW * 0.08 * pulse), 0, Math.PI * 2);
+        ctx.fill();
+
+        // 5. Cúpula del centro de mando de la estación
+        ctx.fillStyle = "#f97316";
+        ctx.beginPath();
+        ctx.arc(0, -halfH * 0.2, Math.max(3, halfW * 0.15), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        ctx.arc(0, -halfH * 0.2, Math.max(1.5, halfW * 0.08), 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
         break;
       }
 
