@@ -124,6 +124,53 @@ def login():
     except Exception as e:
         return jsonify({"success": False, "error": f"Error interno en autenticación: {str(e)}"}), 500
 
+@auth_bp.route("/reset-password", methods=["POST"])
+def reset_password():
+    """
+    Permite restablecer la contraseña validando la combinación de indicativo
+    de piloto y correo registrado.
+    """
+    data = request.get_json() or {}
+    identifier = str(data.get("identifier", "")).strip()
+    email = str(data.get("email", "")).strip().lower()
+    new_password = str(data.get("new_password", "")).strip()
+
+    if not identifier or not email or not new_password:
+        return jsonify({
+            "success": False,
+            "error": "Debe proporcionar indicativo de piloto, correo registrado y la nueva contraseña."
+        }), 400
+
+    if len(new_password) < 6:
+        return jsonify({
+            "success": False,
+            "error": "La nueva contraseña debe tener al menos 6 caracteres."
+        }), 400
+
+    user = User.query.filter(
+        (func.lower(User.username) == identifier.lower()) &
+        (func.lower(User.email) == email.lower())
+    ).first()
+
+    if not user:
+        return jsonify({
+            "success": False,
+            "error": "Los datos no coinciden: Verifique su indicativo de piloto y correo registrado."
+        }), 404
+
+    try:
+        user.set_password(new_password)
+        db.session.commit()
+        User.save_backup()
+
+        return jsonify({
+            "success": True,
+            "message": f"Contraseña actualizada exitosamente para '{user.username}'. Ya puedes iniciar sesión con tu nueva clave."
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": f"Error al restablecer la contraseña: {str(e)}"}), 500
+
 @auth_bp.route("/me", methods=["GET"])
 @token_required
 def get_current_user(current_user: User):

@@ -59,5 +59,39 @@ class TestUserPersistenceAndAccountLifecycle(unittest.TestCase):
             u_deleted = User.query.filter_by(username="PilotoPrueba").first()
             self.assertIsNone(u_deleted)
 
+    def test_reset_password_flow(self):
+        # 1. Registrar usuario
+        reg_res = self.client.post("/api/auth/register", json={
+            "username": "PilotoReset",
+            "email": "reset@naves.space",
+            "password": "OldPassword123!"
+        })
+        self.assertIn(reg_res.status_code, [200, 201])
+
+        # 2. Intentar restablecer con datos erróneos (debe fallar con 404)
+        bad_res = self.client.post("/api/auth/reset-password", json={
+            "identifier": "PilotoReset",
+            "email": "wrongemail@naves.space",
+            "new_password": "NewSecretPassword!"
+        })
+        self.assertEqual(bad_res.status_code, 404)
+
+        # 3. Restablecer con datos correctos
+        ok_res = self.client.post("/api/auth/reset-password", json={
+            "identifier": "PilotoReset",
+            "email": "reset@naves.space",
+            "new_password": "NewSecretPassword!"
+        })
+        self.assertEqual(ok_res.status_code, 200)
+        self.assertTrue(ok_res.get_json()["success"])
+
+        # 4. Probar login con la nueva contraseña
+        login_res = self.client.post("/api/auth/login", json={
+            "identifier": "PilotoReset",
+            "password": "NewSecretPassword!"
+        })
+        self.assertEqual(login_res.status_code, 200)
+        self.assertTrue(login_res.get_json()["success"])
+
 if __name__ == "__main__":
     unittest.main()

@@ -96,6 +96,14 @@ export const ApiService = {
     });
   },
 
+  // Restablecer contraseña olvidada (indicativo + correo registrado)
+  async resetPassword(identifier, email, new_password) {
+    return this.request("/api/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ identifier, email, new_password })
+    });
+  },
+
   // Darse de baja voluntariamente de la flota (Ruta protegida JWT con confirmación)
   async deleteAccount(password) {
     return this.request("/api/auth/delete-account", {

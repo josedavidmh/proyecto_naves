@@ -378,6 +378,81 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Modal y Formulario de Recuperación / Restablecimiento de Contraseña
+  const linkOpenForgotPwd = document.getElementById("link-open-forgot-pwd");
+  const forgotPasswordModal = document.getElementById("forgot-password-modal");
+  const btnCloseForgotPwd = document.getElementById("btn-close-forgot-pwd");
+  const btnCancelForgotPwd = document.getElementById("btn-cancel-forgot-pwd");
+  const formForgotPassword = document.getElementById("form-forgot-password");
+  const forgotPwdAlert = document.getElementById("forgot-pwd-alert");
+
+  function openForgotPasswordModal() {
+    if (!forgotPasswordModal) return;
+    if (forgotPwdAlert) forgotPwdAlert.classList.add("hidden");
+    if (formForgotPassword) formForgotPassword.reset();
+    const loginUser = document.getElementById("login-identifier").value.trim();
+    if (loginUser && document.getElementById("input-forgot-user")) {
+      document.getElementById("input-forgot-user").value = loginUser;
+    }
+    forgotPasswordModal.classList.remove("hidden");
+  }
+
+  function closeForgotPasswordModal() {
+    if (!forgotPasswordModal) return;
+    forgotPasswordModal.classList.add("hidden");
+  }
+
+  if (linkOpenForgotPwd) {
+    linkOpenForgotPwd.addEventListener("click", openForgotPasswordModal);
+  }
+  if (btnCloseForgotPwd) {
+    btnCloseForgotPwd.addEventListener("click", closeForgotPasswordModal);
+  }
+  if (btnCancelForgotPwd) {
+    btnCancelForgotPwd.addEventListener("click", closeForgotPasswordModal);
+  }
+
+  if (formForgotPassword) {
+    formForgotPassword.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const identifier = document.getElementById("input-forgot-user").value.trim();
+      const email = document.getElementById("input-forgot-email").value.trim();
+      const newPwd = document.getElementById("input-forgot-newpwd").value.trim();
+      const submitBtn = document.getElementById("btn-submit-forgot-pwd");
+
+      if (newPwd.length < 6) {
+        forgotPwdAlert.className = "p-2 rounded text-xs font-mono bg-red-950/80 text-red-300 border border-red-500";
+        forgotPwdAlert.textContent = "Error: La contraseña debe tener al menos 6 caracteres.";
+        forgotPwdAlert.classList.remove("hidden");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "ACTUALIZANDO...";
+
+      const res = await ApiService.resetPassword(identifier, email, newPwd);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "GUARDAR CLAVE ➔";
+
+      if (res.ok && res.data.success) {
+        forgotPwdAlert.className = "p-2 rounded text-xs font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-500";
+        forgotPwdAlert.textContent = "✔ Contraseña restablecida con éxito.";
+        forgotPwdAlert.classList.remove("hidden");
+
+        setTimeout(() => {
+          closeForgotPasswordModal();
+          document.getElementById("login-identifier").value = identifier;
+          document.getElementById("login-password").value = newPwd;
+          showAlert("Contraseña actualizada. Ya puedes iniciar sesión con tu clave.", "success");
+        }, 1200);
+      } else {
+        forgotPwdAlert.className = "p-2 rounded text-xs font-mono bg-red-950/80 text-red-300 border border-red-500";
+        forgotPwdAlert.textContent = res.data.error || "No se pudo restablecer la contraseña.";
+        forgotPwdAlert.classList.remove("hidden");
+      }
+    });
+  }
+
   // Inicializar
   checkInitialSession();
 });

@@ -50,11 +50,14 @@ def create_app(config_override: dict = None) -> Flask:
     # Endpoint de chequeo de salud del sistema
     @app.route("/api/health", methods=["GET"])
     def health_check():
+        db_engine_str = str(db.engine.url)
+        is_postgres = "postgresql" in db_engine_str
         return {
             "success": True,
             "status": "online",
             "service": "Space Assault API - Arquitectura Pro",
-            "database": "SQLite (SQLAlchemy)",
+            "database": "PostgreSQL (SQLAlchemy)" if is_postgres else "SQLite (SQLAlchemy)",
+            "database_engine": "PostgreSQL" if is_postgres else "SQLite",
             "auth": "JWT HS256"
         }, 200
 
