@@ -1,4 +1,4 @@
-# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.8`
+# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.9`
 
 Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combate únicas, 5 fases progresivas con desbloqueo secuencial persistente, sublíderes y jefes de fase, mapa continental de América en alta resolución y backend SQLite con autenticación JWT sin mocks.
 
@@ -12,6 +12,7 @@ Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combat
 - **Base de Datos:** SQLite real persistida mediante SQLAlchemy 2.0 ORM (`game.db`).
 - **Seguridad y Criptografía:** Hashing de contraseñas con Werkzeug (`generate_password_hash`, `check_password_hash`) y tokens de sesión firmados criptográficamente con `PyJWT` (HS256).
 - **Motor Gráfico Frontend:** Vanilla JavaScript y Canvas 2D a 60 FPS estables con interpolación, renderizado procedural de partículas, terreno selvático destructible por bombardeo orbital y HUD táctico en tiempo real.
+- **Cuadros de Diálogo Tácticos (CyberDialog):** Sistema propio e inmersivo de mensajes y confirmaciones Sci-Fi (`cyber_dialog.js`) con pausas inteligentes del motor de combate, tipografía *Orbitron*, alertas visuales de evacuación, soporte de teclado (`Enter`/`Esc`) y efectos de sonido sintetizados en tiempo real.
 - **Motor de Audio Procedural:** Web Audio API (`sound_fx.js`) 100% sintetizado en tiempo real (cero archivos de audio externos, cero errores 404, latencia nula) con banda sonora synthwave retro, sirenas de alerta de jefes, disparos diferenciados por arma y fanfarrias.
 - **Diseño Visual:** Interfaz Arcade Sci-Fi propia con soporte nativo de **Pantalla Completa Híbrida (Fullscreen API + Modo Teatro 100vw × 100vh)**.
 

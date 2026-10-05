@@ -8,6 +8,7 @@ import { EnemyCatalog } from "./enemies.js";
 import { BossCatalog } from "./bosses.js";
 import { ADS_CONFIG, renderGoogleAd } from "./ads_config.js";
 import { GAME_VERSION } from "./version.js";
+import { CyberDialog } from "./cyber_dialog.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Sincronización automática de versión en badges y pestaña del navegador
@@ -278,6 +279,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Vincular CyberDialog con el motor de juego para pausar/reanudar automáticamente
+  CyberDialog.init(engine);
+
   // Navegación hacia Selector de Naves
   btnGoToShips.addEventListener("click", async () => {
     lobbyContainer.classList.add("hidden");
@@ -296,9 +300,20 @@ document.addEventListener("DOMContentLoaded", () => {
     shipSelectContainer.classList.remove("hidden");
   });
 
-  // Salir del combate y volver al hangar
-  btnExitBattle.addEventListener("click", () => {
-    if (confirm("¿Deseas abortar la misión de combate y regresar al hangar?")) {
+  // Salir del combate y volver al hangar con Message Box Sci-Fi Táctico
+  btnExitBattle.addEventListener("click", async () => {
+    const confirmed = await CyberDialog.confirm({
+      title: "RETIRADA TÁCTICA // ALERTA",
+      message: "¿Deseas abortar la misión de combate y regresar al hangar?",
+      subtext: "⚠️ La incursión aérea se dará por fallida y la posición de combate se perderá.",
+      icon: "⚠️",
+      badge: "ALTO MANDO // PROTOCOLO DE EVACUACIÓN",
+      confirmText: "✕ ABORTAR MISIÓN",
+      cancelText: "CONTINUAR COMBATE",
+      isDanger: true
+    });
+
+    if (confirmed) {
       engine.stop();
       battleContainer.classList.add("hidden");
       lobbyContainer.classList.remove("hidden");
@@ -390,7 +405,12 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadShips() {
     const res = await ApiService.getShips();
     if (!res.ok || !res.data.success) {
-      alert("Error al cargar naves desde la base de datos.");
+      CyberDialog.alert({
+        title: "ERROR DE BASE DE DATOS",
+        message: "Error al cargar las naves de combate desde SQLite.",
+        icon: "⚠️",
+        isDanger: true
+      });
       return;
     }
 
@@ -467,7 +487,12 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadStageSelector() {
     const res = await ApiService.getProgress();
     if (!res.ok || !res.data.success) {
-      alert("Error al cargar progreso del piloto.");
+      CyberDialog.alert({
+        title: "ERROR DE PROTOCOLO",
+        message: "Error al cargar el progreso del piloto desde el servidor.",
+        icon: "⚠️",
+        isDanger: true
+      });
       return;
     }
 
