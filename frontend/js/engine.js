@@ -1,6 +1,7 @@
 import { ShipRenderer } from "./ship_renderer.js";
 import { ScenarioRenderer } from "./scenario_renderer.js";
 import { BossCatalog } from "./bosses.js";
+import { EnemyCatalog } from "./enemies.js";
 import { ApiService } from "./api.js";
 import { Sound } from "./sound_fx.js";
 
@@ -58,7 +59,7 @@ export class GameEngine {
     this.enemiesDestroyed = 0;
     this.bossesDefeated = 0;
     this.stageDistance = 0;
-    this.stageTargetDistance = 3200;
+    this.stageTargetDistance = 1800;
     this.midBossSpawned = false;
     this.finalBossSpawned = false;
     this.mainBossDefeated = false;
@@ -243,7 +244,7 @@ export class GameEngine {
     this.finalBossSpawned = false;
     this.mainBossDefeated = false;
     this.activeBoss = null;
-    this.stageBannerTimer = 2.4;
+    this.stageBannerTimer = 3.5;
     this.updateHudWeaponAndBombs();
 
     // Reinicializar terreno para la fase correspondiente
@@ -323,6 +324,10 @@ export class GameEngine {
   triggerEMPBlast() {
     this.enemyProjectiles = [];
     this.enemies.forEach((enemy) => {
+      if (enemy.shield && enemy.shield > 0) {
+        enemy.shield = 0;
+        this.addFloatingText(enemy.x, enemy.y - 14, "¡ESCUDO ANULADO!", "#38bdf8");
+      }
       enemy.health -= 70;
       this.createExplosionParticles(enemy.x, enemy.y, "#ff0055", 16);
     });
@@ -434,9 +439,10 @@ export class GameEngine {
       }
     }
 
-    // El avance solo continúa si no estamos estancados en el combate final
-    if (!this.finalBossSpawned || this.enemies.some(e => e.isBoss)) {
-      this.stageDistance += 22 * dt;
+    // El avance de distancia solo progresa en vuelo libre (se pausa durante el combate con Sublíder o Boss)
+    const hasActiveBoss = this.enemies.some(e => e.isBoss);
+    if (!hasActiveBoss && !this.mainBossDefeated) {
+      this.stageDistance += 28 * dt;
     }
   }
 
@@ -578,9 +584,14 @@ export class GameEngine {
         const enemy = this.enemies[j];
         const dist = Math.hypot(p.x - enemy.x, p.y - enemy.y);
         if (dist < (enemy.width / 2 + 10)) {
-          enemy.health -= p.damage;
-          this.createHitSparks(p.x, p.y, "#00f3ff");
           hit = true;
+
+          if (enemy.isBoss) {
+            enemy.health -= p.damage;
+            this.createHitSparks(p.x, p.y, "#00f3ff");
+          } else {
+            EnemyCatalog.handleDamage(enemy, p.damage, this, p.x, p.y);
+          }
 
           // Destrucción de tierra donde impactó la explosión
           if (this.currentStage === 5) {
@@ -605,12 +616,20 @@ export class GameEngine {
       ep.x += ep.vx;
       ep.y += ep.vy;
 
+      // Homing Torpedo: corrección lateral buscando la coordenada X de la nave del jugador
+      if (ep.isHoming && this.player && this.player.health > 0) {
+        const dx = this.player.x - ep.x;
+        ep.vx += Math.sign(dx) * 0.12;
+        ep.vx = Math.max(-2.8, Math.min(2.8, ep.vx));
+      }
+
+      const hitRadius = (ep.radius || 4.5) + (this.player.width / 2) * 0.55;
       const dist = Math.hypot(ep.x - this.player.x, ep.y - this.player.y);
-      if (dist < this.player.width / 2) {
+      if (dist < hitRadius) {
         if (!this.player.isSpecialActive || this.ship.special.slug !== "shield_matrix") {
           this.player.health -= ep.damage;
           Sound.playPlayerDamage();
-          this.createHitSparks(this.player.x, this.player.y, "#ef4444");
+          this.createHitSparks(this.player.x, this.player.y, ep.color || "#ef4444");
           this.onPlayerHit();
         } else {
           Sound.playBeam();
@@ -620,7 +639,7 @@ export class GameEngine {
         continue;
       }
 
-      if (ep.y > this.canvas.height + 30) {
+      if (ep.y > this.canvas.height + 40 || ep.y < -50 || ep.x < -40 || ep.x > this.canvas.width + 40) {
         this.enemyProjectiles.splice(i, 1);
       }
     }
@@ -629,17 +648,17 @@ export class GameEngine {
   updateEnemies(dt, distanceRatio) {
     const hasBoss = this.enemies.some(e => e.isBoss);
 
-    // 1. Spawning de Sublíder al 48% - 52%
-    if (!this.midBossSpawned && distanceRatio >= 0.48 && distanceRatio < 0.85) {
+    // 1. Spawning de Sublíder al 40% (en cada una de las 5 fases)
+    if (!this.midBossSpawned && distanceRatio >= 0.40 && !hasBoss) {
       this.spawnMidBoss();
     }
 
-    // 2. Spawning de Boss Final al 88%
-    if (!this.finalBossSpawned && distanceRatio >= 0.88) {
+    // 2. Spawning de Boss Final de Área al 85%
+    if (!this.finalBossSpawned && distanceRatio >= 0.85 && !hasBoss) {
       this.spawnFinalBoss();
     }
 
-    // Generar cazas menores si no hay Boss activo
+    // Generar cazas menores solo si no hay Boss ni Sublíder activo
     if (!hasBoss && Math.random() < 0.038 && this.enemies.length < 7) {
       this.spawnStandardEnemy();
     }
@@ -650,11 +669,12 @@ export class GameEngine {
 
       if (enemy.isBoss) {
         this.activeBoss = enemy;
-        // Movimiento de patrulla táctica del Jefe
-        if (enemy.y < 120) {
+        // Movimiento de patrulla táctica del Jefe / Subjefe
+        if (enemy.y < 125) {
           enemy.y += enemy.vy;
         } else {
           enemy.x = this.canvas.width / 2 + Math.sin(performance.now() * 0.0018) * (this.canvas.width * 0.35);
+          enemy.y = 125 + Math.sin(performance.now() * 0.0024) * 14;
         }
 
         // Patrón de disparo del Jefe
@@ -664,27 +684,21 @@ export class GameEngine {
           this.fireBossSalvo(enemy);
         }
       } else {
-        // Cazas estándar
-        enemy.y += enemy.vy;
-        enemy.x += Math.sin(enemy.y * 0.03) * enemy.vxAmp;
-
-        enemy.lastShotTime = (enemy.lastShotTime || 0) + dt;
-        if (enemy.lastShotTime > enemy.shootInterval) {
-          enemy.lastShotTime = 0;
-          this.enemyProjectiles.push({
-            x: enemy.x,
-            y: enemy.y + enemy.height / 2,
-            vx: 0,
-            vy: 5.5,
-            damage: 12
-          });
-        }
+        // Cazas estándar y naves de asalto de escuadra táctica
+        EnemyCatalog.updateEnemyAI(
+          enemy,
+          dt,
+          this.player,
+          this.enemyProjectiles,
+          this
+        );
 
         // Colisión de caza contra la nave del jugador
         const colDist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
         if (colDist < (enemy.width / 2 + this.player.width / 2)) {
           if (!this.player.isSpecialActive || this.ship.special.slug !== "shield_matrix") {
-            this.player.health -= 20;
+            const crashDmg = enemy.isFormidable ? 30 : 20;
+            this.player.health -= crashDmg;
             Sound.playPlayerDamage();
             this.createHitSparks(this.player.x, this.player.y, "#ef4444");
             this.onPlayerHit();
@@ -693,7 +707,7 @@ export class GameEngine {
           continue;
         }
 
-        if (enemy.y > this.canvas.height + 50) {
+        if (enemy.y > this.canvas.height + 60) {
           this.enemies.splice(i, 1);
         }
       }
@@ -705,55 +719,50 @@ export class GameEngine {
   }
 
   fireBossSalvo(boss) {
-    if (boss.isFinalBoss) {
-      // Disparo triple en abanico más proyectil central pesado
-      this.enemyProjectiles.push({ x: boss.x - 25, y: boss.y + 40, vx: -2.5, vy: 5.5, damage: 18 });
-      this.enemyProjectiles.push({ x: boss.x, y: boss.y + 45, vx: 0, vy: 7.0, damage: 25 });
-      this.enemyProjectiles.push({ x: boss.x + 25, y: boss.y + 40, vx: 2.5, vy: 5.5, damage: 18 });
-    } else {
-      // Doble ráfaga del Sublíder
-      this.enemyProjectiles.push({ x: boss.x - 18, y: boss.y + 30, vx: -1.5, vy: 5.0, damage: 14 });
-      this.enemyProjectiles.push({ x: boss.x + 18, y: boss.y + 30, vx: 1.5, vy: 5.0, damage: 14 });
-    }
+    BossCatalog.fireBossAttack(boss, this.player, this.enemyProjectiles, this);
   }
 
   spawnStandardEnemy() {
-    this.enemies.push({
-      x: Math.random() * (this.canvas.width - 60) + 30,
-      y: -35,
-      width: 34,
-      height: 34,
-      health: 35 + this.currentStage * 12,
-      maxHealth: 35 + this.currentStage * 12,
-      vy: 2.4 + Math.random() * 1.4,
-      vxAmp: 2.5,
-      shootInterval: 1.6 + Math.random() * 1.0,
-      lastShotTime: Math.random(),
-      isBoss: false,
-      scoreValue: 180
-    });
+    const enemy = EnemyCatalog.createEnemy(this.currentStage, this.canvas.width);
+    this.enemies.push(enemy);
   }
 
   spawnMidBoss() {
     this.midBossSpawned = true;
     Sound.playBossAlarm();
+    this.screenShake = 18;
     const midBossData = BossCatalog.getMidBoss(this.currentStage);
     this.enemies.push({
       ...midBossData,
+      isBoss: true,
+      isSubBoss: true,
+      isFinalBoss: false,
       x: this.canvas.width / 2,
-      y: -70
+      y: -75
     });
+
+    // Anuncio visible en pantalla de intercepción de Sublíder
+    this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 40, `⚠️ ¡ALERTA: SUBLÍDER DETECTADO!`, "#fbbf24");
+    this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 10, midBossData.name, midBossData.color || "#38bdf8");
   }
 
   spawnFinalBoss() {
     this.finalBossSpawned = true;
     Sound.playBossAlarm();
+    this.screenShake = 24;
     const bossData = BossCatalog.getStageBoss(this.currentStage);
     this.enemies.push({
       ...bossData,
+      isBoss: true,
+      isSubBoss: false,
+      isFinalBoss: true,
       x: this.canvas.width / 2,
-      y: -90
+      y: -95
     });
+
+    // Anuncio visible en pantalla de Jefe Final
+    this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 40, `🚨 ¡ALERTA MÁXIMA: BOSS DE FASE!`, "#ff0055");
+    this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 10, bossData.name, bossData.color || "#ff0055");
   }
 
   handleEnemyDefeated(enemy, index) {
@@ -781,8 +790,8 @@ export class GameEngine {
       // Soltar GRAN PREMIO DE JEFE (Mejora de armas + 2 Bombas tácticas)
       this.spawnBossGrandPrize(enemy.x, enemy.y);
 
-      // Si es el Jefe Principal de Área (no un subjefe intermedio)
-      if (!enemy.isSubBoss) {
+      // Si es el Jefe Final del Área (no un subjefe intermedio)
+      if (enemy.isFinalBoss) {
         this.mainBossDefeated = true;
         this.enemyProjectiles = []; // Proteger al jugador limpiando todos los proyectiles hostiles
 
@@ -796,14 +805,27 @@ export class GameEngine {
             this.handleStageVictory();
           }
         }, 1800);
+      } else {
+        // ¡Sublíder de fase derrotado!
+        this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 - 35, `⚡ ¡SUBLÍDER ${enemy.name} DERROTADO!`, "#38bdf8");
+        this.addFloatingText(this.canvas.width / 2, this.canvas.height / 2 + 5, `🚀 AVANCE HACIA EL JEFE FINAL REANUDADO`, "#10b981");
+        this.enemyProjectiles = []; // Despejar ráfagas del subjefe
       }
     } else {
-      this.screenShake = Math.max(this.screenShake, 3.5);
+      this.screenShake = Math.max(this.screenShake, enemy.isFormidable ? 7.0 : 3.5);
       Sound.playExplosion();
-      this.createExplosionParticles(enemy.x, enemy.y, "#f97316", 18);
+      this.createExplosionParticles(enemy.x, enemy.y, enemy.color || "#f97316", enemy.isFormidable ? 26 : 18);
+
+      // Efectos pasivos de muerte y recompensas especiales por tipo de nave
+      EnemyCatalog.handleDefeat(enemy, this);
+
+      // Recompensa de distancia al derribar cazas para dinamismo de arcade
+      if (!this.enemies.some(e => e.isBoss)) {
+        this.stageDistance += 6;
+      }
 
       // Probabilidad de soltar premios aleatorios en combate
-      if (Math.random() < 0.32) {
+      if (Math.random() < (enemy.isFormidable ? 0.42 : 0.28)) {
         this.spawnPowerup(enemy.x, enemy.y);
       }
     }
@@ -1164,6 +1186,16 @@ export class GameEngine {
     if (this.hud.stageProgress) {
       const pct = Math.min(100, Math.floor(distanceRatio * 100));
       this.hud.stageProgress.style.width = `${pct}%`;
+      const pctEl = document.getElementById("hud-progress-pct");
+      if (pctEl) {
+        if (this.enemies.some(e => e.isFinalBoss)) {
+          pctEl.innerHTML = "<span style='color: #ff0055;'>BOSS</span>";
+        } else if (this.enemies.some(e => e.isSubBoss)) {
+          pctEl.innerHTML = "<span style='color: #fbbf24;'>SUBLÍDER</span>";
+        } else {
+          pctEl.textContent = `${pct}%`;
+        }
+      }
     }
 
     this.updateHudWeaponAndBombs();
@@ -1301,12 +1333,79 @@ export class GameEngine {
 
     // 4. Proyectiles de enemigos
     for (const ep of this.enemyProjectiles) {
-      this.ctx.fillStyle = "#ef4444";
-      this.ctx.shadowColor = "#ef4444";
-      this.ctx.shadowBlur = 8;
-      this.ctx.beginPath();
-      this.ctx.arc(ep.x, ep.y, 4.5, 0, Math.PI * 2);
-      this.ctx.fill();
+      const col = ep.color || "#ef4444";
+      const rad = ep.radius || 4.5;
+      this.ctx.fillStyle = col;
+      this.ctx.shadowColor = col;
+      this.ctx.shadowBlur = rad * 2;
+
+      if (ep.type === "frost_needle") {
+        // Aguja de hielo en rombo aerodinámico
+        this.ctx.save();
+        this.ctx.translate(ep.x, ep.y);
+        this.ctx.rotate(Math.atan2(ep.vy, ep.vx));
+        this.ctx.beginPath();
+        this.ctx.moveTo(rad * 2.2, 0);
+        this.ctx.lineTo(0, rad * 0.7);
+        this.ctx.lineTo(-rad * 2.2, 0);
+        this.ctx.lineTo(0, -rad * 0.7);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.restore();
+      } else if (ep.type === "torpedo") {
+        // Torpedo teledirigido abisal con propulsión
+        this.ctx.beginPath();
+        this.ctx.arc(ep.x, ep.y, rad, 0, Math.PI * 2);
+        this.ctx.fill();
+        // Núcleo blanco
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.beginPath();
+        this.ctx.arc(ep.x, ep.y - rad * 0.5, rad * 0.45, 0, Math.PI * 2);
+        this.ctx.fill();
+      } else if (ep.type === "plasma_orb") {
+        // Orbe de plasma denso con corona radiante
+        this.ctx.beginPath();
+        this.ctx.arc(ep.x, ep.y, rad, 0, Math.PI * 2);
+        this.ctx.fill();
+        // Centro de incandescencia blanca
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.beginPath();
+        this.ctx.arc(ep.x, ep.y, rad * 0.45, 0, Math.PI * 2);
+        this.ctx.fill();
+      } else if (ep.type === "imperial_bolt") {
+        // Lanza de energía imperial alargada
+        this.ctx.save();
+        this.ctx.translate(ep.x, ep.y);
+        this.ctx.rotate(Math.atan2(ep.vy, ep.vx));
+        this.ctx.beginPath();
+        this.ctx.ellipse(0, 0, rad * 2.2, rad * 0.65, 0, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.beginPath();
+        this.ctx.ellipse(0, 0, rad * 1.2, rad * 0.35, 0, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.restore();
+      } else if (ep.type === "cluster_bomb") {
+        // Micro-bomba de racimo triangular de fragmentación
+        this.ctx.save();
+        this.ctx.translate(ep.x, ep.y);
+        this.ctx.rotate(performance.now() * 0.008);
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, -rad * 1.5);
+        this.ctx.lineTo(rad * 1.3, rad);
+        this.ctx.lineTo(-rad * 1.3, rad);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.fillStyle = "#ffffff";
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, rad * 0.4, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.restore();
+      } else {
+        this.ctx.beginPath();
+        this.ctx.arc(ep.x, ep.y, rad, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
     }
     this.ctx.shadowBlur = 0;
 
@@ -1315,7 +1414,7 @@ export class GameEngine {
       if (enemy.isBoss) {
         BossCatalog.drawBoss(this.ctx, enemy);
       } else {
-        ShipRenderer.drawEnemy(this.ctx, enemy);
+        EnemyCatalog.drawEnemy(this.ctx, enemy);
       }
     }
 
@@ -1400,24 +1499,35 @@ export class GameEngine {
     const ctx = this.ctx;
     const w = this.canvas.width;
     const h = this.canvas.height;
-    const progress = Math.min(1.0, this.stageBannerTimer / 2.4);
-    const alpha = Math.min(1.0, progress * 1.6);
+    const progress = Math.min(1.0, this.stageBannerTimer / 3.5);
+    const alpha = Math.min(1.0, progress * 1.8);
 
     ctx.save();
     ctx.globalAlpha = alpha;
 
-    ctx.fillStyle = "rgba(4, 9, 24, 0.88)";
-    ctx.fillRect(w * 0.08, h * 0.35, w * 0.84, 88);
+    const boxW = Math.min(w * 0.92, 540);
+    const boxH = 195;
+    const boxX = (w - boxW) / 2;
+    const boxY = h * 0.28;
+
+    // Fondo translúcido de mando cibernético
+    ctx.fillStyle = "rgba(4, 9, 24, 0.94)";
+    ctx.fillRect(boxX, boxY, boxW, boxH);
     ctx.strokeStyle = "#00f3ff";
     ctx.lineWidth = 2;
-    ctx.strokeRect(w * 0.08, h * 0.35, w * 0.84, 88);
-
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#38bdf8";
-    ctx.font = "bold 23px Orbitron, monospace";
     ctx.shadowColor = "#00f3ff";
     ctx.shadowBlur = 14;
-    ctx.fillText(`🚀 ÁREA ${this.currentStage} · DESPLIEGUE`, w / 2, h * 0.35 + 38);
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+    ctx.shadowBlur = 0;
+
+    // Encabezado
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "bold 18px Orbitron, monospace";
+    ctx.shadowColor = "#00f3ff";
+    ctx.shadowBlur = 10;
+    ctx.fillText(`🚀 ÁREA ${this.currentStage} · DESPLIEGUE TÁCTICO`, w / 2, boxY + 26);
+    ctx.shadowBlur = 0;
 
     const stageNames = {
       1: "Travesía Continental: Norteamérica a la Antártida",
@@ -1426,11 +1536,88 @@ export class GameEngine {
       4: "Sector Criogénico: Glaciares y Tempestad de Hielo",
       5: "Jungla Devastada: Asalto al Cuartel General"
     };
-    ctx.font = "12px Orbitron, monospace";
+    ctx.font = "11px Orbitron, monospace";
     ctx.fillStyle = "#34d399";
-    ctx.shadowBlur = 8;
-    ctx.fillText(stageNames[this.currentStage] || "Misión de Incursión Táctica", w / 2, h * 0.35 + 68);
+    ctx.fillText(stageNames[this.currentStage] || "Misión de Incursión Táctica", w / 2, boxY + 46);
 
+    // Obtener naves del Sublíder y Jefe Final de esta fase
+    const midBossData = BossCatalog.getMidBoss(this.currentStage);
+    const stageBossData = BossCatalog.getStageBoss(this.currentStage);
+
+    const cardW = (boxW - 36) / 2;
+    const cardH = 92;
+    const cardY = boxY + 58;
+
+    // --- Tarjeta 1: Sublíder (Izquierda) ---
+    const card1X = boxX + 12;
+    ctx.fillStyle = "rgba(8, 20, 38, 0.9)";
+    ctx.fillRect(card1X, cardY, cardW, cardH);
+    ctx.strokeStyle = midBossData.color || "#38bdf8";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(card1X, cardY, cardW, cardH);
+
+    ctx.font = "bold 9px Orbitron, monospace";
+    ctx.fillStyle = "#38bdf8";
+    ctx.textAlign = "center";
+    ctx.fillText("⚠️ SUBLÍDER (40%)", card1X + cardW / 2, cardY + 15);
+
+    ctx.font = "bold 8px Orbitron, monospace";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(midBossData.name.replace(" (SUBLÍDER)", ""), card1X + cardW / 2, cardY + cardH - 8);
+
+    // Dibujo vectorial de la nave del Sublíder
+    const previewMid = {
+      ...midBossData,
+      x: card1X + cardW / 2,
+      y: cardY + 45,
+      width: midBossData.width * 0.52,
+      height: midBossData.height * 0.52
+    };
+    this.drawMiniBossVector(ctx, previewMid);
+
+    // --- Tarjeta 2: Jefe Final (Derecha) ---
+    const card2X = boxX + boxW - cardW - 12;
+    ctx.fillStyle = "rgba(38, 8, 20, 0.9)";
+    ctx.fillRect(card2X, cardY, cardW, cardH);
+    ctx.strokeStyle = stageBossData.color || "#ff0055";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(card2X, cardY, cardW, cardH);
+
+    ctx.font = "bold 9px Orbitron, monospace";
+    ctx.fillStyle = "#ff0055";
+    ctx.textAlign = "center";
+    ctx.fillText("👑 BOSS FINAL (85%)", card2X + cardW / 2, cardY + 15);
+
+    ctx.font = "bold 8px Orbitron, monospace";
+    ctx.fillStyle = "#ffffff";
+    const shortFinalName = stageBossData.name.split("(")[0].trim();
+    ctx.fillText(shortFinalName, card2X + cardW / 2, cardY + cardH - 8);
+
+    // Dibujo vectorial de la nave del Jefe Final
+    const previewFinal = {
+      ...stageBossData,
+      x: card2X + cardW / 2,
+      y: cardY + 45,
+      width: stageBossData.width * 0.48,
+      height: stageBossData.height * 0.48
+    };
+    this.drawMiniBossVector(ctx, previewFinal);
+
+    // Pie de banner
+    ctx.font = "bold 9px Orbitron, monospace";
+    ctx.fillStyle = "#94a3b8";
+    ctx.textAlign = "center";
+    ctx.fillText("⚡ AMENAZAS CONFIRMADAS · INICIANDO INCURSIÓN ⚡", w / 2, boxY + boxH - 12);
+
+    ctx.restore();
+  }
+
+  drawMiniBossVector(ctx, boss) {
+    ctx.save();
+    ctx.translate(boss.x, boss.y);
+    const halfW = boss.width / 2;
+    const halfH = boss.height / 2;
+    BossCatalog.drawBossShip(ctx, boss, halfW, halfH);
     ctx.restore();
   }
 

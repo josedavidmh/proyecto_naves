@@ -4,6 +4,8 @@ import { ShipRenderer } from "./ship_renderer.js";
 import { IntroCinema } from "./intro_cinema.js";
 import { MissionLore } from "./mission_lore.js";
 import { Sound } from "./sound_fx.js";
+import { EnemyCatalog } from "./enemies.js";
+import { BossCatalog } from "./bosses.js";
 import { ADS_CONFIG, renderGoogleAd } from "./ads_config.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -535,19 +537,120 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // Renderizado de Holograma Vectorial para Previsualización de Jefes en el Briefing
+    function renderBossHologram(canvasId, bossData) {
+      const c = document.getElementById(canvasId);
+      if (!c) return;
+      const ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, c.width, c.height);
+
+      // Radar holográfico de fondo
+      ctx.save();
+      ctx.strokeStyle = bossData.isFinalBoss ? "rgba(255, 0, 85, 0.28)" : "rgba(56, 189, 248, 0.28)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(c.width / 2, c.height / 2, c.height * 0.42, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(c.width * 0.15, c.height / 2);
+      ctx.lineTo(c.width * 0.85, c.height / 2);
+      ctx.moveTo(c.width / 2, c.height * 0.1);
+      ctx.lineTo(c.width / 2, c.height * 0.9);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      // Ajustar escala para centrar la nave
+      const scale = Math.min((c.width * 0.68) / bossData.width, (c.height * 0.68) / bossData.height);
+      const halfW = (bossData.width * scale) / 2;
+      const halfH = (bossData.height * scale) / 2;
+
+      ctx.save();
+      ctx.translate(c.width / 2, c.height / 2 + (bossData.isFinalBoss ? 4 : 2));
+
+      // Dibujar modelo vectorial exacto del Jefe / Subjefe
+      BossCatalog.drawBossShip(ctx, bossData, halfW, halfH);
+
+      ctx.restore();
+    }
+
     // Modal de Briefing Táctico
     function openBriefing(stageNum) {
       selectedStage = stageNum;
       const lore = MissionLore[stageNum];
       if (!lore) return;
 
+      // Obtener datos y renderizar hologramas de Sublíder y Jefe Final de la fase
+      const midBossData = BossCatalog.getMidBoss(stageNum);
+      const stageBossData = BossCatalog.getStageBoss(stageNum);
+
       document.getElementById("briefing-operation-title").textContent = lore.operation;
       document.getElementById("briefing-classification").textContent = lore.classification;
       document.getElementById("briefing-threat-level").textContent = lore.threatLevel;
       document.getElementById("briefing-lore-text").textContent = lore.lore;
       document.getElementById("briefing-objective").textContent = lore.objective;
-      document.getElementById("briefing-subboss-intel").textContent = lore.intel.subBoss;
-      document.getElementById("briefing-finalboss-intel").textContent = lore.intel.finalBoss;
+
+      // Detalles específicos de Sublíder y Jefe con sus habilidades personalizadas
+      const subBossNameEl = document.getElementById("briefing-subboss-name");
+      if (subBossNameEl) subBossNameEl.textContent = midBossData.name;
+      const subIntelEl = document.getElementById("briefing-subboss-intel");
+      if (subIntelEl) {
+        subIntelEl.innerHTML = `<b style="color: #38bdf8;">${midBossData.title}</b><br><span style="color: #94a3b8;">Habilidad:</span> <b style="color: #f1f5f9;">${midBossData.abilityName}</b> — ${midBossData.abilityDesc}`;
+      }
+
+      const finalBossNameEl = document.getElementById("briefing-finalboss-name");
+      if (finalBossNameEl) finalBossNameEl.textContent = stageBossData.name;
+      const finalIntelEl = document.getElementById("briefing-finalboss-intel");
+      if (finalIntelEl) {
+        finalIntelEl.innerHTML = `<b style="color: #ff0055;">${stageBossData.title}</b><br><span style="color: #94a3b8;">Habilidad:</span> <b style="color: #f1f5f9;">${stageBossData.abilityName}</b> — ${stageBossData.abilityDesc}`;
+      }
+
+      renderBossHologram("briefing-subboss-canvas", midBossData);
+      renderBossHologram("briefing-finalboss-canvas", stageBossData);
+
+      // Cargar Inteligencia sobre Escuadras Enemigas Progresivas
+      const squadronIntel = EnemyCatalog.getIntelForStage(stageNum);
+      const countEl = document.getElementById("briefing-squadron-count");
+      const listEl = document.getElementById("briefing-squadron-list");
+      if (countEl) countEl.textContent = squadronIntel.totalTypesCount;
+
+      if (listEl) {
+        listEl.innerHTML = "";
+        squadronIntel.activeEnemies.forEach((enemyDef) => {
+          const isNewInThisStage = enemyDef.introducedStage === stageNum;
+          const item = document.createElement("div");
+          item.style.cssText = `
+            background: ${isNewInThisStage ? "rgba(56, 189, 248, 0.12)" : "rgba(0, 0, 0, 0.35)"};
+            border: 1px solid ${isNewInThisStage ? enemyDef.color : "rgba(148, 163, 184, 0.2)"};
+            border-left: 3px solid ${enemyDef.color};
+            border-radius: 6px;
+            padding: 0.5rem 0.65rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+          `;
+
+          item.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: bold; color: ${enemyDef.color};">
+                ${isNewInThisStage ? "⭐ " : "• "}${enemyDef.name}
+              </span>
+              <div style="display: flex; gap: 0.35rem; align-items: center;">
+                ${isNewInThisStage ? `<span style="font-size: 0.6rem; font-family: monospace; color: #38bdf8; background: rgba(56, 189, 248, 0.2); padding: 1px 5px; border-radius: 3px; font-weight: bold;">NUEVA AMENAZA</span>` : ""}
+                <span style="font-size: 0.62rem; font-family: monospace; color: ${enemyDef.badgeColor}; background: rgba(0,0,0,0.5); padding: 1px 5px; border-radius: 3px;">
+                  ${enemyDef.badge}
+                </span>
+              </div>
+            </div>
+            <div style="font-size: 0.72rem; color: #cbd5e1; font-family: 'Rajdhani', sans-serif;">
+              <b style="color: #f1f5f9;">Habilidad:</b> ${enemyDef.abilityName} — <span style="color: #94a3b8;">${enemyDef.abilityDesc}</span>
+            </div>
+          `;
+          listEl.appendChild(item);
+        });
+      }
 
       // Cargar y mostrar anuncio Google AdSense configurado
       const adSlotBox = document.getElementById("ad-briefing-slot");

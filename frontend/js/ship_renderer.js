@@ -3,6 +3,8 @@
  * Cero dependencias externas: gráficos nítidos, estilizados y escalables a 60 FPS.
  */
 
+import { EnemyCatalog } from "./enemies.js";
+
 export const ShipRenderer = {
   /**
    * Dibuja la nave del jugador según su modelo/slug
@@ -310,25 +312,10 @@ export const ShipRenderer = {
       ctx.fillStyle = "#ef4444";
       ctx.fillRect(-enemy.width / 2, -enemy.height / 2 - 12, enemy.width * healthPct, 6);
     } else {
-      // Caza enemigo común
-      ctx.fillStyle = "#1c1917";
-      ctx.strokeStyle = "#f97316";
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      ctx.moveTo(0, enemy.height / 2);
-      ctx.lineTo(enemy.width / 2, -enemy.height / 2);
-      ctx.lineTo(0, -enemy.height * 0.2);
-      ctx.lineTo(-enemy.width / 2, -enemy.height / 2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      // Ojo rojo enemigo
-      ctx.fillStyle = "#ef4444";
-      ctx.beginPath();
-      ctx.arc(0, 0, 3, 0, Math.PI * 2);
-      ctx.fill();
+      // Delegar al catálogo vectorial de enemigos según su tipo progresivo
+      ctx.restore();
+      EnemyCatalog.drawEnemy(ctx, enemy);
+      return;
     }
 
     ctx.restore();

@@ -338,6 +338,7 @@
       <a href="#dinamica" class="nav-pill active">🎮 Dinámica de Combate</a>
       <a href="#armas-bombas" class="nav-pill">💣 Armas & Bombas</a>
       <a href="#naves" class="nav-pill">🛸 Catálogo de Naves</a>
+      <a href="#enemigos" class="nav-pill">👾 Flota Enemiga Progresiva</a>
       <a href="#fases" class="nav-pill">🗺️ Campaña & Lore</a>
       <a href="#arquitectura" class="nav-pill">🏛️ Arquitectura del Sistema</a>
       <a href="#consejos" class="nav-pill">💡 Consejos Tácticos</a>
@@ -494,9 +495,69 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 4: Fases y Lore -->
+    <!-- SECCIÓN 4: Flota Hostil Progresiva y Habilidades -->
+    <section id="enemigos">
+      <h2>👾 4. Flota Hostil Progresiva y Habilidades Tácticas (Fases 1 a 5)</h2>
+      <p>
+        A diferencia de los combates estáticos donde los enemigos siempre son idénticos, en <b>Space Assault</b> la flota enemiga es <b>progresiva y acumulativa</b>:
+      </p>
+      <ul>
+        <li><b>Fase 1:</b> Te enfrentas exclusivamente a los <b>Cazas Interceptores Alfa</b> clásicos para dominar la dinámica de vuelo y puntería.</li>
+        <li><b>Fases posteriores (2, 3, 4 y 5):</b> En cada nueva fase se <b>desbloquea e incorpora un nuevo tipo de enemigo</b> con habilidades únicas, sumándose a los existentes para formar escuadras tácticas combinadas.</li>
+        <li><b>Fase 5 (Batalla Final):</b> Los 5 tipos de naves enemigas operan simultáneamente en el campo de batalla, coordinando fuego de asedio, barreras de escudos, torpedos teledirigidos y saltos criogénicos.</li>
+      </ul>
+
+      <div class="ships-grid" style="margin-top: 1.25rem;">
+        <!-- Enemigo 1 -->
+        <div class="ship-card" style="border-left: 3px solid #f97316;">
+          <div class="ship-name" style="color: #f97316;">1. Caza Interceptor Alfa <span class="badge" style="font-size: 0.65rem; background: rgba(249, 115, 22, 0.2); color: #f97316; padding: 2px 6px; border-radius: 4px;">Fase 1+</span></div>
+          <div class="ship-stats">Nivel 1 · Básico · 38 HP · 180 Puntos</div>
+          <p><b>Habilidad:</b> <i>Láser Cinético Recto</i> (Disparos lineales constantes).</p>
+          <p><b>Comportamiento:</b> Patrulla sinusoidal descendente. La unidad básica de reconocimiento de Vektor.</p>
+          <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.35rem;"><b>Consejo:</b> Fácil de derribar con fuego sostenido antes de que sature la pantalla.</p>
+        </div>
+
+        <!-- Enemigo 2 -->
+        <div class="ship-card" style="border-left: 3px solid #06b6d4;">
+          <div class="ship-name" style="color: #06b6d4;">2. Torpedero Abisal Nautilus <span class="badge" style="font-size: 0.65rem; background: rgba(6, 182, 212, 0.2); color: #06b6d4; padding: 2px 6px; border-radius: 4px;">Fase 2+</span></div>
+          <div class="ship-stats">Nivel 2 · Intermedio · 85 HP · 360 Puntos</div>
+          <p><b>Habilidad Especial:</b> <i>Torpedo Homing Abisal</i> (Dispara torpedos pesados de plasma que corrigen su trayectoria buscando la posición X del jugador).</p>
+          <p><b>Comportamiento:</b> Corbeta marítima bimotor con blindaje reforzado y disparo secundario.</p>
+          <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.35rem;"><b>Consejo:</b> Muévete en diagonal para obligar al torpedo a sobrepasarte.</p>
+        </div>
+
+        <!-- Enemigo 3 -->
+        <div class="ship-card" style="border-left: 3px solid #a855f7;">
+          <div class="ship-name" style="color: #a855f7;">3. Baluarte de Escudo Joviano <span class="badge" style="font-size: 0.65rem; background: rgba(168, 85, 247, 0.2); color: #a855f7; padding: 2px 6px; border-radius: 4px;">Fase 3+</span></div>
+          <div class="ship-stats">Nivel 3 · Formidable · 135 HP + 80 Escudo · 650 Puntos</div>
+          <p><b>Habilidad Especial:</b> <i>Matriz de Escudo Deflector & Pulso Dual</i> (Escudo visible que absorbe daño directo y ráfaga en ángulo de 30°).</p>
+          <p><b>Comportamiento:</b> Tanque pesado hexagonal que protege a los cazas menores que avanzan tras él.</p>
+          <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.35rem;"><b>Consejo:</b> Usa armas de alto impacto o bombas tácticas para reventar su escudo de golpe.</p>
+        </div>
+
+        <!-- Enemigo 4 -->
+        <div class="ship-card" style="border-left: 3px solid #38bdf8;">
+          <div class="ship-name" style="color: #38bdf8;">4. Espectro Glacial Criogénico <span class="badge" style="font-size: 0.65rem; background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 2px 6px; border-radius: 4px;">Fase 4+</span></div>
+          <div class="ship-stats">Nivel 4 · Muy Formidable · 120 HP · 950 Puntos</div>
+          <p><b>Habilidad Especial:</b> <i>Salto Evasivo Criogénico & Agujas de Hielo</i> (Se teletransporta lateralmente al ser atacado y dispara un abanico triple de agujas ultrarrápidas).</p>
+          <p><b>Comportamiento:</b> Caza furtivo supersónico de cristal de hielo que deja clones fantasma tras de sí.</p>
+          <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.35rem;"><b>Consejo:</b> No gastes munición pesada hasta que termine su salto evasivo.</p>
+        </div>
+
+        <!-- Enemigo 5 -->
+        <div class="ship-card" style="border-left: 3px solid #e11d48;">
+          <div class="ship-name" style="color: #e11d48;">5. Acorazado de Asedio Titán Vektor <span class="badge" style="font-size: 0.65rem; background: rgba(225, 29, 72, 0.2); color: #e11d48; padding: 2px 6px; border-radius: 4px;">Fase 5+</span></div>
+          <div class="ship-stats">Nivel 5 · Letal / Semi-Boss · 260 HP · 1600 Puntos</div>
+          <p><b>Habilidad Especial:</b> <i>Salva Cuádruple de Asedio & Metralla Reactiva</i> (Descarga 4 proyectiles pesados simultáneos y, al ser destruido, estalla liberando 4 fragmentos de metralla en cruz).</p>
+          <p><b>Comportamiento:</b> Buque insignia de guerra pesada con barra de vida propia y 50% de probabilidad de drop de Power-Up.</p>
+          <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.35rem;"><b>Consejo:</b> ¡Peligro de muerte a corta distancia! Destrúyelo desde lejos para evitar la metralla reactiva.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: Fases y Lore -->
     <section id="fases">
-      <h2>🗺️ 4. Campaña Militar y Lore Coherente</h2>
+      <h2>🗺️ 5. Campaña Militar y Lore Coherente</h2>
       <p>
         La Federación Aérea despliega a tu escuadrón a lo largo del continente americano para desmantelar la red de satélites orbitales del <b>General Vektor</b>, quien ha sitiado el planeta:
       </p>
@@ -552,9 +613,9 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 5: Arquitectura del Sistema -->
+    <!-- SECCIÓN 6: Arquitectura del Sistema -->
     <section id="arquitectura">
-      <h2>🏛️ 5. Arquitectura del Sistema</h2>
+      <h2>🏛️ 6. Arquitectura del Sistema</h2>
       <p>
         Space Assault está diseñado siguiendo los más altos estándares de ingeniería de software, desacoplamiento modular y tolerancia a fallos:
       </p>
@@ -570,9 +631,9 @@
       </ul>
     </section>
 
-    <!-- SECCIÓN 6: Consejos Tácticos -->
+    <!-- SECCIÓN 7: Consejos Tácticos -->
     <section id="consejos">
-      <h2>💡 6. Consejos Tácticos para Nuevos Pilotos</h2>
+      <h2>💡 7. Consejos Tácticos para Nuevos Pilotos</h2>
       <ul>
         <li><b>Conserva las Bombas para los Jefes:</b> Si te ves acorralado por cortinas de balas o el jefe activa su ráfaga triple, presiona <span class="key-badge">B</span> para limpiar la pantalla e infligirle 380 de daño crítico de inmediato.</li>
         <li><b>Protege tu Nivel de Armas:</b> Cuando alcances el Nivel 2 o 3 de armas, evita las colisiones directas. Recuerda que con dos impactos perderás la mejora.</li>

@@ -19,14 +19,18 @@ class SoundSystem {
 
     // Inicializar perezosamente al primer clic o interacción del usuario
     this.initOnInteraction = this.initOnInteraction.bind(this);
-    window.addEventListener("click", this.initOnInteraction, { once: true });
-    window.addEventListener("keydown", this.initOnInteraction, { once: true });
+    if (typeof window !== "undefined") {
+      window.addEventListener("click", this.initOnInteraction, { once: true });
+      window.addEventListener("keydown", this.initOnInteraction, { once: true });
+    }
   }
 
   init() {
     if (this.ctx) return;
+    if (typeof window === "undefined") return;
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
       this.ctx = new AudioCtx();
 
       this.masterGain = this.ctx.createGain();
