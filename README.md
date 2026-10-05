@@ -1,4 +1,4 @@
-# PROYECTO NAVES: Tactical Aerial & Space Assault `v1.9`
+# PROYECTO NAVES: Tactical Aerial & Space Assault `v2.0`
 
 Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combate únicas, 5 fases progresivas con desbloqueo secuencial persistente, sublíderes y jefes de fase, mapa continental de América en alta resolución y backend SQLite con autenticación JWT sin mocks.
 
@@ -74,7 +74,7 @@ Juego de combate aeroespacial y táctico 2D en tiempo real con 5 naves de combat
   - Sublíder al 40%: *Nautilus-X*.
   - Jefe al 85%: *Leviathan Colossus*.
 - **Fase 3: Travesía Interplanetaria a Saturno (Vía Marte y Júpiter):**
-  - Despegue desde la Tierra con el planeta alejándose, sobrevuelo orbital de Marte, navegación por el Cinturón de Asteroides en 3D, aproximación a Júpiter y asalto final a la mega-estación en los majestuosos anillos de Saturno.
+  - Despegue desde la Tierra con el planeta alejándose, sobrevuelo orbital de Marte, navegación por el Cinturón de Asteroides en 3D, aproximación a Júpiter (5.2 UA), salto hiperbólico por el vacío subespacial de 4.3 UA y asalto final a la mega-estación en los majestuosos anillos de Saturno (9.5 UA) con separación física completa y proporciones astronómicas esbeltas.
   - Sublíder al 40% (en Júpiter): *Jovian Core (Sonda de Fusión Gravitatoria)*.
   - Jefe Final al 85% (en Saturno): *Ganymede Titan (Estación de Batalla de Saturno)*.
 - **Fase 4: El Círculo Ártico: De Groenlandia al Polo Norte (90°N):**

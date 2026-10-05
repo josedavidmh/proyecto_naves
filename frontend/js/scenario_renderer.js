@@ -1538,17 +1538,24 @@ export class ScenarioRenderer {
     }
 
     // C. Cinturón de Asteroides entre Marte y Júpiter
-    if (distanceRatio >= 0.26 && distanceRatio <= 0.50) {
+    if (distanceRatio >= 0.24 && distanceRatio <= 0.46) {
       this.drawAsteroidBelt(ctx, w, h, distanceRatio);
     }
 
-    // D. Júpiter visible a lo lejos con sus bandas y satélites (aquí aparece el Sublíder)
-    if (distanceRatio >= 0.32 && distanceRatio <= 0.65) {
+    // D. Júpiter visible con sus bandas y satélites (aquí intercepta el Sublíder Jovian Core al 40%)
+    // Desaparece por completo antes del 53% tras superar la órbita joviana
+    if (distanceRatio >= 0.30 && distanceRatio <= 0.53) {
       this.drawDistantJupiter(ctx, w, h, distanceRatio);
     }
 
-    // E. Llegada a Saturno con sus majestuosos anillos 3D (aquí aparece el Jefe Final)
-    if (distanceRatio >= 0.60) {
+    // E. Cruce del vacío interestelar e hiperaceleración hacia el sistema exterior (5.2 UA a 9.5 UA)
+    if (distanceRatio >= 0.50 && distanceRatio <= 0.68) {
+      this.drawSubspaceTransition(ctx, w, h, distanceRatio);
+    }
+
+    // F. Llegada a Saturno con sus anillos 3D perfectamente proporcionados (Jefe Final al 85%)
+    // Emerge en la lejanía a partir de 0.66, completamente separado de Júpiter
+    if (distanceRatio >= 0.66) {
       this.drawApproachingSaturn(ctx, w, h, distanceRatio);
     }
 
@@ -1769,17 +1776,33 @@ export class ScenarioRenderer {
   }
 
   /**
-   * Júpiter visible a lo lejos con sus bandas atmosféricas de gas y la Gran Mancha Roja.
-   * Aquí en la órbita joviana (40% de fase) es donde intercepta el Sublíder JOVIAN CORE.
+   * Júpiter visible con sus bandas atmosféricas de gas y la Gran Mancha Roja.
+   * Intercepta el Sublíder JOVIAN CORE al 40% y se aleja hacia abajo antes de Saturno.
    */
   drawDistantJupiter(ctx, w, h, distanceRatio) {
-    const p = (distanceRatio - 0.32) / 0.33;
-    // Júpiter se ve a lo lejos (no colosal para dejar espacio a la aproximación de Saturno)
-    const jupRadius = 48 + Math.sin(p * Math.PI) * 26; // Radio elegante de 48 a 74px
-    const jupX = w * 0.38 + Math.sin(p * 2) * 20;
-    const jupY = 85 + p * 130;
+    // Progreso normalizado de Júpiter (0.30 a 0.53)
+    const norm = (distanceRatio - 0.30) / 0.23;
+    
+    // Suave fade-in al entrar y rápido alejamiento hacia abajo al superar su órbita (> 0.44)
+    let alpha = 1.0;
+    let yScrollOffset = 0;
+    if (distanceRatio < 0.34) {
+      alpha = Math.max(0, (distanceRatio - 0.30) / 0.04);
+    } else if (distanceRatio > 0.44) {
+      const exitP = (distanceRatio - 0.44) / 0.09;
+      alpha = Math.max(0, 1.0 - exitP);
+      yScrollOffset = exitP * exitP * 380; // Acelera hacia abajo al quedar atrás
+    }
+
+    if (alpha <= 0.01) return;
 
     ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // Júpiter ubicado a la izquierda con tamaño elegante y proporcionado (radio 46px a 54px)
+    const jupRadius = 46 + Math.sin(Math.min(1.0, norm * 1.5) * Math.PI * 0.5) * 8;
+    const jupX = w * 0.28;
+    const jupY = 95 + norm * 35 + yScrollOffset;
 
     // Resplandor de hidrógeno joviano
     const jupGlow = ctx.createRadialGradient(jupX, jupY, jupRadius * 0.75, jupX, jupY, jupRadius * 1.32);
@@ -1816,6 +1839,8 @@ export class ScenarioRenderer {
     ctx.restore();
 
     // Lunas Galileanas (Ío, Europa, Ganímedes, Calisto)
+    ctx.save();
+    ctx.globalAlpha = alpha;
     const moons = [
       { name: "Ío", dist: -1.45, yOff: -0.2, r: 2.2, color: "#fef08a" },
       { name: "Europa", dist: -1.9, yOff: 0.1, r: 1.8, color: "#e0f2fe" },
@@ -1839,32 +1864,69 @@ export class ScenarioRenderer {
   }
 
   /**
-   * Saturno aproximándose con sus majestuosos anillos 3D inclinados,
-   * división de Cassini, sombra proyectada del planeta y Titán.
-   * Aquí en los anillos (85% de avance) es donde intercepta el Jefe Final.
+   * Transición del vacío profundo y aceleración subespacial entre Júpiter (5.2 UA) y Saturno (9.5 UA)
    */
-  drawApproachingSaturn(ctx, w, h, distanceRatio) {
-    const p = Math.min(1.0, (distanceRatio - 0.60) / 0.40);
-    // Saturno crece majestuosamente de 45px hasta 112px de radio
-    const satRadius = 45 + p * 67;
-    const satX = w * 0.52 + Math.sin(p * 1.5) * 20;
-    const satY = 110 + p * 75;
-
-    const ringTilt = 0.38; // Inclinación en perspectiva
-    const ringAngle = -0.22; // Ángulo de rotación del plano orbital de los anillos
+  drawSubspaceTransition(ctx, w, h, distanceRatio) {
+    const p = (distanceRatio - 0.50) / 0.18;
+    const alpha = Math.sin(p * Math.PI) * 0.75;
+    if (alpha <= 0.01) return;
 
     ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // Destellos hiperbólicos de velocidad iónica en el vacío
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+    ctx.lineWidth = 1.2;
+    const time = this.scrollY * 0.8;
+    for (let i = 0; i < 22; i++) {
+      const sx = ((i * 37 + 19) % w);
+      const sy = (time * (1.2 + (i % 5) * 0.3) + i * 45) % (h + 60) - 30;
+      const sLen = 25 + (i % 4) * 15;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx, sy + sLen);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  /**
+   * Saturno aproximándose con proporciones astronómicas perfectas,
+   * anillos 3D esbeltos, división de Cassini, sombra planetaria y Titán.
+   * Aparece a partir de 0.66 en el horizonte espacial, completamente separado de Júpiter.
+   */
+  drawApproachingSaturn(ctx, w, h, distanceRatio) {
+    const p = Math.min(1.0, (distanceRatio - 0.66) / 0.24);
+    
+    // Suave entrada al campo visual en la lejanía cósmica
+    let alpha = 1.0;
+    if (distanceRatio < 0.70) {
+      alpha = Math.max(0, (distanceRatio - 0.66) / 0.04);
+    }
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // Proporción refinada: radio de 26px (lejano) a 56px (acercamiento final)
+    const satRadius = 26 + p * 30;
+    const satX = w * 0.50; // Centrado en la bóveda espacial
+    const satY = 72 + p * 36; // Altura perfecta (Y ~108px), dejando libre la zona de batalla
+
+    const ringTilt = 0.28; // Inclinación en perspectiva esbelta y estilizada
+    const ringAngle = -0.22; // Ángulo orbital de 12.5°
+
     ctx.translate(satX, satY);
     ctx.rotate(ringAngle);
 
     // Resplandor dorado de Saturno
-    const satGlow = ctx.createRadialGradient(0, 0, satRadius * 0.8, 0, 0, satRadius * 2.2);
-    satGlow.addColorStop(0, "rgba(253, 230, 138, 0.35)");
-    satGlow.addColorStop(0.65, "rgba(245, 158, 11, 0.12)");
+    const satGlow = ctx.createRadialGradient(0, 0, satRadius * 0.8, 0, 0, satRadius * 2.1);
+    satGlow.addColorStop(0, "rgba(253, 230, 138, 0.32)");
+    satGlow.addColorStop(0.65, "rgba(245, 158, 11, 0.10)");
     satGlow.addColorStop(1, "transparent");
     ctx.fillStyle = satGlow;
     ctx.beginPath();
-    ctx.arc(0, 0, satRadius * 2.2, 0, Math.PI * 2);
+    ctx.arc(0, 0, satRadius * 2.1, 0, Math.PI * 2);
     ctx.fill();
 
     // ----------------------------------------------------
@@ -1873,10 +1935,10 @@ export class ScenarioRenderer {
     this.drawSaturnRingArc(ctx, satRadius, ringTilt, Math.PI, Math.PI * 2);
 
     // Sombra del planeta proyectada sobre la mitad trasera del anillo (a la derecha)
-    ctx.fillStyle = "rgba(1, 3, 10, 0.85)";
+    ctx.fillStyle = "rgba(1, 3, 10, 0.88)";
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(satRadius * 0.85, -satRadius * 2.2 * ringTilt);
+    ctx.lineTo(satRadius * 0.85, -satRadius * 2.22 * ringTilt);
     ctx.lineTo(satRadius * 2.1, -satRadius * 1.4 * ringTilt);
     ctx.lineTo(satRadius * 0.9, 0);
     ctx.closePath();
@@ -1917,13 +1979,13 @@ export class ScenarioRenderer {
     // Sombra oscura de los anillos proyectada sobre el ecuador de Saturno
     ctx.fillStyle = "rgba(15, 23, 42, 0.65)";
     ctx.beginPath();
-    ctx.ellipse(0, 0, satRadius * 0.98, satRadius * 0.14, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, satRadius * 0.98, satRadius * 0.12, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Vórtice polar hexagonal de Saturno en el norte
+    // Vórtice polar hexagonal de Saturno en el polo norte
     ctx.fillStyle = "rgba(163, 230, 53, 0.45)";
     ctx.beginPath();
-    ctx.ellipse(0, -satRadius * 0.85, satRadius * 0.24, satRadius * 0.1, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, -satRadius * 0.85, satRadius * 0.24, satRadius * 0.08, 0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();
@@ -1933,21 +1995,21 @@ export class ScenarioRenderer {
     // ----------------------------------------------------
     this.drawSaturnRingArc(ctx, satRadius, ringTilt, 0, Math.PI);
 
-    // Luna Titán orbitando cerca de los anillos
-    const titanX = satRadius * 2.45;
-    const titanY = -satRadius * 0.6;
+    // Luna Titán orbitando con su atmósfera naranja
+    const titanX = satRadius * 2.35;
+    const titanY = -satRadius * 0.55;
     ctx.fillStyle = "#fbbf24";
     ctx.shadowColor = "#f59e0b";
     ctx.shadowBlur = 6;
     ctx.beginPath();
-    ctx.arc(titanX, titanY, 3.8, 0, Math.PI * 2);
+    ctx.arc(titanX, titanY, 3.4, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Rótulo táctico
+    // Rótulo táctico elegante
     ctx.font = "bold 9px 'Orbitron', monospace";
     ctx.fillStyle = "#fde047";
-    ctx.fillText("🪐 SATURNO [9.5 UA] · SECTOR JEFE FINAL", -90, satRadius + 32);
+    ctx.fillText("🪐 SATURNO [9.5 UA] · ANILLOS EN RANGO", -90, satRadius + 24);
 
     ctx.restore();
   }
@@ -1956,13 +2018,13 @@ export class ScenarioRenderer {
    * Traza los arcos concéntricos de los anillos de Saturno (con División de Cassini)
    */
   drawSaturnRingArc(ctx, satRadius, ringTilt, startAngle, endAngle) {
-    const rxOuter = satRadius * 2.35;
+    const rxOuter = satRadius * 2.22;
     const ryOuter = rxOuter * ringTilt;
 
-    const rxCassiniOut = satRadius * 1.95;
+    const rxCassiniOut = satRadius * 1.88;
     const ryCassiniOut = rxCassiniOut * ringTilt;
 
-    const rxCassiniIn = satRadius * 1.82;
+    const rxCassiniIn = satRadius * 1.76;
     const ryCassiniIn = rxCassiniIn * ringTilt;
 
     const rxInner = satRadius * 1.35;
@@ -1977,7 +2039,7 @@ export class ScenarioRenderer {
     ctx.fill();
 
     // 2. División de Cassini (Brecha oscura realista en los anillos)
-    ctx.fillStyle = "rgba(2, 6, 18, 0.88)";
+    ctx.fillStyle = "rgba(2, 6, 18, 0.90)";
     ctx.beginPath();
     ctx.ellipse(0, 0, rxCassiniOut, ryCassiniOut, 0, startAngle, endAngle, false);
     ctx.ellipse(0, 0, rxCassiniIn, ryCassiniIn, 0, endAngle, startAngle, true);
@@ -2011,13 +2073,13 @@ export class ScenarioRenderer {
     if (distanceRatio > 0.20 && distanceRatio <= 0.35) {
       regionText = "PASANDO ÓRBITA DE MARTE [1.5 UA] · APROXIMACIÓN A ZONA DE ASTEROIDES";
       subText = "Escaneando superficie marciana - Sin hostiles detectados en la órbita roja";
-    } else if (distanceRatio > 0.35 && distanceRatio <= 0.52) {
-      regionText = "CRUCE DEL CINTURÓN DE ASTEROIDES & JÚPITER A LO LEJOS · INTERCEPCIÓN SUBLÍDER";
+    } else if (distanceRatio > 0.35 && distanceRatio <= 0.50) {
+      regionText = "CINTURÓN DE ASTEROIDES & ÓRBITA DE JÚPITER [5.2 UA] · INTERCEPCIÓN SUBLÍDER";
       subText = "Navegando campo de rocas espaciales - Sublíder Jovian Core detectado";
-    } else if (distanceRatio > 0.52 && distanceRatio <= 0.75) {
-      regionText = "SUPERANDO JÚPITER · ACELERACIÓN SUBESPACIAL RUMBO A SATURNO";
-      subText = "Trayectoria hiperbólica hacia los anillos del gigante gaseoso";
-    } else if (distanceRatio > 0.75) {
+    } else if (distanceRatio > 0.50 && distanceRatio <= 0.66) {
+      regionText = "SUPERANDO JÚPITER · ACELERACIÓN SUBESPACIAL RUMBO A SATURNO [9.5 UA]";
+      subText = "Salto hiperbólico de 4.3 UA a través del vacío del sistema solar exterior";
+    } else if (distanceRatio > 0.66) {
       regionText = "LLEGADA A SATURNO [9.5 UA] · ANILLOS EN RANGO VISUAL · ALERTA DE JEFE FINAL";
       subText = "Estación Titán de Vektor interceptada en los anillos exteriores";
     }
