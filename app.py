@@ -52,13 +52,22 @@ def create_app(config_override: dict = None) -> Flask:
     def health_check():
         db_engine_str = str(db.engine.url)
         is_postgres = "postgresql" in db_engine_str
+        raw_db_env = (os.getenv("DATABASE_URL") or os.getenv("INTERNAL_DATABASE_URL") or "").strip().strip('"').strip("'")
         detected_keys = [k for k in os.environ.keys() if any(term in k.upper() for term in ["DATA", "POSTGRES", "DB", "SQL"])]
+        
+        # Diagnóstico seguro: solo muestra el prefijo y esquema sin credenciales
+        scheme = raw_db_env.split("://")[0] if "://" in raw_db_env else ("vacio" if not raw_db_env else "sin_protocolo")
+        prefix = raw_db_env[:14] if raw_db_env else "vacio"
+
         return {
             "success": True,
             "status": "online",
             "service": "Space Assault API - Arquitectura Pro",
             "database": "PostgreSQL (SQLAlchemy)" if is_postgres else "SQLite (SQLAlchemy)",
             "database_engine": "PostgreSQL" if is_postgres else "SQLite",
+            "database_url_scheme": scheme,
+            "database_url_prefix": prefix,
+            "database_url_length": len(raw_db_env),
             "detected_env_db_keys": detected_keys,
             "auth": "JWT HS256"
         }, 200
