@@ -242,12 +242,18 @@ export class ScenarioRenderer {
 
     if (stageNumber === 2) {
       // Mover islas hacia abajo con velocidad orgánica y oleaje
-      for (let i = 0; i < this.pacificIslands.length; i++) {
+      for (let i = this.pacificIslands.length - 1; i >= 0; i--) {
         const island = this.pacificIslands[i];
         island.y += scrollSpeed * 0.92;
         if (island.y > this.canvas.height + 120) {
-          const newX = Math.random() * (this.canvas.width - 120) + 60;
-          this.pacificIslands[i] = this.createPacificIsland(newX, -120);
+          // Solo reaparecen islas si aún no entramos en la aproximación continental
+          if (distanceRatio < 0.26) {
+            const newX = Math.random() * (this.canvas.width - 120) + 60;
+            this.pacificIslands[i] = this.createPacificIsland(newX, -120);
+          } else {
+            // Se eliminan para que el océano quede libre sin superposiciones sobre Australia
+            this.pacificIslands.splice(i, 1);
+          }
         }
       }
     } else if (stageNumber === 3) {
@@ -734,27 +740,17 @@ export class ScenarioRenderer {
       ctx.stroke();
     }
 
-    // 2. Islas Orgánicas del Pacífico (visibles en la travesía oceánica inicial hasta entrar a Australia)
-    const islandAlpha = distanceRatio > 0.36 ? Math.max(0, 1.0 - (distanceRatio - 0.36) / 0.08) : 1.0;
-    if (islandAlpha > 0) {
-      ctx.save();
-      ctx.globalAlpha = islandAlpha;
+    // 2. Islas Orgánicas del Pacífico (visibles únicamente en la travesía oceánica inicial)
+    if (this.pacificIslands.length > 0) {
       for (const island of this.pacificIslands) {
         this.drawOrganicIsland(ctx, island);
       }
-      ctx.restore();
     }
 
-    // 3. Masa Continental de Australia: Gran isla-continente integrada al terreno y scrolleable
-    if (distanceRatio >= 0.30) {
+    // 3. Masa Continental de Australia: Gran isla-continente integrada al océano, scrolleable sin superposición
+    if (distanceRatio >= 0.28 && distanceRatio <= 0.96) {
       this.drawAustraliaContinent(ctx, w, h, distanceRatio);
     }
-
-    // 4. Cartela Táctica de Posición Geográfica
-    this.renderPacificPositionBanner(ctx, w, h, distanceRatio);
-
-    // 5. Radar Táctico de Aproximación Continental en la esquina inferior izquierda
-    this.renderPacificAustraliaRadar(ctx, distanceRatio);
   }
 
   /**
@@ -959,18 +955,24 @@ export class ScenarioRenderer {
    * que el avión recorre durante un extenso tramo de la misión (del 32% al 100%).
    */
   drawAustraliaContinent(ctx, w, h, distanceRatio) {
-    const totalContinentHeight = 3400;
-    // El avance del avión a través del continente inicia al 32% de la fase y se prolonga hasta el 100%
-    const progress = Math.min(1.0, Math.max(0, (distanceRatio - 0.32) / (1.0 - 0.32)));
-    const cameraY = progress * (totalContinentHeight - h);
+    const totalContinentHeight = 3000;
+    // El avance del avión a través del continente inicia al 28% y se prolonga hasta el 95%
+    const progress = Math.min(1.0, Math.max(0, (distanceRatio - 0.28) / (0.95 - 0.28)));
+    
+    // Entrada natural y continua desde la parte superior (y < 0) hacia abajo (y > 0)
+    // Tasmania y la costa sur entran primero desde arriba al aproximarse desde el sur (Antártida a Australia)
+    // y el avión recorre toda la masa continental hacia el norte (Cabo York)
+    const startOffsetY = -3050;
+    const endOffsetY = h + 80;
+    const offsetY = startOffsetY + progress * (endOffsetY - startOffsetY);
 
     const baseW = Math.max(w * 1.55, 1080);
     const centerX = w * 0.5;
 
     ctx.save();
-    ctx.translate(centerX, -cameraY);
+    ctx.translate(centerX, offsetY);
 
-    // Contorno vectorial a escala continental (Y: 60px Cabo York hasta 2700px Victoria / 3050px Tasmania)
+    // Contorno vectorial a escala continental (Y: 70px Cabo York hasta 2660px Victoria / 2920px Tasmania)
     const australiaOutline = [
       // 1. Península de Cabo York y extremo norte
       { x: 0.14 * baseW, y: 70 },
@@ -1035,53 +1037,66 @@ export class ScenarioRenderer {
       }));
     };
 
-    const shelfPoly = expandPolygon(australiaOutline, 1.038);
+    const shelfOuterPoly = expandPolygon(australiaOutline, 1.045);
+    const shelfInnerPoly = expandPolygon(australiaOutline, 1.025);
+    const sandPoly = expandPolygon(australiaOutline, 1.012);
 
     // ========================================================
-    // 1. PLATAFORMA DE ARRECIFE Y AGUAS SOMERAS (Estética de Islas)
+    // 1. PLATAFORMA DE ARRECIFE Y AGUAS SOMERAS (Idéntica a las Islas)
     // ========================================================
-    ctx.fillStyle = "rgba(45, 212, 191, 0.38)"; // Turquesa arrecifal resplandeciente
+    ctx.fillStyle = "rgba(45, 212, 191, 0.32)"; // Turquesa arrecifal resplandeciente
     ctx.beginPath();
-    ctx.moveTo(shelfPoly[0].x, shelfPoly[0].y);
-    for (let i = 1; i < shelfPoly.length; i++) {
-      ctx.lineTo(shelfPoly[i].x, shelfPoly[i].y);
+    ctx.moveTo(shelfOuterPoly[0].x, shelfOuterPoly[0].y);
+    for (let i = 1; i < shelfOuterPoly.length; i++) {
+      ctx.lineTo(shelfOuterPoly[i].x, shelfOuterPoly[i].y);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Bajíos coralinos intermedios
+    ctx.fillStyle = "rgba(20, 184, 166, 0.45)";
+    ctx.beginPath();
+    ctx.moveTo(shelfInnerPoly[0].x, shelfInnerPoly[0].y);
+    for (let i = 1; i < shelfInnerPoly.length; i++) {
+      ctx.lineTo(shelfInnerPoly[i].x, shelfInnerPoly[i].y);
     }
     ctx.closePath();
     ctx.fill();
 
     // ========================================================
-    // 2. ROMPIENTES DE SURF Y ESPUMA COSTERA ANIMADA (Estética de Islas)
+    // 2. ROMPIENTES DE SURF Y ESPUMA COSTERA ANIMADA (Idéntica a las Islas)
     // ========================================================
-    const surfPulse = 1.0 + Math.sin(performance.now() * 0.0028) * 0.05;
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
-    ctx.lineWidth = 2.0;
+    const surfPulse = 1.0 + Math.sin(performance.now() * 0.003) * 0.05;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.52)";
+    ctx.lineWidth = 1.8;
     ctx.setLineDash([6, 8]);
     ctx.beginPath();
-    ctx.moveTo(shelfPoly[0].x * surfPulse, shelfPoly[0].y);
-    for (let i = 1; i < shelfPoly.length; i++) {
-      ctx.lineTo(shelfPoly[i].x * surfPulse, shelfPoly[i].y);
+    ctx.moveTo(shelfInnerPoly[0].x * surfPulse, shelfInnerPoly[0].y);
+    for (let i = 1; i < shelfInnerPoly.length; i++) {
+      ctx.lineTo(shelfInnerPoly[i].x * surfPulse, shelfInnerPoly[i].y);
     }
     ctx.closePath();
     ctx.stroke();
     ctx.setLineDash([]);
 
     // ========================================================
-    // 3. PLAYA DE ARENA DORADA PERIMETRAL
+    // 3. PLAYA DE ARENA TROPICAL DORADA PERIMETRAL (Idéntica a las Islas)
     // ========================================================
-    ctx.strokeStyle = "#fef08a"; // Arena dorada cálida
-    ctx.lineWidth = 7.0;
+    ctx.fillStyle = "#fef08a"; // Arena fina dorada
+    ctx.strokeStyle = "#fde047";
+    ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.moveTo(australiaOutline[0].x, australiaOutline[0].y);
-    for (let i = 1; i < australiaOutline.length; i++) {
-      ctx.lineTo(australiaOutline[i].x, australiaOutline[i].y);
+    ctx.moveTo(sandPoly[0].x, sandPoly[0].y);
+    for (let i = 1; i < sandPoly.length; i++) {
+      ctx.lineTo(sandPoly[i].x, sandPoly[i].y);
     }
     ctx.closePath();
+    ctx.fill();
     ctx.stroke();
 
     // ========================================================
     // 4. MASA CONTINENTAL DE TIERRA CON BIOMAS RICOS Y GRADIENTES
     // ========================================================
-    // Gradiente de Biomas: Costa Norte y Este tropicales -> Desierto Rojo central -> Costa Sur templada
     const continentGrad = ctx.createLinearGradient(0, 100, 0, 2700);
     continentGrad.addColorStop(0, "#15803d");    // Selva tropical de Daintree y Cabo York
     continentGrad.addColorStop(0.18, "#166534"); // Bosques de eucalipto de Queensland
@@ -1089,7 +1104,7 @@ export class ScenarioRenderer {
     continentGrad.addColorStop(0.55, "#9a3412"); // Gran Desierto Rojo / Territorio de Uluru
     continentGrad.addColorStop(0.75, "#b45309"); // Llanura semiárida de Nullarbor
     continentGrad.addColorStop(0.90, "#15803d"); // Colinas verdes y bosques de Victoria
-    continentGrad.addColorStop(1, "#14532d");    // Selva fría templada del extremo sur
+    continentGrad.addColorStop(1, "#14532d");    // Selva templada del extremo sur
 
     ctx.fillStyle = continentGrad;
     ctx.beginPath();
@@ -1100,19 +1115,30 @@ export class ScenarioRenderer {
     ctx.closePath();
     ctx.fill();
 
+    // Orla de vegetación costera exuberante
+    ctx.strokeStyle = "#16a34a";
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.moveTo(australiaOutline[0].x, australiaOutline[0].y);
+    for (let i = 1; i < australiaOutline.length; i++) {
+      ctx.lineTo(australiaOutline[i].x, australiaOutline[i].y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+
     // Textura y sombras del Outback en el corazón continental
     ctx.save();
-    ctx.fillStyle = "rgba(120, 53, 15, 0.45)";
+    ctx.fillStyle = "rgba(120, 53, 15, 0.40)";
     ctx.beginPath();
     ctx.ellipse(-0.06 * baseW, 1450, baseW * 0.32, 480, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
     // ========================================================
-    // 5. GRAN CORDILLERA DIVISORIA (Relieve montañoso oriental)
+    // 5. GRAN CORDILLERA DIVISORIA (Relieve natural montañoso)
     // ========================================================
     ctx.save();
-    ctx.strokeStyle = "rgba(120, 53, 15, 0.65)";
+    ctx.strokeStyle = "rgba(120, 53, 15, 0.55)";
     ctx.lineWidth = 14;
     ctx.lineCap = "round";
     ctx.beginPath();
@@ -1121,8 +1147,7 @@ export class ScenarioRenderer {
     ctx.quadraticCurveTo(0.36 * baseW, 2100, 0.22 * baseW, 2550);
     ctx.stroke();
 
-    // Crestas de roca y cumbres de las Blue Mountains y Snowy Mountains
-    ctx.strokeStyle = "rgba(254, 243, 199, 0.45)";
+    ctx.strokeStyle = "rgba(254, 243, 199, 0.35)";
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(0.18 * baseW + 2, 380);
@@ -1132,15 +1157,13 @@ export class ScenarioRenderer {
     ctx.restore();
 
     // ========================================================
-    // 6. DETALLES GEOGRÁFICOS LEGENDARIOS
+    // 6. ACCIDENTES GEOGRÁFICOS NATURALES
     // ========================================================
-    // A. Monolito Sagrado Uluru (Ayers Rock) en el centro rojo
+    // Monolito Uluru en el centro rojo
     const uluruX = -0.08 * baseW;
     const uluruY = 1450;
     ctx.save();
     ctx.fillStyle = "#dc2626";
-    ctx.shadowColor = "#ef4444";
-    ctx.shadowBlur = 14;
     ctx.beginPath();
     ctx.ellipse(uluruX, uluruY, 22, 12, -0.2, 0, Math.PI * 2);
     ctx.fill();
@@ -1150,7 +1173,7 @@ export class ScenarioRenderer {
     ctx.fill();
     ctx.restore();
 
-    // B. Lago Eyre (Kati Thanda) - Depresión salina interior
+    // Depresión salina del Lago Eyre
     const eyreX = -0.05 * baseW;
     const eyreY = 1920;
     ctx.fillStyle = "rgba(254, 243, 199, 0.65)";
@@ -1162,14 +1185,11 @@ export class ScenarioRenderer {
     ctx.stroke();
 
     // ========================================================
-    // 7. LA GRAN BARRERA DE CORAL (Great Barrier Reef)
-    // Cadena monumental de arrecifes turquesas bioluminiscentes a lo largo de Queensland
+    // 7. LA GRAN BARRERA DE CORAL (Atolones coralinos individuales)
     // ========================================================
     ctx.save();
-    ctx.strokeStyle = "rgba(45, 212, 191, 0.75)";
-    ctx.lineWidth = 8.0;
-    ctx.shadowColor = "#5eead4";
-    ctx.shadowBlur = 16;
+    ctx.strokeStyle = "rgba(45, 212, 191, 0.65)";
+    ctx.lineWidth = 6.0;
     ctx.setLineDash([12, 8]);
     ctx.beginPath();
     ctx.moveTo(0.22 * baseW, 120);
@@ -1177,7 +1197,6 @@ export class ScenarioRenderer {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Atolones coralinos individuales con cayos de arena blanca
     const coralAtolls = [
       { x: 0.20 * baseW, y: 160, r: 16 },
       { x: 0.22 * baseW, y: 320, r: 22 },
@@ -1189,19 +1208,16 @@ export class ScenarioRenderer {
     ];
 
     for (const atoll of coralAtolls) {
-      // Halo turquesa somero
       ctx.fillStyle = "rgba(45, 212, 191, 0.55)";
       ctx.beginPath();
       ctx.arc(atoll.x, atoll.y, atoll.r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Laguna interior
       ctx.fillStyle = "rgba(2, 44, 67, 0.75)";
       ctx.beginPath();
       ctx.arc(atoll.x, atoll.y, atoll.r * 0.55, 0, Math.PI * 2);
       ctx.fill();
 
-      // Cayo de arena coralina blanca
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
       ctx.arc(atoll.x - 3, atoll.y - 2, atoll.r * 0.25, 0, Math.PI * 2);
@@ -1210,7 +1226,7 @@ export class ScenarioRenderer {
     ctx.restore();
 
     // ========================================================
-    // 8. ISLA DE TASMANIA (Al Sureste, en el Estrecho de Bass)
+    // 8. ISLA DE TASMANIA (Al sur, en el Estrecho de Bass)
     // ========================================================
     const tasX = 0.20 * baseW;
     const tasY = 2920;
@@ -1223,13 +1239,11 @@ export class ScenarioRenderer {
       { x: tasX - 45, y: tasY - 10 }
     ];
 
-    // Arrecife de Tasmania
-    ctx.fillStyle = "rgba(45, 212, 191, 0.4)";
+    ctx.fillStyle = "rgba(45, 212, 191, 0.35)";
     ctx.beginPath();
     ctx.arc(tasX, tasY, 68, 0, Math.PI * 2);
     ctx.fill();
 
-    // Playa dorada de Tasmania
     ctx.strokeStyle = "#fef08a";
     ctx.lineWidth = 4;
     ctx.beginPath();
@@ -1238,7 +1252,6 @@ export class ScenarioRenderer {
     ctx.closePath();
     ctx.stroke();
 
-    // Tierra fértil y montañas de Tasmania
     ctx.fillStyle = "#15803d";
     ctx.beginPath();
     ctx.moveTo(tasOutline[0].x, tasOutline[0].y);
@@ -1250,13 +1263,15 @@ export class ScenarioRenderer {
     // 9. PALMERAS Y ARBOLEDAS COSTERAS (Estética de Islas)
     // ========================================================
     const coastalGroves = [
-      { x: 0.17 * baseW, y: 280, count: 4 },  // Cooktown
-      { x: 0.22 * baseW, y: 460, count: 5 },  // Cairns
-      { x: 0.27 * baseW, y: 780, count: 4 },  // Townsville
-      { x: 0.43 * baseW, y: 1540, count: 5 }, // Gold Coast
-      { x: 0.39 * baseW, y: 2120, count: 4 }, // Sydney
-      { x: -0.66 * baseW, y: 1920, count: 4 },// Perth
-      { x: -0.10 * baseW, y: 270, count: 5 }  // Darwin
+      { x: 0.17 * baseW, y: 280, count: 5 },
+      { x: 0.22 * baseW, y: 460, count: 6 },
+      { x: 0.27 * baseW, y: 780, count: 5 },
+      { x: 0.43 * baseW, y: 1540, count: 6 },
+      { x: 0.39 * baseW, y: 2120, count: 5 },
+      { x: 0.15 * baseW, y: 2640, count: 4 },
+      { x: -0.66 * baseW, y: 1920, count: 5 },
+      { x: -0.40 * baseW, y: 600, count: 4 },
+      { x: -0.10 * baseW, y: 270, count: 6 }
     ];
 
     for (const grove of coastalGroves) {
@@ -1267,235 +1282,10 @@ export class ScenarioRenderer {
       }
     }
 
-    // ========================================================
-    // 10. BASES ESTRATÉGICAS Y PISTAS MILITARES DE ATERRIZAJE
-    // ========================================================
-    const militaryBases = [
-      { name: "BASE AÉREA ESTRATÉGICA DARWIN", x: -0.10 * baseW, y: 260, color: "#38bdf8", isAirbase: true },
-      { name: "PUESTO NAVAL DEL CORAL / CAIRNS", x: 0.17 * baseW, y: 440, color: "#fbbf24", isAirbase: true },
-      { name: "ESTACIÓN TÁCTICA TOWNSVILLE", x: 0.25 * baseW, y: 760, color: "#34d399", isAirbase: false },
-      { name: "RADAR PROFUNDO ALICE SPRINGS", x: -0.06 * baseW, y: 1380, color: "#f43f5e", isAirbase: true },
-      { name: "COMANDO NAVAL BRISBANE", x: 0.41 * baseW, y: 1520, color: "#38bdf8", isAirbase: false },
-      { name: "FORTALEZA MARÍTIMA SYDNEY", x: 0.38 * baseW, y: 2100, color: "#00f3ff", isAirbase: true },
-      { name: "HANGAR MERIDIONAL MELBOURNE", x: 0.05 * baseW, y: 2620, color: "#a855f7", isAirbase: true },
-      { name: "PUERTO DEFENSIVO PERTH", x: -0.64 * baseW, y: 1890, color: "#34d399", isAirbase: true }
-    ];
-
-    const radarAngle = performance.now() * 0.003;
-    for (const base of militaryBases) {
-      // Pistas de aterrizaje iluminadas
-      if (base.isAirbase) {
-        ctx.strokeStyle = "#fef08a";
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.moveTo(base.x - 16, base.y - 5);
-        ctx.lineTo(base.x + 16, base.y + 5);
-        ctx.stroke();
-      }
-
-      // Baliza de radar de defensa
-      ctx.fillStyle = base.color;
-      ctx.beginPath();
-      ctx.arc(base.x, base.y, 4.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Ondas concéntricas de radar
-      ctx.strokeStyle = base.color;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(base.x, base.y, 16, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(base.x, base.y);
-      ctx.lineTo(base.x + Math.cos(radarAngle) * 16, base.y + Math.sin(radarAngle) * 16);
-      ctx.stroke();
-
-      // Rótulo táctico
-      ctx.font = "bold 8.5px 'Orbitron', monospace";
-      ctx.fillStyle = base.color;
-      ctx.fillText(base.name, base.x + 20, base.y + 3);
-    }
-
-    // ========================================================
-    // 11. RÓTULOS HOLOGRÁFICOS DE GEOGRAFÍA TÁCTICA
-    // ========================================================
-    ctx.font = "bold 10px 'Orbitron', monospace";
-    ctx.fillStyle = "#38bdf8";
-    ctx.fillText("📍 PENÍNSULA DE CABO YORK", 0.16 * baseW, 110);
-
-    ctx.fillStyle = "#2dd4bf";
-    ctx.fillText("📍 GOLFO DE CARPENTARIA", 0.01 * baseW, 460);
-
-    ctx.fillStyle = "#5eead4";
-    ctx.fillText("🛡️ GRAN BARRERA DE CORAL", 0.32 * baseW, 620);
-
-    ctx.fillStyle = "#fbbf24";
-    ctx.fillText("📍 GRAN DESIERTO ROJO (OUTBACK & ULURU)", -0.16 * baseW, 1340);
-
-    ctx.fillStyle = "#34d399";
-    ctx.fillText("📍 GRAN BAHÍA AUSTRALIANA", -0.42 * baseW, 2320);
-
-    ctx.fillStyle = "#a855f7";
-    ctx.fillText("📍 ESTRECHO DE BASS & TASMANIA", 0.16 * baseW, 2820);
-
     ctx.restore();
   }
 
-  /**
-   * Cartela táctica inferior de región y avance continental
-   */
-  renderPacificPositionBanner(ctx, w, h, distanceRatio) {
-    let regionText = "SOBREVOLANDO: OCÉANO PACÍFICO [ARCHIPIÉLAGOS & ATOLONES]";
-    let subText = "Ruta marítima de alta velocidad - Neutralizando puestos flotantes";
 
-    if (distanceRatio > 0.32 && distanceRatio <= 0.52) {
-      regionText = "TIERRA A LA VISTA: CABO YORK & GRAN BARRERA DE CORAL";
-      subText = "Incursión al continente australiano - Intercepción de Sublíder Nautilus-X";
-    } else if (distanceRatio > 0.52 && distanceRatio <= 0.72) {
-      regionText = "ESPACIO AÉREO AUSTRALIANO: QUEENSLAND & CORDILLERA DIVISORIA";
-      subText = "Sobrevuelo sobre bosques de eucalipto, costas doradas y bases de defensa";
-    } else if (distanceRatio > 0.72 && distanceRatio <= 0.86) {
-      regionText = "CORAZÓN DEL CONTINENTE: EL GRAN DESIERTO ROJO (OUTBACK & ULURU)";
-      subText = "Cielos carmesí del desierto central - Aproximación al área del Jefe Leviathan";
-    } else if (distanceRatio > 0.86) {
-      regionText = "¡ALERTA MÁXIMA! COSTA SUR AUSTRALIANA [BOSS LEVIATHAN COLOSSUS]";
-      subText = "Acorazado Leviathan Colossus en combate decisivo sobre el litoral sur";
-    }
-
-    ctx.save();
-    ctx.fillStyle = "rgba(7, 10, 24, 0.78)";
-    ctx.fillRect(w / 2 - 220, h - 38, 440, 30);
-    ctx.strokeStyle = distanceRatio > 0.86 ? "#ff0055" : "rgba(20, 184, 166, 0.6)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(w / 2 - 220, h - 38, 440, 30);
-
-    ctx.font = "9px 'Orbitron', monospace";
-    ctx.fillStyle = distanceRatio > 0.86 ? "#ff0055" : "#2dd4bf";
-    ctx.textAlign = "center";
-    ctx.fillText(regionText, w / 2, h - 22);
-
-    ctx.font = "8px monospace";
-    ctx.fillStyle = "#94a3b8";
-    ctx.fillText(subText, w / 2, h - 11);
-    ctx.restore();
-  }
-
-  /**
-   * Radar táctico en la esquina inferior izquierda:
-   * Muestra la silueta de Australia, la Gran Barrera de Coral y la posición del caza.
-   */
-  renderPacificAustraliaRadar(ctx, distanceRatio) {
-    const rx = 15;
-    const ry = this.canvas.height - 145;
-    const rw = 100;
-    const rh = 135;
-
-    ctx.save();
-    // Caja del radar
-    ctx.fillStyle = "rgba(7, 12, 26, 0.88)";
-    ctx.strokeStyle = "#14b8a6";
-    ctx.lineWidth = 1.5;
-    ctx.fillRect(rx, ry, rw, rh);
-    ctx.strokeRect(rx, ry, rw, rh);
-
-    // Título
-    ctx.fillStyle = "#2dd4bf";
-    ctx.font = "bold 8px 'Orbitron', monospace";
-    ctx.fillText("RADAR PACÍFICO", rx + 8, ry + 12);
-
-    // Líneas de cuadrícula
-    ctx.strokeStyle = "rgba(20, 184, 166, 0.18)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(rx + 5, ry + rh / 2);
-    ctx.lineTo(rx + rw - 5, ry + rh / 2);
-    ctx.moveTo(rx + rw / 2, ry + 18);
-    ctx.lineTo(rx + rw / 2, ry + rh - 18);
-    ctx.stroke();
-
-    // Silueta vectorial esquemática de Australia en el radar
-    const radarCenterY = ry + 82;
-    const radarCenterX = rx + 50;
-    const rScale = 52;
-
-    ctx.strokeStyle = "rgba(52, 211, 153, 0.65)";
-    ctx.fillStyle = "rgba(21, 128, 61, 0.25)";
-    ctx.lineWidth = 1.3;
-
-    ctx.beginPath();
-    // Cabo York
-    ctx.moveTo(radarCenterX + 0.16 * rScale, radarCenterY - 0.42 * rScale);
-    ctx.lineTo(radarCenterX + 0.28 * rScale, radarCenterY + 0.02 * rScale); // Queensland
-    ctx.lineTo(radarCenterX + 0.36 * rScale, radarCenterY + 0.30 * rScale); // Brisbane
-    ctx.lineTo(radarCenterX + 0.25 * rScale, radarCenterY + 0.54 * rScale); // Sydney
-    ctx.lineTo(radarCenterX + 0.10 * rScale, radarCenterY + 0.64 * rScale); // Victoria
-    ctx.lineTo(radarCenterX - 0.16 * rScale, radarCenterY + 0.50 * rScale); // Gran Bahía
-    ctx.lineTo(radarCenterX - 0.66 * rScale, radarCenterY + 0.46 * rScale); // Suroeste
-    ctx.lineTo(radarCenterX - 0.74 * rScale, radarCenterY + 0.00 * rScale); // Shark Bay
-    ctx.lineTo(radarCenterX - 0.44 * rScale, radarCenterY - 0.30 * rScale); // Broome
-    ctx.lineTo(radarCenterX - 0.12 * rScale, radarCenterY - 0.36 * rScale); // Darwin
-    ctx.lineTo(radarCenterX + 0.02 * rScale, radarCenterY - 0.32 * rScale); // Arnhem
-    ctx.lineTo(radarCenterX + 0.03 * rScale, radarCenterY - 0.24 * rScale); // Golfo oeste
-    ctx.lineTo(radarCenterX + 0.06 * rScale, radarCenterY - 0.06 * rScale); // Golfo sur
-    ctx.lineTo(radarCenterX + 0.13 * rScale, radarCenterY - 0.26 * rScale); // Golfo este
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Gran Barrera de Coral en el radar (Línea punteada cian)
-    ctx.strokeStyle = "#38bdf8";
-    ctx.lineWidth = 1.2;
-    ctx.setLineDash([2, 2]);
-    ctx.beginPath();
-    ctx.moveTo(radarCenterX + 0.22 * rScale, radarCenterY - 0.38 * rScale);
-    ctx.quadraticCurveTo(radarCenterX + 0.25 * rScale, radarCenterY - 0.16 * rScale, radarCenterX + 0.38 * rScale, radarCenterY + 0.04 * rScale);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Línea de vector de vuelo continuo desde el Pacífico hasta el sur de Australia
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
-    ctx.setLineDash([3, 3]);
-    ctx.beginPath();
-    ctx.moveTo(rx + 82, ry + 22);
-    ctx.lineTo(radarCenterX + 0.16 * rScale, radarCenterY - 0.42 * rScale);
-    ctx.lineTo(radarCenterX + 0.10 * rScale, radarCenterY + 0.65 * rScale);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Marcador de posición del jugador en el radar
-    let planeX, planeY;
-    if (distanceRatio < 0.32) {
-      const oceanP = distanceRatio / 0.32;
-      planeX = (rx + 82) + ((radarCenterX + 0.16 * rScale) - (rx + 82)) * oceanP;
-      planeY = (ry + 22) + ((radarCenterY - 0.42 * rScale) - (ry + 22)) * oceanP;
-    } else {
-      const landP = (distanceRatio - 0.32) / (1.0 - 0.32);
-      planeX = (radarCenterX + 0.16 * rScale) + ((radarCenterX + 0.10 * rScale) - (radarCenterX + 0.16 * rScale)) * landP;
-      planeY = (radarCenterY - 0.42 * rScale) + ((radarCenterY + 0.65 * rScale) - (radarCenterY - 0.42 * rScale)) * landP;
-    }
-
-    ctx.fillStyle = "#ff0055";
-    ctx.beginPath();
-    ctx.arc(planeX, planeY, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.arc(planeX, planeY, 6, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Coordenadas tácticas en tiempo real
-    ctx.font = "8px monospace";
-    ctx.fillStyle = "#34d399";
-    const lat = Math.floor(6 + distanceRatio * 24);
-    const lon = Math.floor(168 - distanceRatio * 24);
-    ctx.fillText(`LAT: ${lat}°S`, rx + 10, ry + rh - 13);
-    ctx.fillText(`LON: ${lon}°E`, rx + 10, ry + rh - 3);
-
-    ctx.restore();
-  }
 
   // ==========================================
   // ESCENARIO 3: DE LA TIERRA A SATURNO (VÍA MARTE, ASTEROIDES Y JÚPITER)

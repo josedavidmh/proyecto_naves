@@ -1,0 +1,356 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 860" width="100%" height="100%">
+  <defs>
+    <!-- Filtros de Glow y Sombras -->
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-gold" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+
+    <!-- Gradientes de Fondo y Tarjetas -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050814" />
+      <stop offset="50%" stop-color="#0a1026" />
+      <stop offset="100%" stop-color="#030611" />
+    </linearGradient>
+
+    <linearGradient id="card-local" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1b38" />
+      <stop offset="100%" stop-color="#081024" />
+    </linearGradient>
+
+    <linearGradient id="card-github" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e183a" />
+      <stop offset="100%" stop-color="#0f0c24" />
+    </linearGradient>
+
+    <linearGradient id="card-render" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#063238" />
+      <stop offset="100%" stop-color="#041a1f" />
+    </linearGradient>
+
+    <linearGradient id="card-prod" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d1c06" />
+      <stop offset="100%" stop-color="#180f03" />
+    </linearGradient>
+
+    <linearGradient id="card-users" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#132338" />
+      <stop offset="100%" stop-color="#091424" />
+    </linearGradient>
+
+    <!-- Gradientes de Conectores -->
+    <linearGradient id="line-cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <linearGradient id="line-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#00f3ff" />
+    </linearGradient>
+
+    <linearGradient id="line-render" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f3ff" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+
+    <linearGradient id="line-prod" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <!-- Marcadores de Flecha -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" />
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#a855f7" />
+    </marker>
+    <marker id="arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#fbbf24" />
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#34d399" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 26px; fill: #ffffff; letter-spacing: 1px; }
+    .subtitle { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 400; font-size: 14px; fill: #94a3b8; }
+    .card-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; }
+    .step-badge { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 12px; }
+    .text-body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12.5px; fill: #cbd5e1; line-height: 1.4; }
+    .code-pill { font-family: 'Courier New', monospace; font-size: 11px; fill: #00f3ff; font-weight: bold; }
+    .tag { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+  </style>
+
+  <!-- Fondo General con Patrón de Cuadrícula Tecnológica -->
+  <rect width="1300" height="860" fill="url(#bg-grad)" />
+  
+  <!-- Cuadrícula sutil de fondo -->
+  <g opacity="0.08" stroke="#38bdf8" stroke-width="1">
+    <line x1="0" y1="100" x2="1300" y2="100" />
+    <line x1="0" y1="250" x2="1300" y2="250" />
+    <line x1="0" y1="400" x2="1300" y2="400" />
+    <line x1="0" y1="550" x2="1300" y2="550" />
+    <line x1="0" y1="700" x2="1300" y2="700" />
+    <line x1="200" y1="0" x2="200" y2="860" />
+    <line x1="450" y1="0" x2="450" y2="860" />
+    <line x1="700" y1="0" x2="700" y2="860" />
+    <line x1="950" y1="0" x2="950" y2="860" />
+    <line x1="1200" y1="0" x2="1200" y2="860" />
+  </g>
+
+  <!-- ENCABEZADO -->
+  <g transform="translate(60, 48)">
+    <rect x="-10" y="-8" width="58" height="58" rx="14" fill="#00f3ff" opacity="0.1" />
+    <text x="0" y="32" font-size="36">🚀</text>
+    <text x="60" y="24" class="title">SPACE ASSAULT: PIPELINE DE DESPLIEGUE &amp; CI/CD</text>
+    <text x="60" y="46" class="subtitle">Flujo Integral de Código: Desarrollo Local ➔ Repositorio GitHub ➔ Automatización GitHub Actions ➔ Cloud Render (Gunicorn/WSGI)</text>
+  </g>
+
+  <!-- ============================================================== -->
+  <!-- PASO 1: DESARROLLO LOCAL -->
+  <!-- ============================================================== -->
+  <g transform="translate(50, 140)" filter="url(#card-shadow)">
+    <!-- Marco Exterior -->
+    <rect width="215" height="420" rx="14" fill="url(#card-local)" stroke="#38bdf8" stroke-width="1.8" />
+    
+    <!-- Encabezado Tarjeta -->
+    <rect width="215" height="52" rx="14" fill="#38bdf8" fill-opacity="0.15" />
+    <circle cx="28" cy="26" r="14" fill="#38bdf8" />
+    <text x="24" y="31" class="step-badge" fill="#041026">01</text>
+    <text x="50" y="27" class="card-title" fill="#38bdf8">ENTORNO LOCAL</text>
+    <text x="50" y="42" class="tag" fill="#93c5fd">Workstation / Dev</text>
+
+    <!-- Elementos del Bloque -->
+    <g transform="translate(16, 70)">
+      <!-- Item 1 -->
+      <rect width="183" height="66" rx="8" fill="#071228" stroke="#1e3a5f" stroke-width="1" />
+      <text x="12" y="20" font-weight="bold" font-size="12" fill="#ffffff">💻 Antigravity / IDE</text>
+      <text x="12" y="38" font-size="11" fill="#94a3b8">• Código Frontend (JS/CSS)</text>
+      <text x="12" y="54" font-size="11" fill="#94a3b8">• Backend Flask (Python 3.12)</text>
+
+      <!-- Item 2 -->
+      <rect y="78" width="183" height="74" rx="8" fill="#071228" stroke="#1e3a5f" stroke-width="1" />
+      <text x="12" y="98" font-weight="bold" font-size="12" fill="#34d399">🧪 Testing &amp; SQLite</text>
+      <text x="12" y="116" font-size="11" fill="#94a3b8">• test_phase1.py &amp; phase2.py</text>
+      <text x="12" y="132" font-size="11" fill="#94a3b8">• test_persistence.py (Pass)</text>
+      <text x="12" y="146" font-size="10.5" fill="#34d399">✓ 100% Tests Superados</text>
+
+      <!-- Item 3 -->
+      <rect y="164" width="183" height="80" rx="8" fill="#071228" stroke="#1e3a5f" stroke-width="1" />
+      <text x="12" y="184" font-weight="bold" font-size="12" fill="#38bdf8">📦 Control de Versiones</text>
+      <text x="12" y="202" class="code-pill">$ git add .</text>
+      <text x="12" y="218" class="code-pill">$ git commit -m "v2.0"</text>
+      <text x="12" y="234" class="code-pill">$ git push origin main</text>
+
+      <!-- Estado -->
+      <rect y="256" width="183" height="74" rx="8" fill="#0b2447" stroke="#38bdf8" stroke-width="1.2" />
+      <text x="12" y="276" font-weight="bold" font-size="11.5" fill="#e0f2fe">🚀 Disparador:</text>
+      <text x="12" y="295" font-size="11" fill="#94a3b8">Envío de commits limpios a</text>
+      <text x="12" y="312" font-weight="bold" font-size="11.5" fill="#38bdf8">rama principal `main`</text>
+    </g>
+  </g>
+
+  <!-- FLECHA CONECTORA 1 -> 2 -->
+  <path d="M 265 350 L 325 350" fill="none" stroke="url(#line-cyan)" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-purple)" />
+  <text x="272" y="338" font-size="10" font-weight="bold" fill="#38bdf8">git push</text>
+
+  <!-- ============================================================== -->
+  <!-- PASO 2: GITHUB REPO & ACTIONS -->
+  <!-- ============================================================== -->
+  <g transform="translate(330, 140)" filter="url(#card-shadow)">
+    <!-- Marco Exterior -->
+    <rect width="220" height="420" rx="14" fill="url(#card-github)" stroke="#a855f7" stroke-width="1.8" />
+    
+    <!-- Encabezado Tarjeta -->
+    <rect width="220" height="52" rx="14" fill="#a855f7" fill-opacity="0.15" />
+    <circle cx="28" cy="26" r="14" fill="#a855f7" />
+    <text x="24" y="31" class="step-badge" fill="#ffffff">02</text>
+    <text x="50" y="27" class="card-title" fill="#c084fc">GITHUB REPO</text>
+    <text x="50" y="42" class="tag" fill="#e9d5ff">VCS &amp; Webhook CI</text>
+
+    <!-- Elementos del Bloque -->
+    <g transform="translate(16, 70)">
+      <!-- Item 1 -->
+      <rect width="188" height="74" rx="8" fill="#140f2b" stroke="#3b2d66" stroke-width="1" />
+      <text x="12" y="20" font-weight="bold" font-size="12" fill="#ffffff">🐙 Rama `main`</text>
+      <text x="12" y="38" font-size="11" fill="#cbd5e1">• Repositorio centralizado</text>
+      <text x="12" y="54" font-size="11" fill="#cbd5e1">• Historial inmutable de commits</text>
+      <text x="12" y="68" font-size="10.5" fill="#c084fc">• Tags semánticos de versión</text>
+
+      <!-- Item 2 -->
+      <rect y="86" width="188" height="84" rx="8" fill="#140f2b" stroke="#3b2d66" stroke-width="1" />
+      <text x="12" y="106" font-weight="bold" font-size="12" fill="#f472b6">⚡ Render Webhook Trigger</text>
+      <text x="12" y="124" font-size="11" fill="#cbd5e1">• Evento: `push: [main]`</text>
+      <text x="12" y="140" font-size="11" fill="#cbd5e1">• Notificación automática a</text>
+      <text x="12" y="156" font-weight="bold" font-size="11" fill="#00f3ff">  Render Deploy Hook</text>
+
+      <!-- Item 3: GitHub Actions -->
+      <rect y="182" width="188" height="106" rx="8" fill="#140f2b" stroke="#a855f7" stroke-width="1.2" />
+      <text x="12" y="202" font-weight="bold" font-size="11.5" fill="#c084fc">⏱️ GitHub Actions Cron</text>
+      <text x="12" y="220" font-size="10.5" fill="#a855f7">• .github/workflows/main.yml</text>
+      <text x="12" y="238" font-size="10.5" fill="#cbd5e1">• Cron: <tspan fill="#fbbf24">*/14 * * * *</tspan></text>
+      <text x="12" y="256" font-size="10.5" fill="#cbd5e1">• curl al Web Service activo</text>
+      <text x="12" y="274" font-weight="bold" font-size="10.5" fill="#34d399">✓ Evita hibernación en Free Tier</text>
+
+      <!-- Archivos Clave -->
+      <rect y="300" width="188" height="42" rx="6" fill="#201542" stroke="#6b21a8" stroke-width="1" />
+      <text x="10" y="325" font-size="10.5" fill="#e9d5ff">📁 Procfile &amp; render.yaml</text>
+    </g>
+  </g>
+
+  <!-- FLECHA CONECTORA 2 -> 3 -->
+  <path d="M 550 350 L 610 350" fill="none" stroke="url(#line-purple)" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-cyan)" />
+  <text x="556" y="338" font-size="10" font-weight="bold" fill="#00f3ff">Webhook</text>
+
+  <!-- ============================================================== -->
+  <!-- PASO 3: BUILD PIPELINE EN RENDER -->
+  <!-- ============================================================== -->
+  <g transform="translate(615, 140)" filter="url(#card-shadow)">
+    <!-- Marco Exterior -->
+    <rect width="225" height="420" rx="14" fill="url(#card-render)" stroke="#00f3ff" stroke-width="1.8" />
+    
+    <!-- Encabezado Tarjeta -->
+    <rect width="225" height="52" rx="14" fill="#00f3ff" fill-opacity="0.15" />
+    <circle cx="28" cy="26" r="14" fill="#00f3ff" />
+    <text x="24" y="31" class="step-badge" fill="#032024">03</text>
+    <text x="50" y="27" class="card-title" fill="#00f3ff">RENDER BUILD</text>
+    <text x="50" y="42" class="tag" fill="#67e8f9">Build &amp; Provisioning</text>
+
+    <!-- Elementos del Bloque -->
+    <g transform="translate(16, 70)">
+      <!-- Item 1: Config -->
+      <rect width="193" height="74" rx="8" fill="#042026" stroke="#0e4e59" stroke-width="1" />
+      <text x="12" y="20" font-weight="bold" font-size="12" fill="#ffffff">📋 Detección Blueprint</text>
+      <text x="12" y="38" font-size="11" fill="#cbd5e1">• Lee <tspan fill="#00f3ff">render.yaml</tspan> &amp; <tspan fill="#00f3ff">Procfile</tspan></text>
+      <text x="12" y="54" font-size="11" fill="#cbd5e1">• Entorno Linux Python 3.12</text>
+      <text x="12" y="68" font-size="10.5" fill="#38bdf8">✓ Runtime aislado en contenedor</text>
+
+      <!-- Item 2: Build Command -->
+      <rect y="86" width="193" height="96" rx="8" fill="#042026" stroke="#0e4e59" stroke-width="1" />
+      <text x="12" y="106" font-weight="bold" font-size="12" fill="#38bdf8">📦 Build Command</text>
+      <text x="12" y="125" class="code-pill">pip install -r requirements.txt</text>
+      <text x="12" y="145" font-size="10.5" fill="#94a3b8">• Flask &amp; Werkzeug 3.x</text>
+      <text x="12" y="161" font-size="10.5" fill="#94a3b8">• Flask-SQLAlchemy &amp; SQLite</text>
+      <text x="12" y="176" font-size="10.5" fill="#94a3b8">• PyJWT &amp; Gunicorn 23.x</text>
+
+      <!-- Item 3: Secrets Injection -->
+      <rect y="194" width="193" height="90" rx="8" fill="#042026" stroke="#00f3ff" stroke-width="1.2" />
+      <text x="12" y="214" font-weight="bold" font-size="12" fill="#00f3ff">🔐 Inyección de Secretos</text>
+      <text x="12" y="232" font-size="11" fill="#cbd5e1">• <tspan fill="#fbbf24">SECRET_KEY</tspan> (Generada)</text>
+      <text x="12" y="248" font-size="11" fill="#fbbf24">• JWT_SECRET_KEY</text>
+      <text x="12" y="264" font-size="11" fill="#cbd5e1">• <tspan fill="#34d399">FLASK_ENV</tspan>=production</text>
+      <text x="12" y="278" font-size="10.5" fill="#34d399">✓ Zero Credentials en repo Git</text>
+
+      <!-- Start Command -->
+      <rect y="296" width="193" height="46" rx="6" fill="#082b33" stroke="#00f3ff" stroke-width="1" />
+      <text x="10" y="314" font-size="10" font-weight="bold" fill="#e0f2fe">Start Command:</text>
+      <text x="10" y="331" class="code-pill">gunicorn "app:create_app()"</text>
+    </g>
+  </g>
+
+  <!-- FLECHA CONECTORA 3 -> 4 -->
+  <path d="M 840 350 L 900 350" fill="none" stroke="url(#line-render)" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-gold)" />
+  <text x="847" y="338" font-size="10" font-weight="bold" fill="#fbbf24">Deploy OK</text>
+
+  <!-- ============================================================== -->
+  <!-- PASO 4: SERVICIO EN PRODUCCIÓN (RENDER RUNTIME) -->
+  <!-- ============================================================== -->
+  <g transform="translate(905, 140)" filter="url(#card-shadow)">
+    <!-- Marco Exterior -->
+    <rect width="235" height="420" rx="14" fill="url(#card-prod)" stroke="#fbbf24" stroke-width="1.8" />
+    
+    <!-- Encabezado Tarjeta -->
+    <rect width="235" height="52" rx="14" fill="#fbbf24" fill-opacity="0.15" />
+    <circle cx="28" cy="26" r="14" fill="#fbbf24" />
+    <text x="24" y="31" class="step-badge" fill="#2d1702">04</text>
+    <text x="50" y="27" class="card-title" fill="#fbbf24">PRODUCCIÓN RENDER</text>
+    <text x="50" y="42" class="tag" fill="#fde68a">Live Cloud Instance</text>
+
+    <!-- Elementos del Bloque -->
+    <g transform="translate(16, 70)">
+      <!-- Item 1: WSGI Server -->
+      <rect width="203" height="74" rx="8" fill="#1c1102" stroke="#543707" stroke-width="1" />
+      <text x="12" y="20" font-weight="bold" font-size="12" fill="#ffffff">⚙️ Servidor Gunicorn WSGI</text>
+      <text x="12" y="38" font-size="11" fill="#cbd5e1">• Múltiples workers concurrentes</text>
+      <text x="12" y="54" font-size="11" fill="#cbd5e1">• Factory: <tspan fill="#fbbf24">create_app()</tspan></text>
+      <text x="12" y="68" font-size="10.5" fill="#34d399">✓ Auto-recovery ante fallos</text>
+
+      <!-- Item 2: Database -->
+      <rect y="86" width="203" height="84" rx="8" fill="#1c1102" stroke="#543707" stroke-width="1" />
+      <text x="12" y="106" font-weight="bold" font-size="12" fill="#38bdf8">💾 Base de Datos Persistente</text>
+      <text x="12" y="124" font-size="11" fill="#cbd5e1">• SQLite File: <tspan fill="#00f3ff">game.db</tspan></text>
+      <text x="12" y="140" font-size="11" fill="#cbd5e1">• Tablas: Users, Ships, Scores</text>
+      <text x="12" y="156" font-size="10.5" fill="#fbbf24">• UserProgress (Fases 1-5)</text>
+
+      <!-- Item 3: Networking & Security -->
+      <rect y="182" width="203" height="88" rx="8" fill="#1c1102" stroke="#fbbf24" stroke-width="1.2" />
+      <text x="12" y="202" font-weight="bold" font-size="12" fill="#fbbf24">🌐 Conectividad &amp; SSL</text>
+      <text x="12" y="220" font-size="11" fill="#cbd5e1">• Certificado SSL/TLS Automático</text>
+      <text x="12" y="236" font-size="11" fill="#cbd5e1">• Dominio Oficial en la Nube:</text>
+      <text x="12" y="254" font-weight="bold" font-size="10.5" fill="#34d399">space-assault.onrender.com</text>
+
+      <!-- Live Badge -->
+      <rect y="282" width="203" height="60" rx="8" fill="#382103" stroke="#fbbf24" stroke-width="1" />
+      <circle cx="24" cy="312" r="6" fill="#22c55e" filter="url(#glow-gold)" />
+      <text x="38" y="308" font-weight="bold" font-size="11.5" fill="#fde047">ESTADO: ONLINE 24/7</text>
+      <text x="38" y="326" font-size="10.5" fill="#cbd5e1">Healthchecks continuos</text>
+    </g>
+  </g>
+
+  <!-- ============================================================== -->
+  <!-- PASO 5: CLIENTES & JUGADORES (BANNER INFERIOR CONECTADO) -->
+  <!-- ============================================================== -->
+  <g transform="translate(100, 600)" filter="url(#card-shadow)">
+    <!-- Marco Exterior -->
+    <rect width="1100" height="210" rx="16" fill="url(#card-users)" stroke="#38bdf8" stroke-width="1.5" />
+    
+    <!-- Encabezado Horizontal -->
+    <rect width="1100" height="44" rx="16" fill="#38bdf8" fill-opacity="0.12" />
+    <circle cx="32" cy="22" r="12" fill="#38bdf8" />
+    <text x="28" y="27" class="step-badge" fill="#041026">05</text>
+    <text x="56" y="27" class="card-title" fill="#38bdf8">CLIENTES, JUGADORES &amp; CICLO DE TRÁFICO BIDIRECCIONAL (SPA + REST API)</text>
+
+    <!-- Tres Columnas de Detalle -->
+    <g transform="translate(25, 62)">
+      <!-- Col 1: Acceso Web SPA -->
+      <rect width="325" height="125" rx="10" fill="#071426" stroke="#1e3a5f" stroke-width="1" />
+      <text x="16" y="26" font-weight="bold" font-size="13" fill="#ffffff">🎮 Navegador Web (Cliente SPA)</text>
+      <text x="16" y="48" font-size="11.5" fill="#cbd5e1">• Carga inicial de HTML5, CSS y Módulos JS</text>
+      <text x="16" y="68" font-size="11.5" fill="#cbd5e1">• Motor Canvas a 60 FPS (Scenario &amp; Bosses)</text>
+      <text x="16" y="88" font-size="11.5" fill="#cbd5e1">• Web Audio API con síntesis polifónica retro</text>
+      <text x="16" y="108" font-weight="bold" font-size="11" fill="#34d399">✓ 0% plugins, 100% nativo en cualquier navegador</text>
+
+      <!-- Col 2: Autenticación JWT -->
+      <rect x="360" width="335" height="125" rx="10" fill="#071426" stroke="#1e3a5f" stroke-width="1" />
+      <text x="376" y="26" font-weight="bold" font-size="13" fill="#fbbf24">🔑 Seguridad &amp; Sesión Táctica</text>
+      <text x="376" y="48" font-size="11.5" fill="#cbd5e1">• Autenticación con JWT Bearer Token</text>
+      <text x="376" y="68" font-size="11.5" fill="#cbd5e1">• Token resguardado en <tspan fill="#00f3ff">localStorage</tspan></text>
+      <text x="376" y="88" font-size="11.5" fill="#cbd5e1">• Rutas protegidas: /api/game/progress &amp; scores</text>
+      <text x="376" y="108" font-weight="bold" font-size="11" fill="#fbbf24">✓ Modo Invitado con persistencia de fases</text>
+
+      <!-- Col 3: Persistencia y Ranking -->
+      <rect x="725" width="325" height="125" rx="10" fill="#071426" stroke="#1e3a5f" stroke-width="1" />
+      <text x="741" y="26" font-weight="bold" font-size="13" fill="#38bdf8">🏆 Telemetría &amp; Ranking Mundial</text>
+      <text x="741" y="48" font-size="11.5" fill="#cbd5e1">• Sincronización de desbloqueo de Fases 1 a 5</text>
+      <text x="741" y="68" font-size="11.5" fill="#cbd5e1">• Registro inmediato de puntuación en Leaderboard</text>
+      <text x="741" y="88" font-size="11.5" fill="#cbd5e1">• Keep-alive continuo vía cron y peticiones activas</text>
+      <text x="741" y="108" font-weight="bold" font-size="11" fill="#38bdf8">✓ Top 10 global consultable en tiempo real</text>
+    </g>
+  </g>
+
+  <!-- Flechas Conectoras entre Producción y Clientes -->
+  <path d="M 1022 560 L 1022 595" fill="none" stroke="url(#line-prod)" stroke-width="3" marker-end="url(#arrow-green)" />
+  <path d="M 280 595 L 280 565" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrow-cyan)" />
+  <text x="210" y="583" font-size="10" font-weight="bold" fill="#38bdf8">Peticiones HTTP</text>
+  <text x="1035" y="583" font-size="10" font-weight="bold" fill="#34d399">Entrega HTTPS</text>
+</svg>

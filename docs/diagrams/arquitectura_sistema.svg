@@ -1,0 +1,407 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1350 920" width="100%" height="100%">
+  <defs>
+    <!-- Filtros de Glow y Sombras -->
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+
+    <!-- Gradientes -->
+    <linearGradient id="bg-grad-arch" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040712" />
+      <stop offset="50%" stop-color="#090f24" />
+      <stop offset="100%" stop-color="#03050d" />
+    </linearGradient>
+
+    <linearGradient id="box-front" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d2440" />
+      <stop offset="100%" stop-color="#061224" />
+    </linearGradient>
+
+    <linearGradient id="box-api" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2a143d" />
+      <stop offset="100%" stop-color="#140821" />
+    </linearGradient>
+
+    <linearGradient id="box-back" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#052c28" />
+      <stop offset="100%" stop-color="#021412" />
+    </linearGradient>
+
+    <linearGradient id="box-db" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2e1f06" />
+      <stop offset="100%" stop-color="#140c01" />
+    </linearGradient>
+
+    <!-- Conectores -->
+    <linearGradient id="conn-front-back" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#2dd4bf" />
+    </linearGradient>
+
+    <linearGradient id="conn-back-db" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+
+    <!-- Marcadores de Flecha -->
+    <marker id="arrow-c" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" />
+    </marker>
+    <marker id="arrow-p" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#c084fc" />
+    </marker>
+    <marker id="arrow-g" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#2dd4bf" />
+    </marker>
+    <marker id="arrow-y" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#fbbf24" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 26px; fill: #ffffff; letter-spacing: 1px; }
+    .subtitle { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 400; font-size: 13.5px; fill: #94a3b8; }
+    .section-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 0.5px; }
+    .badge { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 10px; text-transform: uppercase; }
+    .comp-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 12.5px; fill: #ffffff; }
+    .comp-desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; fill: #94a3b8; }
+    .code { font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; }
+  </style>
+
+  <!-- Fondo General con Patrón de Cuadrícula Tecnológica -->
+  <rect width="1350" height="920" fill="url(#bg-grad-arch)" />
+  
+  <g opacity="0.06" stroke="#38bdf8" stroke-width="1">
+    <line x1="0" y1="120" x2="1350" y2="120" />
+    <line x1="0" y1="280" x2="1350" y2="280" />
+    <line x1="0" y1="460" x2="1350" y2="460" />
+    <line x1="0" y1="640" x2="1350" y2="640" />
+    <line x1="0" y1="800" x2="1350" y2="800" />
+    <line x1="220" y1="0" x2="220" y2="920" />
+    <line x1="480" y1="0" x2="480" y2="920" />
+    <line x1="720" y1="0" x2="720" y2="920" />
+    <line x1="980" y1="0" x2="980" y2="920" />
+    <line x1="1200" y1="0" x2="1200" y2="920" />
+  </g>
+
+  <!-- ENCABEZADO -->
+  <g transform="translate(60, 48)">
+    <rect x="-10" y="-8" width="58" height="58" rx="14" fill="#00f3ff" opacity="0.1" />
+    <text x="0" y="32" font-size="36">⚡</text>
+    <text x="60" y="24" class="title">SPACE ASSAULT: ARQUITECTURA TÉCNICA DEL SISTEMA</text>
+    <text x="60" y="46" class="subtitle">Ecosistema Completo de Componentes: Cliente Frontend SPA ➔ Gateway REST API JWT ➔ Servidor Flask Backend ➔ Persistencia SQLite</text>
+  </g>
+
+  <!-- =================================================================== -->
+  <!-- CAPA 1: FRONTEND (CLIENTE SPA / MOTOR HTML5 & WEB AUDIO) -->
+  <!-- =================================================================== -->
+  <g transform="translate(45, 125)" filter="url(#card-shadow)">
+    <!-- Contenedor Principal Front -->
+    <rect width="410" height="745" rx="16" fill="url(#box-front)" stroke="#38bdf8" stroke-width="1.8" />
+    
+    <!-- Barra Superior -->
+    <rect width="410" height="48" rx="16" fill="#38bdf8" fill-opacity="0.15" />
+    <circle cx="28" cy="24" r="13" fill="#38bdf8" />
+    <text x="21" y="29" font-size="14">🎮</text>
+    <text x="50" y="24" class="section-title" fill="#38bdf8">FRONTEND: SPA &amp; MOTOR WEB</text>
+    <text x="50" y="39" class="badge" fill="#93c5fd">HTML5 • Canvas 2D • Vanilla JS • Web Audio</text>
+
+    <!-- Submódulo A: Vistas & UI -->
+    <g transform="translate(18, 62)">
+      <rect width="374" height="152" rx="10" fill="#06162d" stroke="#1d4ed8" stroke-width="1" />
+      <rect width="374" height="28" rx="10" fill="#1d4ed8" fill-opacity="0.25" />
+      <text x="14" y="19" class="comp-title" fill="#60a5fa">🖥️ Capa de Presentación &amp; UI Dinámica</text>
+      
+      <text x="14" y="46" class="code" fill="#38bdf8">index.html / manual.html</text>
+      <text x="14" y="60" class="comp-desc">Estructura SPA, Canvas viewport, modales glassmorphism.</text>
+
+      <text x="14" y="80" class="code" fill="#38bdf8">app_ui.js</text>
+      <text x="14" y="94" class="comp-desc">Control de vistas (Hangar, Fase, Leaderboard, Ajustes).</text>
+
+      <text x="14" y="114" class="code" fill="#38bdf8">cyber_dialog.js &amp; intro_cinema.js</text>
+      <text x="14" y="128" class="comp-desc">Cinemáticas de lore, diálogos cyberpunk con voz sintética.</text>
+    </g>
+
+    <!-- Submódulo B: Motor del Juego (Engine Core) -->
+    <g transform="translate(18, 226)">
+      <rect width="374" height="236" rx="10" fill="#06162d" stroke="#0284c7" stroke-width="1.2" />
+      <rect width="374" height="28" rx="10" fill="#0284c7" fill-opacity="0.25" />
+      <text x="14" y="19" class="comp-title" fill="#38bdf8">⚙️ Game Engine &amp; Renderers (60 FPS)</text>
+
+      <text x="14" y="48" class="code" fill="#00f3ff">engine.js (Game Loop Principal)</text>
+      <text x="14" y="62" class="comp-desc">• requestAnimationFrame ciclo continuo a 60 FPS.</text>
+      <text x="14" y="76" class="comp-desc">• Detección de colisiones (Jugador, Proyectiles, Bombas, Drops).</text>
+      <text x="14" y="90" class="comp-desc">• Desbloqueo progresivo y control de distancia de fases.</text>
+
+      <text x="14" y="112" class="code" fill="#38bdf8">scenario_renderer.js (Terreno Procedural)</text>
+      <text x="14" y="126" class="comp-desc">• Fase 1: Antártida (Plataforma de hielo y grietas glaciares).</text>
+      <text x="14" y="140" class="comp-desc">• Fase 2: Océano Pacífico a masa continental de Australia.</text>
+      <text x="14" y="154" class="comp-desc">• Fase 3: Espacio Profundo a Saturno (Marte, Júpiter, asteroides).</text>
+      <text x="14" y="168" class="comp-desc">• Fase 4: Círculo Ártico • Fase 5: Selva Prohibida de Vektor.</text>
+
+      <text x="14" y="190" class="code" fill="#38bdf8">ship_renderer.js &amp; enemies.js / bosses.js</text>
+      <text x="14" y="204" class="comp-desc">• 8 naves jugables con estadísticas diferenciadas.</text>
+      <text x="14" y="218" class="comp-desc">• IA de cazas enemigos, sublíderes y jefes colosales de fase.</text>
+    </g>
+
+    <!-- Submódulo C: Audio & Red -->
+    <g transform="translate(18, 474)">
+      <rect width="374" height="150" rx="10" fill="#06162d" stroke="#0369a1" stroke-width="1" />
+      <rect width="374" height="28" rx="10" fill="#0369a1" fill-opacity="0.25" />
+      <text x="14" y="19" class="comp-title" fill="#7dd3fc">🔊 Audio Web &amp; Red Cliente</text>
+
+      <text x="14" y="46" class="code" fill="#38bdf8">sound_fx.js (Web Audio API)</text>
+      <text x="14" y="60" class="comp-desc">Síntesis polifónica en tiempo real: lásers, bombas, música.</text>
+
+      <text x="14" y="80" class="code" fill="#38bdf8">auth.js &amp; api.js (Gestión de Sesión)</text>
+      <text x="14" y="94" class="comp-desc">• Token JWT guardado en <tspan fill="#00f3ff">localStorage</tspan>.</text>
+      <text x="14" y="108" class="comp-desc">• Modo Invitado offline con guardado en SQLite.</text>
+      <text x="14" y="122" class="comp-desc">• Cliente fetch() centralizado con cabeceras Bearer.</text>
+    </g>
+
+    <!-- Estado LocalStorage -->
+    <g transform="translate(18, 636)">
+      <rect width="374" height="90" rx="8" fill="#081d3b" stroke="#38bdf8" stroke-width="1" />
+      <text x="14" y="22" font-weight="bold" font-size="11.5" fill="#e0f2fe">💾 Almacenamiento Local (localStorage):</text>
+      <text x="14" y="42" font-size="11" fill="#cbd5e1">• <tspan fill="#00f3ff">naves_jwt_token</tspan>: Token de autenticación activa</text>
+      <text x="14" y="58" font-size="11" fill="#cbd5e1">• <tspan fill="#fbbf24">naves_guest_progress</tspan>: Backup offline de fases</text>
+      <text x="14" y="74" font-size="11" fill="#34d399">• naves_selected_ship: Nave preferida por el piloto</text>
+    </g>
+  </g>
+
+  <!-- =================================================================== -->
+  <!-- CAPA 2: COMUNICACIÓN & GATEWAY API REST (PUENTE CENTRAL) -->
+  <!-- =================================================================== -->
+  <g transform="translate(485, 125)" filter="url(#card-shadow)">
+    <!-- Contenedor Gateway -->
+    <rect width="180" height="745" rx="16" fill="url(#box-api)" stroke="#c084fc" stroke-width="1.8" />
+    
+    <!-- Encabezado Gateway -->
+    <rect width="180" height="48" rx="16" fill="#c084fc" fill-opacity="0.15" />
+    <circle cx="24" cy="24" r="12" fill="#c084fc" />
+    <text x="18" y="29" font-size="13">🔒</text>
+    <text x="44" y="24" class="section-title" fill="#c084fc">API GATEWAY</text>
+    <text x="44" y="39" class="badge" fill="#e9d5ff">HTTP / REST / JWT</text>
+
+    <!-- Protocolos & Seguridad -->
+    <g transform="translate(12, 65)">
+      <rect width="156" height="85" rx="8" fill="#130824" stroke="#581c87" stroke-width="1" />
+      <text x="10" y="20" font-weight="bold" font-size="11" fill="#ffffff">🔐 Seguridad HTTP</text>
+      <text x="10" y="38" font-size="10" fill="#cbd5e1">• SSL/TLS (HTTPS)</text>
+      <text x="10" y="52" font-size="10" fill="#cbd5e1">• Authorization:</text>
+      <text x="10" y="66" class="code" fill="#00f3ff">Bearer &lt;JWT&gt;</text>
+      <text x="10" y="78" font-size="9" fill="#34d399">✓ CORS habilitado</text>
+
+      <!-- Endpoints de Autenticación -->
+      <rect y="98" width="156" height="158" rx="8" fill="#130824" stroke="#7e22ce" stroke-width="1" />
+      <text x="10" y="118" font-weight="bold" font-size="11" fill="#f472b6">👤 /api/auth</text>
+      
+      <text x="10" y="138" class="code" fill="#e879f9">POST /register</text>
+      <text x="10" y="150" font-size="9.5" fill="#94a3b8">Alta de nuevo piloto</text>
+
+      <text x="10" y="170" class="code" fill="#e879f9">POST /login</text>
+      <text x="10" y="182" font-size="9.5" fill="#94a3b8">Valida hash &amp; da JWT</text>
+
+      <text x="10" y="202" class="code" fill="#e879f9">POST /guest</text>
+      <text x="10" y="214" font-size="9.5" fill="#94a3b8">Piloto temporal</text>
+
+      <text x="10" y="234" class="code" fill="#e879f9">GET /me</text>
+      <text x="10" y="246" font-size="9.5" fill="#94a3b8">Perfil de sesión</text>
+
+      <!-- Endpoints de Juego -->
+      <rect y="268" width="156" height="188" rx="8" fill="#130824" stroke="#7e22ce" stroke-width="1" />
+      <text x="10" y="288" font-weight="bold" font-size="11" fill="#38bdf8">🎮 /api/game</text>
+
+      <text x="10" y="308" class="code" fill="#38bdf8">GET /ships</text>
+      <text x="10" y="320" font-size="9.5" fill="#94a3b8">Catálogo de 8 naves</text>
+
+      <text x="10" y="338" class="code" fill="#38bdf8">GET /progress</text>
+      <text x="10" y="350" font-size="9.5" fill="#94a3b8">Fases desbloqueadas</text>
+
+      <text x="10" y="368" class="code" fill="#38bdf8">POST /progress/unlock</text>
+      <text x="10" y="380" font-size="9.5" fill="#94a3b8">Desbloqueo de fase</text>
+
+      <text x="10" y="398" class="code" fill="#38bdf8">POST /scores</text>
+      <text x="10" y="410" font-size="9.5" fill="#94a3b8">Envío de puntuación</text>
+
+      <text x="10" y="428" class="code" fill="#38bdf8">GET /scores/top</text>
+      <text x="10" y="440" font-size="9.5" fill="#94a3b8">Top 10 Leaderboard</text>
+
+      <!-- Payload JSON -->
+      <rect y="468" width="156" height="198" rx="8" fill="#190d30" stroke="#a855f7" stroke-width="1" />
+      <text x="10" y="488" font-weight="bold" font-size="10.5" fill="#fde047">📦 Formato de Datos:</text>
+      <text x="10" y="506" font-size="9.5" fill="#cbd5e1">• MIME: application/json</text>
+      <text x="10" y="522" font-size="9.5" fill="#cbd5e1">• Respuestas HTTP:</text>
+      <text x="10" y="538" font-size="9" fill="#34d399">  200 OK / 201 Created</text>
+      <text x="10" y="552" font-size="9" fill="#f87171">  401 Unauthorized</text>
+      <text x="10" y="566" font-size="9" fill="#fbbf24">  422 Unprocessable</text>
+      <text x="10" y="584" font-size="9.5" fill="#cbd5e1">• Validaciones estrictas</text>
+      <text x="10" y="600" font-size="9.5" fill="#cbd5e1">• Prevención SQL Inject</text>
+      <text x="10" y="618" font-size="9.5" fill="#cbd5e1">• Manejo de excepciones</text>
+      <text x="10" y="634" class="code" fill="#c084fc">{"status":"success"}</text>
+      <text x="10" y="650" font-weight="bold" font-size="9" fill="#34d399">✓ 100% Sin bloqueos</text>
+    </g>
+  </g>
+
+  <!-- Flechas Conectoras Front <-> Gateway -->
+  <path d="M 455 350 L 485 350" fill="none" stroke="url(#conn-front-back)" stroke-width="2.5" marker-end="url(#arrow-p)" />
+  <path d="M 485 375 L 455 375" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="4,3" marker-end="url(#arrow-c)" />
+  
+  <path d="M 665 350 L 695 350" fill="none" stroke="url(#conn-front-back)" stroke-width="2.5" marker-end="url(#arrow-g)" />
+  <path d="M 695 375 L 665 375" fill="none" stroke="#c084fc" stroke-width="2.5" stroke-dasharray="4,3" marker-end="url(#arrow-p)" />
+
+  <!-- =================================================================== -->
+  <!-- CAPA 3: BACKEND (PYTHON / FLASK APPLICATION FACTORY) -->
+  <!-- =================================================================== -->
+  <g transform="translate(695, 125)" filter="url(#card-shadow)">
+    <!-- Contenedor Principal Backend -->
+    <rect width="365" height="745" rx="16" fill="url(#box-back)" stroke="#2dd4bf" stroke-width="1.8" />
+    
+    <!-- Encabezado Backend -->
+    <rect width="365" height="48" rx="16" fill="#2dd4bf" fill-opacity="0.15" />
+    <circle cx="28" cy="24" r="13" fill="#2dd4bf" />
+    <text x="21" y="29" font-size="14">🐍</text>
+    <text x="50" y="24" class="section-title" fill="#2dd4bf">BACKEND: FLASK &amp; SERVICIOS</text>
+    <text x="50" y="39" class="badge" fill="#99f6e4">Python 3.12 • Blueprints • SQLAlchemy ORM</text>
+
+    <!-- Submódulo 1: App Core -->
+    <g transform="translate(18, 62)">
+      <rect width="329" height="152" rx="10" fill="#031f1c" stroke="#0d9488" stroke-width="1" />
+      <rect width="329" height="28" rx="10" fill="#0d9488" fill-opacity="0.25" />
+      <text x="14" y="19" class="comp-title" fill="#5eead4">🏗️ Núcleo &amp; Application Factory</text>
+
+      <text x="14" y="46" class="code" fill="#2dd4bf">app.py :: create_app()</text>
+      <text x="14" y="60" class="comp-desc">Factory Pattern: instancia Flask, registra rutas y estáticos.</text>
+
+      <text x="14" y="80" class="code" fill="#2dd4bf">backend/config.py</text>
+      <text x="14" y="94" class="comp-desc">Configuración: SECRET_KEY, JWT_EXPIRATION, DB_PATH.</text>
+
+      <text x="14" y="114" class="code" fill="#2dd4bf">backend/database.py</text>
+      <text x="14" y="128" class="comp-desc">Inicialización de SQLAlchemy (`db = SQLAlchemy()`).</text>
+    </g>
+
+    <!-- Submódulo 2: Rutas & Controladores -->
+    <g transform="translate(18, 226)">
+      <rect width="329" height="236" rx="10" fill="#031f1c" stroke="#14b8a6" stroke-width="1.2" />
+      <rect width="329" height="28" rx="10" fill="#14b8a6" fill-opacity="0.25" />
+      <text x="14" y="19" class="comp-title" fill="#2dd4bf">🧭 Controladores &amp; Blueprints de Rutas</text>
+
+      <text x="14" y="48" class="code" fill="#34d399">backend/routes/auth_routes.py</text>
+      <text x="14" y="62" class="comp-desc">• Endpoint /register con hash seguro de contraseñas.</text>
+      <text x="14" y="76" class="comp-desc">• Endpoint /login con generación de token PyJWT.</text>
+      <text x="14" y="90" class="comp-desc">• Endpoint /guest: inicio instantáneo sin fricción.</text>
+      <text x="14" y="104" class="comp-desc">• Endpoint /me: obtención de credenciales del piloto.</text>
+
+      <text x="14" y="128" class="code" fill="#34d399">backend/routes/game_routes.py</text>
+      <text x="14" y="142" class="comp-desc">• Endpoint /ships: serialización de specs de naves.</text>
+      <text x="14" y="156" class="comp-desc">• Endpoint /progress: consulta de fases desbloqueadas.</text>
+      <text x="14" y="170" class="comp-desc">• Endpoint /progress/unlock: guardado persistente de fase.</text>
+      <text x="14" y="184" class="comp-desc">• Endpoint /scores: registro de puntajes de combate.</text>
+      <text x="14" y="198" class="comp-desc">• Endpoint /scores/top: ranking mundial en tiempo real.</text>
+    </g>
+
+    <!-- Submódulo 3: Middleware & Seguridad -->
+    <g transform="translate(18, 474)">
+      <rect width="329" height="150" rx="10" fill="#031f1c" stroke="#0f766e" stroke-width="1" />
+      <rect width="329" height="28" rx="10" fill="#0f766e" fill-opacity="0.25" />
+      <text x="14" y="19" class="comp-title" fill="#99f6e4">🛡️ Middleware &amp; Decoradores</text>
+
+      <text x="14" y="46" class="code" fill="#2dd4bf">backend/utils/auth.py :: @jwt_required</text>
+      <text x="14" y="60" class="comp-desc">Intercéptor de cabecera Bearer, decodificación y validación.</text>
+
+      <text x="14" y="80" class="code" fill="#2dd4bf">Manejo de Errores &amp; Static Serving</text>
+      <text x="14" y="94" class="comp-desc">• Retorno uniforme de errores en JSON (400, 401, 404, 500).</text>
+      <text x="14" y="108" class="comp-desc">• Servidor estático Flask: entrega `frontend/` y `ads.txt`.</text>
+      <text x="14" y="122" class="comp-desc">• Compatible con WSGI Gunicorn multi-worker.</text>
+    </g>
+
+    <!-- Estado WSGI -->
+    <g transform="translate(18, 636)">
+      <rect width="329" height="90" rx="8" fill="#062e29" stroke="#2dd4bf" stroke-width="1" />
+      <text x="14" y="22" font-weight="bold" font-size="11.5" fill="#ccfbf1">🚀 Servidor de Producción:</text>
+      <text x="14" y="42" font-size="11" fill="#cbd5e1">• Gunicorn WSGI: <tspan fill="#2dd4bf">app:create_app()</tspan></text>
+      <text x="14" y="58" font-size="11" fill="#cbd5e1">• Workers sincrónicos y asíncronos configurables</text>
+      <text x="14" y="74" font-size="11" fill="#34d399">✓ Preparado para despliegue Cloud en Render</text>
+    </g>
+  </g>
+
+  <!-- Flechas Conectoras Backend <-> Database -->
+  <path d="M 1060 350 L 1090 350" fill="none" stroke="url(#conn-back-db)" stroke-width="2.5" marker-end="url(#arrow-y)" />
+  <path d="M 1090 375 L 1060 375" fill="none" stroke="#2dd4bf" stroke-width="2.5" stroke-dasharray="4,3" marker-end="url(#arrow-g)" />
+
+  <!-- =================================================================== -->
+  <!-- CAPA 4: PERSISTENCIA (MODELOS ORM & BASE DE DATOS SQLITE) -->
+  <!-- =================================================================== -->
+  <g transform="translate(1090, 125)" filter="url(#card-shadow)">
+    <!-- Contenedor Base de Datos -->
+    <rect width="215" height="745" rx="16" fill="url(#box-db)" stroke="#fbbf24" stroke-width="1.8" />
+    
+    <!-- Encabezado DB -->
+    <rect width="215" height="48" rx="16" fill="#fbbf24" fill-opacity="0.15" />
+    <circle cx="26" cy="24" r="12" fill="#fbbf24" />
+    <text x="20" y="29" font-size="13">💾</text>
+    <text x="46" y="24" class="section-title" fill="#fbbf24">PERSISTENCIA</text>
+    <text x="46" y="39" class="badge" fill="#fde68a">SQLAlchemy • SQLite</text>
+
+    <!-- Modelos de Dominio -->
+    <g transform="translate(14, 65)">
+      <!-- Modelo 1: User -->
+      <rect width="187" height="116" rx="8" fill="#1f1402" stroke="#664608" stroke-width="1" />
+      <text x="12" y="20" font-weight="bold" font-size="12" fill="#ffffff">👤 Modelo `User`</text>
+      <text x="12" y="38" class="code" fill="#fbbf24">backend/models/user.py</text>
+      <text x="12" y="56" font-size="10.5" fill="#cbd5e1">• id (Integer, PK)</text>
+      <text x="12" y="70" font-size="10.5" fill="#cbd5e1">• username (String, Unique)</text>
+      <text x="12" y="84" font-size="10.5" fill="#cbd5e1">• password_hash (String)</text>
+      <text x="12" y="98" font-size="10.5" fill="#cbd5e1">• role (pilot / admin)</text>
+      <text x="12" y="112" font-size="10" fill="#34d399">✓ Relación con Scores &amp; Progreso</text>
+
+      <!-- Modelo 2: Progress -->
+      <rect y="128" width="187" height="126" rx="8" fill="#1f1402" stroke="#664608" stroke-width="1" />
+      <text x="12" y="148" font-weight="bold" font-size="12" fill="#ffffff">🎖️ `UserProgress`</text>
+      <text x="12" y="166" class="code" fill="#fbbf24">backend/models/progress.py</text>
+      <text x="12" y="184" font-size="10.5" fill="#cbd5e1">• id (Integer, PK)</text>
+      <text x="12" y="198" font-size="10.5" fill="#cbd5e1">• user_id (FK ➔ User.id)</text>
+      <text x="12" y="212" font-size="10.5" fill="#cbd5e1">• stage_number (1 a 5)</text>
+      <text x="12" y="226" font-size="10.5" fill="#cbd5e1">• is_unlocked (Boolean)</text>
+      <text x="12" y="240" font-size="10.5" fill="#cbd5e1">• completed (Boolean)</text>
+
+      <!-- Modelo 3: Score -->
+      <rect y="266" width="187" height="114" rx="8" fill="#1f1402" stroke="#664608" stroke-width="1" />
+      <text x="12" y="286" font-weight="bold" font-size="12" fill="#ffffff">🏆 Modelo `Score`</text>
+      <text x="12" y="304" class="code" fill="#fbbf24">backend/models/score.py</text>
+      <text x="12" y="322" font-size="10.5" fill="#cbd5e1">• id (Integer, PK)</text>
+      <text x="12" y="336" font-size="10.5" fill="#cbd5e1">• user_id (FK ➔ User.id)</text>
+      <text x="12" y="350" font-size="10.5" fill="#cbd5e1">• score (Integer, Puntos)</text>
+      <text x="12" y="364" font-size="10.5" fill="#cbd5e1">• stage_reached (1 a 5)</text>
+      <text x="12" y="378" font-size="10" fill="#38bdf8">• ship_used (Slug de nave)</text>
+
+      <!-- Modelo 4: Ship -->
+      <rect y="392" width="187" height="114" rx="8" fill="#1f1402" stroke="#664608" stroke-width="1" />
+      <text x="12" y="412" font-weight="bold" font-size="12" fill="#ffffff">🚀 Modelo `Ship`</text>
+      <text x="12" y="430" class="code" fill="#fbbf24">backend/models/ship.py</text>
+      <text x="12" y="448" font-size="10.5" fill="#cbd5e1">• slug (String, Unique PK)</text>
+      <text x="12" y="462" font-size="10.5" fill="#cbd5e1">• name, speed, health</text>
+      <text x="12" y="476" font-size="10.5" fill="#cbd5e1">• weapon &amp; special specs</text>
+      <text x="12" y="490" font-size="10" fill="#34d399">✓ 8 Naves preconfiguradas</text>
+
+      <!-- Motor Físico DB -->
+      <rect y="518" width="187" height="148" rx="8" fill="#2d1902" stroke="#fbbf24" stroke-width="1.2" />
+      <text x="12" y="538" font-weight="bold" font-size="11.5" fill="#fde047">🗄️ Archivo de Base de Datos:</text>
+      <text x="12" y="558" class="code" fill="#ffffff">game.db (SQLite 3)</text>
+      <text x="12" y="578" font-size="10.5" fill="#cbd5e1">• Ubicación: Raíz / backend</text>
+      <text x="12" y="594" font-size="10.5" fill="#cbd5e1">• Transacciones ACID completas</text>
+      <text x="12" y="610" font-size="10.5" fill="#cbd5e1">• Sin servidor DB externo (0ms)</text>
+      <text x="12" y="626" font-size="10.5" fill="#cbd5e1">• Persistencia garantizada</text>
+      <text x="12" y="642" font-weight="bold" font-size="10" fill="#34d399">✓ Probado con test_persistence.py</text>
+    </g>
+  </g>
+</svg>
