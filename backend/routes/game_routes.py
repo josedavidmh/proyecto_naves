@@ -110,6 +110,30 @@ def complete_stage(current_user: User):
         "progress": progress.to_dict()
     }), 200
 
+@game_bp.route("/progress/reset-run", methods=["POST"])
+@token_required
+def reset_run(current_user: User):
+    """
+    Reinicia el progreso de campaña a la Fase 1 tras perder todas las vidas de combate.
+    """
+    progress = PlayerProgress.query.filter_by(user_id=current_user.id).first()
+    if progress:
+        progress.current_max_stage = 1
+        progress.stage_1_unlocked = True
+        progress.stage_2_unlocked = False
+        progress.stage_3_unlocked = False
+        progress.stage_4_unlocked = False
+        progress.stage_5_unlocked = False
+        progress.campaign_completed = False
+        db.session.commit()
+        User.save_backup()
+
+    return jsonify({
+        "success": True,
+        "message": "Campaña reiniciada a Fase 1 tras agotar vidas.",
+        "progress": progress.to_dict() if progress else None
+    }), 200
+
 @game_bp.route("/scores", methods=["POST"])
 @token_required
 def submit_score(current_user: User):

@@ -148,6 +148,13 @@ export const ApiService = {
     });
   },
 
+  // Reiniciar campaña a Fase 1 tras agotar todas las vidas
+  async resetRun() {
+    return this.request("/api/game/progress/reset-run", {
+      method: "POST"
+    });
+  },
+
   // Asentar puntuación en SQLite (Requiere JWT)
   async submitScore(scoreData) {
     return this.request("/api/game/scores", {

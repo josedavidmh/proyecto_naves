@@ -1195,3 +1195,197 @@ body.theater-mode-active .cyber-dialog-overlay,
   cursor: pointer;
 }
 
+/* ==========================================================================
+   SISTEMA DE DIFUSIÓN Y RECOMENDACIÓN EN REDES SOCIALES (ESTILO SCI-FI)
+   ========================================================================== */
+
+.modal-box-share {
+  max-width: 620px !important;
+  border-color: #ec4899 !important;
+  box-shadow: 0 0 50px rgba(236, 72, 153, 0.35) !important;
+  padding: 1.5rem !important;
+}
+
+.share-message-box {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 243, 255, 0.25);
+  border-radius: 10px;
+  padding: 0.85rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.share-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.45;
+  resize: vertical;
+  min-height: 75px;
+  outline: none;
+}
+
+.share-textarea:focus {
+  outline: none;
+}
+
+.social-share-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.65rem;
+  border-radius: 8px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.2);
+}
+
+.social-btn:active {
+  transform: translateY(1px);
+}
+
+/* Redes Específicas */
+.social-btn-x {
+  background: #000000;
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.social-btn-x:hover {
+  border-color: #00f3ff;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.35);
+}
+
+.social-btn-wa {
+  background: linear-gradient(135deg, #128c7e, #25D366);
+  border-color: rgba(37, 211, 102, 0.6);
+  box-shadow: 0 0 15px rgba(37, 211, 102, 0.25);
+}
+
+.social-btn-wa:hover {
+  box-shadow: 0 0 25px rgba(37, 211, 102, 0.5);
+}
+
+.social-btn-fb {
+  background: linear-gradient(135deg, #1877F2, #0d5bbd);
+  border-color: rgba(24, 119, 242, 0.6);
+  box-shadow: 0 0 15px rgba(24, 119, 242, 0.25);
+}
+
+.social-btn-fb:hover {
+  box-shadow: 0 0 25px rgba(24, 119, 242, 0.5);
+}
+
+.social-btn-tg {
+  background: linear-gradient(135deg, #229ED9, #1b7fad);
+  border-color: rgba(34, 158, 217, 0.6);
+  box-shadow: 0 0 15px rgba(34, 158, 217, 0.25);
+}
+
+.social-btn-tg:hover {
+  box-shadow: 0 0 25px rgba(34, 158, 217, 0.5);
+}
+
+.social-btn-ig {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  border-color: rgba(220, 39, 67, 0.6);
+  box-shadow: 0 0 18px rgba(220, 39, 67, 0.35);
+}
+
+.social-btn-ig:hover {
+  box-shadow: 0 0 28px rgba(220, 39, 67, 0.65);
+}
+
+.social-btn-native {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(236, 72, 153, 0.25));
+  border-color: #00f3ff;
+  color: #00f3ff;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.25);
+  font-size: 0.8rem;
+  padding: 0.85rem;
+}
+
+.social-btn-native:hover {
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.35), rgba(236, 72, 153, 0.4));
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
+}
+
+/* Barra de Copia Rápida de Enlace */
+.share-copy-bar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  background: #070a14;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+}
+
+.share-copy-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-family: monospace;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.5rem;
+  outline: none;
+  text-overflow: ellipsis;
+}
+
+/* Notificación Cyber Toast */
+.cyber-toast-notification {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(12, 17, 34, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid #00f3ff;
+  border-radius: 10px;
+  padding: 0.85rem 1.6rem;
+  color: #ffffff;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  z-index: 99999999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 35px rgba(0, 243, 255, 0.4);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cyber-toast-notification.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+

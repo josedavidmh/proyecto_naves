@@ -36,8 +36,13 @@ export class GameEngine {
       specialCooldownTimer: 0,
       lastShotTime: 0,
       weaponLevel: 1,
-      upgradeHitsReceived: 0
+      upgradeHitsReceived: 0,
+      invulnerableTimer: 0
     };
+
+    // Sistema de Vidas de Combate (5 vidas iniciales)
+    this.initialLives = 5;
+    this.lives = 5;
 
     // Munición de bombas tácticas y destello de detonación
     this.bombs = 1;
@@ -210,7 +215,7 @@ export class GameEngine {
     }
   }
 
-  start(shipData, stageNumber = 1, pilotName = "PILOTO") {
+  start(shipData, stageNumber = 1, pilotName = "PILOTO", runState = null) {
     document.body.classList.add("battle-locked");
     this.ship = shipData;
     this.currentStage = stageNumber;
@@ -225,10 +230,39 @@ export class GameEngine {
     this.player.specialTimer = 0;
     this.player.specialCooldownTimer = 0;
     this.player.lastShotTime = 0;
-    this.player.weaponLevel = 1;
-    this.player.upgradeHitsReceived = 0;
 
-    this.bombs = 1;
+    if (runState && runState.preserveHistory) {
+      // CONSERVAR HISTORIAL MIENTRAS TENGA VIDAS VIGENTES:
+      // Conserva nivel de arma, vidas restantes, bombas, puntuación y bajas acumuladas
+      this.player.weaponLevel = runState.weaponLevel || 1;
+      this.player.upgradeHitsReceived = runState.upgradeHitsReceived || 0;
+      this.lives = (runState.lives !== undefined && runState.lives > 0) ? runState.lives : 5;
+      this.bombs = runState.bombs !== undefined ? runState.bombs : 1;
+      this.score = runState.score || 0;
+      this.enemiesDestroyed = runState.enemies || 0;
+      this.bossesDefeated = runState.bosses || 0;
+
+      setTimeout(() => {
+        this.addFloatingText(
+          this.canvas.width / 2, 
+          this.canvas.height / 2 + 35, 
+          `🛡️ HISTORIAL PRESERVADO: ${this.lives} VIDAS · ${this.score.toLocaleString()} PTS`, 
+          "#34d399"
+        );
+      }, 500);
+    } else {
+      // REINICIO DESDE EL PRINCIPIO (VIDAS AGOTADAS O NUEVA CAMPAÑA):
+      this.player.weaponLevel = 1;
+      this.player.upgradeHitsReceived = 0;
+      const bonusLives = (typeof localStorage !== "undefined") ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
+      this.lives = 5 + bonusLives;
+      this.bombs = 1;
+      this.score = 0;
+      this.enemiesDestroyed = 0;
+      this.bossesDefeated = 0;
+    }
+
+    this.player.invulnerableTimer = 0;
     this.bombFlash = 0;
 
     this.projectiles = [];
@@ -240,9 +274,6 @@ export class GameEngine {
     this.shockwaves = [];
     this.screenShake = 0;
     this.criticalAlarmTimer = 0;
-    this.score = 0;
-    this.enemiesDestroyed = 0;
-    this.bossesDefeated = 0;
     this.stageDistance = 0;
     this.midBossSpawned = false;
     this.finalBossSpawned = false;
@@ -386,9 +417,20 @@ export class GameEngine {
       this.stageBannerTimer = Math.max(0, this.stageBannerTimer - dt);
     }
 
-    // Condición de derrota
+    // Temporizador de invulnerabilidad tras reaparición
+    if (this.player.invulnerableTimer > 0) {
+      this.player.invulnerableTimer = Math.max(0, this.player.invulnerableTimer - dt);
+    }
+
+    // Condición de pérdida de vida / derrota definitiva
     if (this.player.health <= 0) {
-      this.handleGameOver();
+      if (this.lives > 1) {
+        this.respawnPlayer();
+      } else {
+        this.lives = 0;
+        this.updateHudLives();
+        this.handleGameOver();
+      }
     }
     // Condición de victoria de respaldo si no se activó por el jefe
     else if (!this.mainBossDefeated && this.finalBossSpawned && this.enemies.filter(e => e.isBoss).length === 0 && distanceRatio >= 0.95) {
@@ -631,10 +673,15 @@ export class GameEngine {
       const dist = Math.hypot(ep.x - this.player.x, ep.y - this.player.y);
       if (dist < hitRadius) {
         if (!this.player.isSpecialActive || this.ship.special.slug !== "shield_matrix") {
-          this.player.health -= ep.damage;
-          Sound.playPlayerDamage();
-          this.createHitSparks(this.player.x, this.player.y, ep.color || "#ef4444");
-          this.onPlayerHit();
+          if (this.player.invulnerableTimer > 0) {
+            Sound.playBeam();
+            this.createHitSparks(ep.x, ep.y, "#00f3ff");
+          } else {
+            this.player.health -= ep.damage;
+            Sound.playPlayerDamage();
+            this.createHitSparks(this.player.x, this.player.y, ep.color || "#ef4444");
+            this.onPlayerHit();
+          }
         } else {
           Sound.playBeam();
           this.createHitSparks(ep.x, ep.y, "#00f3ff");
@@ -701,11 +748,16 @@ export class GameEngine {
         const colDist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
         if (colDist < (enemy.width / 2 + this.player.width / 2)) {
           if (!this.player.isSpecialActive || this.ship.special.slug !== "shield_matrix") {
-            const crashDmg = enemy.isFormidable ? 30 : 20;
-            this.player.health -= crashDmg;
-            Sound.playPlayerDamage();
-            this.createHitSparks(this.player.x, this.player.y, "#ef4444");
-            this.onPlayerHit();
+            if (this.player.invulnerableTimer > 0) {
+              Sound.playBeam();
+              this.createHitSparks(this.player.x, this.player.y, "#00f3ff");
+            } else {
+              const crashDmg = enemy.isFormidable ? 30 : 20;
+              this.player.health -= crashDmg;
+              Sound.playPlayerDamage();
+              this.createHitSparks(this.player.x, this.player.y, "#ef4444");
+              this.onPlayerHit();
+            }
           }
           this.handleEnemyDefeated(enemy, i);
           continue;
@@ -1237,6 +1289,56 @@ export class GameEngine {
     if (this.hud.bombsCountText) {
       this.hud.bombsCountText.textContent = this.bombs;
     }
+
+    this.updateHudLives();
+  }
+
+  updateHudLives() {
+    if (this.hud && this.hud.livesText) {
+      this.hud.livesText.textContent = this.lives;
+    } else {
+      const el = (typeof document !== "undefined" && typeof document.getElementById === "function") 
+        ? document.getElementById("hud-lives-count") 
+        : null;
+      if (el) el.textContent = this.lives;
+    }
+  }
+
+  respawnPlayer() {
+    this.lives--;
+    this.player.health = this.player.maxHealth;
+    this.player.x = this.canvas.width / 2;
+    this.player.y = this.canvas.height - 90;
+    this.player.invulnerableTimer = 3.0; // 3 segundos de escudo e invulnerabilidad
+    this.player.weaponLevel = Math.max(1, this.player.weaponLevel - 1);
+    this.player.upgradeHitsReceived = 0;
+
+    // Onda defensiva de rescate: desintegrar proyectiles hostiles en el área inferior
+    this.enemyProjectiles = this.enemyProjectiles.filter(ep => ep.y < this.canvas.height - 240);
+    this.screenShake = 16;
+    this.shockwaves.push({
+      x: this.player.x,
+      y: this.player.y,
+      radius: 10,
+      maxRadius: 320,
+      color: "#f43f5e",
+      alpha: 1.0
+    });
+
+    try {
+      Sound.playSpecialAbility();
+    } catch (_) {}
+
+    this.addFloatingText(this.player.x, this.player.y - 45, `⚠️ ¡VIDA PERDIDA! TE QUEDAN ${this.lives} VIDAS`, "#f43f5e");
+    this.updateHudLives();
+    this.updateHudWeaponAndBombs();
+  }
+
+  addLives(count = 5) {
+    this.lives += count;
+    this.updateHudLives();
+    this.addFloatingText(this.player.x, this.player.y - 45, `💖 ¡+${count} VIDAS OTORGADAS (${this.lives})!`, "#f43f5e");
+    this.createExplosionParticles(this.player.x, this.player.y, "#f43f5e", 25);
   }
 
   onPlayerHit() {
@@ -1433,15 +1535,38 @@ export class GameEngine {
 
     // 7. Nave del jugador
     if (this.player.health > 0) {
-      ShipRenderer.drawPlayerShip(
-        this.ctx,
-        this.ship,
-        this.player.x,
-        this.player.y,
-        this.player.width,
-        this.player.height,
-        this.player.isSpecialActive
-      );
+      const isInvul = this.player.invulnerableTimer > 0;
+      const shouldDraw = !isInvul || (Math.floor(this.player.invulnerableTimer * 12) % 2 === 0);
+
+      if (shouldDraw) {
+        ShipRenderer.drawPlayerShip(
+          this.ctx,
+          this.ship,
+          this.player.x,
+          this.player.y,
+          this.player.width,
+          this.player.height,
+          this.player.isSpecialActive
+        );
+      }
+
+      // Escudo holográfico protector tras perder una vida
+      if (isInvul) {
+        this.ctx.save();
+        this.ctx.strokeStyle = "#00f3ff";
+        this.ctx.lineWidth = 2.5;
+        this.ctx.shadowColor = "#00f3ff";
+        this.ctx.shadowBlur = 18;
+        this.ctx.beginPath();
+        this.ctx.arc(this.player.x, this.player.y, this.player.width * 0.78, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = "rgba(0, 243, 255, 0.15)";
+        this.ctx.beginPath();
+        this.ctx.arc(this.player.x, this.player.y, this.player.width * 0.78, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.restore();
+      }
     }
 
     // 8. Partículas
@@ -1713,6 +1838,11 @@ export class GameEngine {
     this.stop();
     Sound.stopMusic();
     Sound.playGameOver();
+
+    // Consumir bonos de vidas tras partida finalizada
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("naves_bonus_lives", "0");
+    }
 
     await ApiService.submitScore({
       ship_id: this.ship.id,

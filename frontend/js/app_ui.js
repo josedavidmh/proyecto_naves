@@ -9,6 +9,7 @@ import { BossCatalog } from "./bosses.js";
 import { ADS_CONFIG, renderGoogleAd, adsManager } from "./ads_config.js";
 import { GAME_VERSION } from "./version.js";
 import { CyberDialog } from "./cyber_dialog.js";
+import { socialShare } from "./social_share.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Sincronización automática de versión en badges y pestaña del navegador
@@ -188,6 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedStage = 1;
   let engine = null;
   let currentUser = null;
+  let latestGameStats = null;
+  let activeRunSession = null;
 
   async function loadPilotStats() {
     try {
@@ -206,6 +209,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (elBosses) elBosses.textContent = s.total_bosses_defeated;
         if (elVictories) elVictories.textContent = s.victories;
       }
+
+      // Sincronizar contador de vidas disponibles (5 base + bonos)
+      const elLives = document.getElementById("stat-lives");
+      const bonus = (typeof localStorage !== "undefined") ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
+      if (elLives) elLives.textContent = 5 + bonus;
+      socialShare.updateLobbyBannerRewardStatus();
     } catch (err) {
       console.warn("[Error al cargar estadísticas]", err);
     }
@@ -229,7 +238,25 @@ document.addEventListener("DOMContentLoaded", () => {
     stageProgress,
     weaponLevelText: hudWeaponLevel,
     bombsCountText: hudBombsCount,
-    onGameOver: (stats) => {
+    onGameOver: async (stats) => {
+      // Al agotarse las vidas, se reinicia la partida desde el comienzo (Fase 1)
+      activeRunSession = null;
+      selectedStage = 1;
+      try {
+        await ApiService.resetRun();
+      } catch (err) {
+        console.warn("[ResetRun error]", err);
+      }
+
+      latestGameStats = {
+        score: stats.score,
+        enemies: stats.enemies,
+        bosses: stats.bosses,
+        shipName: selectedShip ? selectedShip.name : "Phoenix Vanguard",
+        stage: stats.stage || 1,
+        stageName: `Fase ${stats.stage || 1}`,
+        isVictory: false
+      };
       document.getElementById("go-score").textContent = stats.score.toLocaleString();
       document.getElementById("go-enemies").textContent = stats.enemies;
       document.getElementById("go-bosses").textContent = stats.bosses;
@@ -239,16 +266,49 @@ document.addEventListener("DOMContentLoaded", () => {
       adsManager.showInterstitial();
     },
     onStageVictory: (stats) => {
+      // CUANDO SUPERA UN ÁREA SE LE OTORGA +1 VIDA EXTRA:
+      const currentLives = engine ? engine.lives : 5;
+      const rewardedLives = currentLives + 1;
+      if (engine) {
+        engine.lives = rewardedLives;
+        engine.updateHudLives();
+      }
+
+      // PRESERVAR HISTORIAL MIENTRAS TENGA VIDAS VIGENTES:
+      activeRunSession = {
+        preserveHistory: true,
+        score: stats.score,
+        enemies: stats.enemies,
+        bosses: stats.bosses,
+        lives: rewardedLives,
+        weaponLevel: engine && engine.player ? engine.player.weaponLevel : 1,
+        upgradeHitsReceived: engine && engine.player ? engine.player.upgradeHitsReceived : 0,
+        bombs: (engine && engine.bombs !== undefined) ? engine.bombs : 1
+      };
+
+      latestGameStats = {
+        score: stats.score,
+        enemies: stats.enemies,
+        bosses: stats.bosses,
+        shipName: selectedShip ? selectedShip.name : "Phoenix Vanguard",
+        stage: stats.stageCompleted,
+        stageName: `Fase ${stats.stageCompleted}`,
+        isVictory: true
+      };
       const isFinal = stats.isCampaignVictory || stats.stageCompleted === 5;
       const elTitle = document.getElementById("vic-title");
       const elUnlocked = document.getElementById("vic-unlocked-msg");
       const elEpilogue = document.getElementById("vic-epilogue-box");
+      const elRewardText = document.getElementById("vic-lives-reward-text");
       const nextStageNum = stats.stageCompleted + 1;
       selectedStage = stats.stageCompleted; // Registrar fase superada
 
       document.getElementById("vic-score").textContent = stats.score.toLocaleString();
       document.getElementById("vic-enemies").textContent = stats.enemies;
       document.getElementById("vic-bosses").textContent = stats.bosses;
+      if (elRewardText) {
+        elRewardText.textContent = `+1 VIDA EXTRA (Total: ${rewardedLives} ❤️)`;
+      }
 
       if (isFinal) {
         if (elTitle) elTitle.textContent = "🏆 ¡VICTORIA TOTAL: CAMPAÑA CONQUISTADA!";
@@ -307,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmed = await CyberDialog.confirm({
       title: "RETIRADA TÁCTICA // ALERTA",
       message: "¿Deseas abortar la misión de combate y regresar al hangar?",
-      subtext: "⚠️ La incursión aérea se dará por fallida y la posición de combate se perderá.",
+      subtext: "⚠️ La incursión aérea se dará por fallida y el historial de la partida se reiniciará a Fase 1.",
       icon: "⚠️",
       badge: "ALTO MANDO // PROTOCOLO DE EVACUACIÓN",
       confirmText: "✕ ABORTAR MISIÓN",
@@ -316,6 +376,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (confirmed) {
+      activeRunSession = null;
+      selectedStage = 1;
       engine.stop();
       battleContainer.classList.add("hidden");
       lobbyContainer.classList.remove("hidden");
@@ -361,35 +423,48 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Reintentar tras derrota
+  // Reintentar tras agotar vidas: reinicia desde el principio (Fase 1, vidas y puntuación reseteadas)
   btnRestartFromGameOver.addEventListener("click", () => {
     gameOverModal.classList.add("hidden");
-    startMission(selectedShip, selectedStage);
+    activeRunSession = null;
+    selectedStage = 1;
+    const shipToDeploy = selectedShip || (availableShips && availableShips.length > 0 ? availableShips[0] : null);
+    if (shipToDeploy) {
+      startMission(shipToDeploy, 1, null);
+    } else {
+      loadShips().then(() => {
+        const fallback = availableShips && availableShips.length > 0 ? availableShips[0] : null;
+        if (fallback) startMission(fallback, 1, null);
+      });
+    }
   });
 
   btnHangarFromGameOver.addEventListener("click", () => {
     gameOverModal.classList.add("hidden");
     battleContainer.classList.add("hidden");
     lobbyContainer.classList.remove("hidden");
+    activeRunSession = null;
+    selectedStage = 1;
     loadPilotStats();
   });
 
-  // Continuar y ubicar directamente en la siguiente fase tras victoria
+  // Continuar y ubicar directamente en la siguiente fase tras victoria conservando historial
   btnNextStageVictory.addEventListener("click", () => {
     victoryModal.classList.add("hidden");
     if (selectedStage < 5) {
       selectedStage++;
       const shipToDeploy = selectedShip || (availableShips && availableShips.length > 0 ? availableShips[0] : null);
       if (shipToDeploy) {
-        startMission(shipToDeploy, selectedStage);
+        startMission(shipToDeploy, selectedStage, activeRunSession);
       } else {
         // En caso de no tener nave en memoria, cargarla desde el catálogo
         loadShips().then(() => {
           const fallback = availableShips && availableShips.length > 0 ? availableShips[0] : null;
-          if (fallback) startMission(fallback, selectedStage);
+          if (fallback) startMission(fallback, selectedStage, activeRunSession);
         });
       }
     } else {
+      activeRunSession = null;
       battleContainer.classList.add("hidden");
       stageSelectContainer.classList.remove("hidden");
       loadStages();
@@ -786,10 +861,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selectedStage === 1 && !introWatched) {
         introWatched = true;
         IntroCinema.show(() => {
-          startMission(selectedShip, selectedStage);
+          startMission(selectedShip, selectedStage, activeRunSession);
         });
       } else {
-        startMission(selectedShip, selectedStage);
+        startMission(selectedShip, selectedStage, activeRunSession);
       }
     }
 
@@ -804,12 +879,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Iniciar la misión de combate en el Canvas 60 FPS
-  function startMission(ship, stageNumber) {
+  function startMission(ship, stageNumber, runState = null) {
     battleContainer.classList.remove("hidden");
     hudShipName.textContent = ship.name.toUpperCase();
     const elStageBadge = document.getElementById("hud-stage-badge");
     if (elStageBadge) elStageBadge.textContent = `FASE ${stageNumber}`;
-    engine.start(ship, stageNumber, currentUser ? currentUser.username : "PILOTO");
+    engine.start(ship, stageNumber, currentUser ? currentUser.username : "PILOTO", runState);
 
     // Centrar automáticamente la pantalla de combate para eliminar el desplazamiento incómodo
     requestAnimationFrame(() => {
@@ -869,4 +944,50 @@ document.addEventListener("DOMContentLoaded", () => {
       helpModal.classList.add("hidden");
     });
   }
+
+  // --- SISTEMA DE RECOMENDACIÓN Y DIFUSIÓN EN REDES SOCIALES ---
+  const btnOpenShareHeader = document.getElementById("btn-open-share");
+  const btnLobbyOpenShare = document.getElementById("btn-lobby-open-share");
+  const btnShareGameOver = document.getElementById("btn-share-gameover");
+  const btnShareVictory = document.getElementById("btn-share-victory");
+
+  if (btnOpenShareHeader) {
+    btnOpenShareHeader.addEventListener("click", () => {
+      socialShare.open("lobby");
+    });
+  }
+
+  if (btnLobbyOpenShare) {
+    btnLobbyOpenShare.addEventListener("click", () => {
+      socialShare.open("lobby");
+    });
+  }
+
+  if (btnShareGameOver) {
+    btnShareGameOver.addEventListener("click", () => {
+      socialShare.open("game_over", latestGameStats || {});
+    });
+  }
+
+  if (btnShareVictory) {
+    btnShareVictory.addEventListener("click", () => {
+      socialShare.open("victory", latestGameStats || {});
+    });
+  }
+
+  // Bono táctico de +5 VIDAS otorgado al compartir (con recarga de 24h)
+  window.addEventListener("naves:lives-rewarded", (e) => {
+    const added = e.detail ? e.detail.livesAdded : 5;
+    if (engine && engine.isRunning) {
+      engine.addLives(added);
+    }
+    if (activeRunSession) {
+      activeRunSession.lives = (activeRunSession.lives || 5) + added;
+    }
+    const elLives = document.getElementById("stat-lives");
+    const bonus = (typeof localStorage !== "undefined") ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
+    if (elLives) elLives.textContent = 5 + bonus;
+    socialShare.updateLobbyBannerRewardStatus();
+  });
 });
+
