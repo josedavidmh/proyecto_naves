@@ -1,0 +1,50 @@
+Guía de Registro Paso a Paso en Cada Plataforma
+Aquí tienes el instructivo detallado para registrarte en cada una de las 3 opciones:
+
+1. MONETAG (Para monetizar de inmediato tu web en Render)
+Por qué usarlo: No tiene requisitos mínimos de visitas y aprueban tu dominio en menos de 10 minutos.
+
+Ve a monetag.com y haz clic en Sign Up -> Selecciona Publisher / Editor.
+Completa tu nombre, país y correo electrónico.
+Una vez dentro del panel, ve a la pestaña Sites y haz clic en Add Site.
+Pega la URL de tu juego en Render:
+text
+https://tu-proyecto.onrender.com
+Te pedirá verificar la propiedad del dominio. Elige el método Meta Tag o archivo HTML (o simplemente cópialo y lo agregamos en un instante).
+Una vez verificado, haz clic en Add Zone:
+Te recomendamos elegir el formato Vignette Banner (anuncio a pantalla completa entre pantallas) o In-Page Push.
+Te entregará un pequeño script de 1 línea con tu código de zona.
+2. GAMEDISTRIBUTION (Para distribuir tu juego a más de 1.000 portales)
+Por qué usarlo: Ellos se encargan de poner tu juego frente a millones de personas y te pagan el 50% de todos los ingresos publicitarios generados.
+
+Ingresa a gamedistribution.com/publishers (o portal de desarrolladores).
+Haz clic en Register as Game Developer.
+Rellena los datos de tu cuenta (nombre de estudio, correo y contraseña).
+En tu panel, ve a Games -> Upload New Game:
+Title: Space Assault
+Category: Arcade / Action / Sci-Fi / Shooter
+Platform: HTML5 / WebGL / Canvas
+Orientation: Landscape (Horizontal)
+La plataforma te generará un Game GUID (un código alfanumérico único para tu juego).
+Ese Game GUID lo colocamos en tu archivo 
+
+ads_manager.js
+ en la variable GD_GAME_ID.
+3. CRAZYGAMES DEVELOPER PORTAL (La plataforma con mejores tarifas de pago)
+Por qué usarlo: Es el portal de juegos web número 1 de la actualidad; pagan en dólares a través de PayPal o transferencia bancaria y valoran los juegos arcade con 60 FPS como Space Assault.
+
+Entra en developer.crazygames.com.
+Haz clic en Join as a Developer y crea tu cuenta con tu correo.
+Haz clic en Submit Game:
+Game Name: Space Assault
+Game Description: Escribe un resumen breve (o copia el lore de tu 
+
+acerca.html
+).
+Controls: Flechas / WASD para moverte, Barra espaciadora para disparar, B para Bomba Táctica, F para pantalla completa.
+Elige si quieres subir un archivo .zip con tu carpeta frontend/ o enlazar la URL donde está alojado tu juego.
+El equipo de CrazyGames revisará el juego (suelen tardar entre 2 y 5 días laborables).
+¿Cuál es tu siguiente paso?
+Puedes comenzar registrándote en la que prefieras (por ejemplo Monetag para tu web actual o CrazyGames para distribución masiva). En cuanto tengas tu primer código o ID de cualquiera de ellas, avísame y lo conectamos en tu código en un segundo.
+
+7:39 AM

@@ -43,6 +43,22 @@ def create_app(config_override: dict = None) -> Flask:
     def index():
         return send_from_directory(app.static_folder, "index.html")
 
+    # Rutas explícitas para archivos clave de verificación y monetización
+    @app.route("/sw.js")
+    def service_worker():
+        target_dir = app.static_folder if os.path.exists(os.path.join(app.static_folder, "sw.js")) else project_dir
+        response = send_from_directory(target_dir, "sw.js")
+        response.headers["Content-Type"] = "application/javascript; charset=utf-8"
+        response.headers["Service-Worker-Allowed"] = "/"
+        return response
+
+    @app.route("/ads.txt")
+    def ads_txt():
+        target_dir = app.static_folder if os.path.exists(os.path.join(app.static_folder, "ads.txt")) else project_dir
+        response = send_from_directory(target_dir, "ads.txt")
+        response.headers["Content-Type"] = "text/plain; charset=utf-8"
+        return response
+
     @app.route("/<path:path>")
     def static_files(path):
         return send_from_directory(app.static_folder, path)

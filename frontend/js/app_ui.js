@@ -6,7 +6,7 @@ import { MissionLore } from "./mission_lore.js";
 import { Sound } from "./sound_fx.js";
 import { EnemyCatalog } from "./enemies.js";
 import { BossCatalog } from "./bosses.js";
-import { ADS_CONFIG, renderGoogleAd } from "./ads_config.js";
+import { ADS_CONFIG, renderGoogleAd, adsManager } from "./ads_config.js";
 import { GAME_VERSION } from "./version.js";
 import { CyberDialog } from "./cyber_dialog.js";
 
@@ -235,6 +235,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("go-bosses").textContent = stats.bosses;
       gameOverModal.classList.remove("hidden");
       loadPilotStats();
+      // Anuncio post-partida compatible con CrazyGames / GameDistribution / Monetag
+      adsManager.showInterstitial();
     },
     onStageVictory: (stats) => {
       const isFinal = stats.isCampaignVictory || stats.stageCompleted === 5;
@@ -793,8 +795,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnBriefingLaunch) {
       btnBriefingLaunch.addEventListener("click", () => {
-        // Despegue táctico inmediato sin retardo para experiencia fluida
-        finalizeMissionLaunch();
+        // Ejecuta el anuncio si la plataforma lo requiere, o despega de inmediato en web propia
+        adsManager.showInterstitial(() => {
+          finalizeMissionLaunch();
+        });
       });
     }
   }
