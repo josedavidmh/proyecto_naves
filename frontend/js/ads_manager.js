@@ -17,7 +17,7 @@ export const ADS_CONFIG = {
   ADSENSE_SLOT_POST_MISSION: "0987654321",
 
   // Configuración Monetag (ID de zona directa al registrarse)
-  MONETAG_ZONE_ID: "12121371",
+  MONETAG_ZONE_ID: "302008",
 
   // Configuración GameDistribution (Game GUID asignado al crear el juego)
   GD_GAME_ID: "",
