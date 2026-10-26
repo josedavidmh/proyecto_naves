@@ -5,19 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Assault v2.0 - Tactical Aerial & Space Combat</title>
   
-  <!-- Monetag SDK (Zona Limpia 12128966: Vignette Banner sin popunders ni redirecciones invasivas) -->
+  <!-- Monetag SDK (Zona Limpia 12128966: Vignette Banner y Programmatic SDK para cambio de fase y revivir) -->
   <script type="text/javascript">
     (function() {
       var isOwnSite = window.location.hostname.includes("onrender.com") || 
                       window.location.hostname === "localhost" || 
                       window.location.hostname === "127.0.0.1";
       if (isOwnSite) {
-        var s = document.createElement("script");
-        s.src = "https://n6wxm.com/vignette.min.js";
-        s.dataset.zone = "12128966";
-        s.async = true;
-        s.setAttribute("data-cfasync", "false");
-        document.head.appendChild(s);
+        // 1. Script Vignette Banner Oficial (Zona 12128966)
+        var s1 = document.createElement("script");
+        s1.src = "https://n6wxm.com/vignette.min.js";
+        s1.dataset.zone = "12128966";
+        s1.async = true;
+        s1.setAttribute("data-cfasync", "false");
+        document.head.appendChild(s1);
+
+        // 2. Script Programático Monetag In-App (Genera window.show_12128966 para invocar en victoria y vidas)
+        var s2 = document.createElement("script");
+        s2.src = "https://libtl.com/sdk.js";
+        s2.dataset.zone = "12128966";
+        s2.dataset.sdk = "show_12128966";
+        s2.async = true;
+        document.head.appendChild(s2);
       }
     })();
   </script>
@@ -724,9 +733,9 @@
       </div>
 
       <!-- Opción Recompensada Voluntaria: Revivir con escudo al 100% -->
-      <button id="btn-revive-rewarded" class="btn-cyber-primary" style="background: linear-gradient(135deg, #059669, #10b981); border-color: #34d399; color: #ffffff; width: 100%; margin-bottom: 0.75rem; padding: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 0.88rem; font-weight: 900; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); cursor: pointer;" title="Ver anuncio voluntario para revivir con escudo al 100% y +2 vidas de rescate">
+      <a id="btn-revive-rewarded" href="#revive-lives" class="btn-cyber-primary" style="background: linear-gradient(135deg, #059669, #10b981); border-color: #34d399; color: #ffffff; width: 100%; margin-bottom: 0.75rem; padding: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 0.88rem; font-weight: 900; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); cursor: pointer; text-decoration: none;" title="Ver anuncio voluntario para revivir con escudo al 100% y +2 vidas de rescate">
         <span>⚡</span> <span>REVIVIR NAVE CON ESCUDO AL 100% (+2 VIDAS)</span>
-      </button>
+      </a>
 
       <div style="display: flex; gap: 0.75rem;">
         <button id="btn-restart-gameover" class="btn-cyber-primary" style="flex: 1; padding: 0.75rem;">
@@ -783,9 +792,9 @@
       </div>
 
       <div style="display: flex; gap: 0.75rem;">
-        <button id="btn-next-victory" class="btn-cyber-primary" style="flex: 1; padding: 0.75rem;">
+        <a id="btn-next-victory" href="#next-stage" class="btn-cyber-primary" style="flex: 1; padding: 0.75rem; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
           SIGUIENTE FASE ➔
-        </button>
+        </a>
         <button id="btn-hangar-victory" class="btn-cyber-outline" style="flex: 1; padding: 0.75rem;">
           HANGAR
         </button>

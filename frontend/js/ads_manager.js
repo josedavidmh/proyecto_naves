@@ -264,7 +264,22 @@ class UniversalAdsManager {
 
       // 3. Monetag Programático (si se ha configurado función directa en la zona Vignette)
       if (typeof window.show_12128966 === "function") {
-        try { window.show_12128966(); } catch (_) {}
+        console.log("[AdsManager] 📺 Invocando Intersticial Monetag show_12128966...");
+        try {
+          window.show_12128966({ type: 'end' })
+            .then(() => {
+              clearTimeout(timer);
+              safeComplete();
+            })
+            .catch((err) => {
+              console.warn("[Monetag] Anuncio cerrado o no disponible:", err);
+              clearTimeout(timer);
+              safeComplete();
+            });
+          return;
+        } catch (e) {
+          console.warn("[Monetag] Excepción al invocar show_12128966:", e);
+        }
       } else if (typeof window.show_monetag_ad === "function") {
         try { window.show_monetag_ad(); } catch (_) {}
       }
@@ -359,22 +374,41 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Monetag Rewarded (si está disponible API programática)
+      // 3. Monetag Rewarded Programático (Zona 12128966 / show_12128966)
+      if (typeof window.show_12128966 === "function") {
+        console.log("[AdsManager] ⚡ Invocando anuncio recompensado Monetag show_12128966...");
+        try {
+          window.show_12128966({ type: 'inApp' })
+            .then(() => {
+              console.log("[AdsManager] Recompensa Monetag completada con éxito.");
+              if (typeof onRewarded === "function") onRewarded();
+            })
+            .catch((err) => {
+              console.warn("[AdsManager] Recompensa Monetag cerrada o no disponible:", err);
+              // Conceder vida de rescate para no castigar al usuario por error de red publicitaria
+              if (typeof onRewarded === "function") onRewarded();
+            });
+          return;
+        } catch (err) {
+          console.warn("[AdsManager] Error al ejecutar show_12128966:", err);
+        }
+      }
+
       if (typeof window.show_monetag_rewarded === "function") {
         window.show_monetag_rewarded()
           .then(() => {
             if (typeof onRewarded === "function") onRewarded();
           })
           .catch(() => {
-            if (typeof onDismissed === "function") onDismissed();
+            if (typeof onRewarded === "function") onRewarded();
           });
         return;
       }
 
-      // 4. Fallback Web Propia (Simulación generosa y cortesía táctica):
+      // 4. Fallback Web Propia: Conceder revivir de rescate al piloto
       console.log("[AdsManager] Entorno Web Propia: Concediendo revivir de rescate al piloto.");
       if (typeof onRewarded === "function") {
-        setTimeout(onRewarded, 200);
+        setTimeout(onRewarded, 300);
       }
 
     } catch (e) {

@@ -346,8 +346,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       victoryModal.classList.remove("hidden");
       loadPilotStats();
-      // Anuncio en transición de victoria de fase
-      adsManager.showInterstitial(null, { context: "stage_victory" });
     }
   });
 
@@ -462,7 +460,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Botón voluntario de anuncio recompensado: Revivir nave en la fase actual
   if (btnReviveRewarded) {
-    btnReviveRewarded.addEventListener("click", () => {
+    btnReviveRewarded.addEventListener("click", (e) => {
+      if (e && e.preventDefault) e.preventDefault();
       adsManager.showRewardedAd(
         () => {
           hasRevivedInCurrentRun = true;
@@ -498,26 +497,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Continuar y ubicar directamente en la siguiente fase tras victoria conservando historial
-  btnNextStageVictory.addEventListener("click", () => {
-    victoryModal.classList.add("hidden");
-    if (selectedStage < 5) {
-      selectedStage++;
-      const shipToDeploy = selectedShip || (availableShips && availableShips.length > 0 ? availableShips[0] : null);
-      if (shipToDeploy) {
-        startMission(shipToDeploy, selectedStage, activeRunSession);
+  btnNextStageVictory.addEventListener("click", (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    
+    // Disparar anuncio de transición de área con fuerza
+    adsManager.showInterstitial(() => {
+      victoryModal.classList.add("hidden");
+      if (selectedStage < 5) {
+        selectedStage++;
+        const shipToDeploy = selectedShip || (availableShips && availableShips.length > 0 ? availableShips[0] : null);
+        if (shipToDeploy) {
+          startMission(shipToDeploy, selectedStage, activeRunSession);
+        } else {
+          // En caso de no tener nave en memoria, cargarla desde el catálogo
+          loadShips().then(() => {
+            const fallback = availableShips && availableShips.length > 0 ? availableShips[0] : null;
+            if (fallback) startMission(fallback, selectedStage, activeRunSession);
+          });
+        }
       } else {
-        // En caso de no tener nave en memoria, cargarla desde el catálogo
-        loadShips().then(() => {
-          const fallback = availableShips && availableShips.length > 0 ? availableShips[0] : null;
-          if (fallback) startMission(fallback, selectedStage, activeRunSession);
-        });
+        activeRunSession = null;
+        battleContainer.classList.add("hidden");
+        stageSelectContainer.classList.remove("hidden");
+        loadStages();
       }
-    } else {
-      activeRunSession = null;
-      battleContainer.classList.add("hidden");
-      stageSelectContainer.classList.remove("hidden");
-      loadStages();
-    }
+    }, { force: true, context: "stage_victory" });
   });
 
   btnHangarVictory.addEventListener("click", () => {
