@@ -5,28 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Assault v2.0 - Tactical Aerial & Space Combat</title>
   
-  <!-- Monetag SDK (Zona 12128966 Vignette Banner + Zona 302008 In-Page Push MultiTag) -->
+  <!-- Monetag SDK (Zona Limpia 12128966: Vignette Banner sin popunders ni redirecciones invasivas) -->
   <script type="text/javascript">
     (function() {
       var isOwnSite = window.location.hostname.includes("onrender.com") || 
                       window.location.hostname === "localhost" || 
                       window.location.hostname === "127.0.0.1";
       if (isOwnSite) {
-        // 1. Monetag Vignette Banner (Zona 12128966)
-        var s1 = document.createElement("script");
-        s1.src = "https://n6wxm.com/vignette.min.js";
-        s1.dataset.zone = "12128966";
-        s1.async = true;
-        s1.setAttribute("data-cfasync", "false");
-        document.head.appendChild(s1);
-
-        // 2. Monetag MultiTag / In-Page Push (Zona 302008) para asegurar visibilidad en cambios de fase
-        var s2 = document.createElement("script");
-        s2.src = "https://quge5.com/88/tag.min.js";
-        s2.dataset.zone = "302008";
-        s2.async = true;
-        s2.setAttribute("data-cfasync", "false");
-        document.head.appendChild(s2);
+        var s = document.createElement("script");
+        s.src = "https://n6wxm.com/vignette.min.js";
+        s.dataset.zone = "12128966";
+        s.async = true;
+        s.setAttribute("data-cfasync", "false");
+        document.head.appendChild(s);
       }
     })();
   </script>

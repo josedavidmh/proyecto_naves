@@ -116,19 +116,21 @@ export class GameEngine {
     });
 
     this.canvas.addEventListener("mousedown", (e) => {
+      if (this.isRunning) e.stopPropagation();
       if (e.button === 0) {
         this.keys["Space"] = true;
       }
     });
 
     this.canvas.addEventListener("mouseup", (e) => {
+      if (this.isRunning) e.stopPropagation();
       if (e.button === 0) {
         this.keys["Space"] = false;
       }
     });
 
-    this.canvas.addEventListener("click", () => {
-      // Evento permitido para burbujear hacia el documento para mediación de eventos
+    this.canvas.addEventListener("click", (e) => {
+      if (this.isRunning) e.stopPropagation();
     });
 
     // --- CONTROLES TÁCTILES ULTRA-FLUIDOS PARA MÓVILES Y TABLETS ---
@@ -139,6 +141,7 @@ export class GameEngine {
     const handleTouchStart = (e) => {
       if (!this.isRunning || this.isPaused) return;
       e.preventDefault();
+      e.stopPropagation();
       isTouching = true;
 
       const touch = e.touches[0];
@@ -156,6 +159,7 @@ export class GameEngine {
     const handleTouchMove = (e) => {
       if (!this.isRunning || this.isPaused || !isTouching) return;
       e.preventDefault();
+      e.stopPropagation();
 
       const touch = e.touches[0];
       const rect = this.canvas.getBoundingClientRect();
@@ -184,6 +188,7 @@ export class GameEngine {
 
     const handleTouchEnd = (e) => {
       e.preventDefault();
+      e.stopPropagation();
       if (e.touches.length === 0) {
         isTouching = false;
         this.keys["Space"] = false;

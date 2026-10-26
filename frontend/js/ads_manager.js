@@ -262,14 +262,10 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Monetag Programático (si se ha configurado función directa en la zona o MultiTag)
-      if (typeof window.show_302008 === "function") {
-        try { window.show_302008(); } catch (_) {}
-      }
+      // 3. Monetag Programático (si se ha configurado función directa en la zona Vignette)
       if (typeof window.show_12128966 === "function") {
         try { window.show_12128966(); } catch (_) {}
-      }
-      if (typeof window.show_monetag_ad === "function") {
+      } else if (typeof window.show_monetag_ad === "function") {
         try { window.show_monetag_ad(); } catch (_) {}
       }
 
@@ -291,10 +287,13 @@ class UniversalAdsManager {
   _triggerMonetagVignette() {
     if (typeof document === "undefined") return;
     try {
-      console.log(`[AdsManager] 📺 Invocando anuncios Monetag (Zona Vignette: ${ADS_CONFIG.MONETAG_ZONE_ID}, MultiTag: ${ADS_CONFIG.MONETAG_ZONE_MULTITAG})...`);
+      console.log(`[AdsManager] 📺 Invocando Vignette Banner de Monetag (Zona: ${ADS_CONFIG.MONETAG_ZONE_ID})...`);
       
       // Notificar a listeners de navegación
       document.dispatchEvent(new CustomEvent("stage_completed", { detail: { timestamp: Date.now() } }));
+
+      if (typeof window.show_12128966 === "function") window.show_12128966();
+      if (typeof window.show_monetag_ad === "function") window.show_monetag_ad();
 
       // Verificar si hay bloqueador de publicidad activo para informar al usuario
       this.checkAdBlocker();
