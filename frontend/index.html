@@ -15,35 +15,44 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6261859133501243"
      crossorigin="anonymous"></script>
 
-  <!-- GameDistribution HTML5 SDK Oficial -->
+  <!-- GameDistribution HTML5 SDK Oficial (Solo activo en la red de GameDistribution o embebidos externos) -->
   <script type="text/javascript">
-    window["GD_OPTIONS"] = {
-      "gameId": "d49c747be6564b50b1e93571d8b0ad58",
-      "onEvent": function(event) {
-        switch (event.name) {
-          case "SDK_GAME_START":
-            console.log("[GameDistribution] Reanudar audio y juego");
-            break;
-          case "SDK_GAME_PAUSE":
-            console.log("[GameDistribution] Pausar juego durante anuncio");
-            break;
-          case "SDK_READY":
-            console.log("[GameDistribution] SDK listo para servir anuncios");
-            break;
-          case "SDK_ERROR":
-            console.warn("[GameDistribution] Notificación SDK:", event);
-            break;
-        }
+    (function() {
+      var isOwnSite = window.location.hostname.includes("onrender.com") || 
+                      window.location.hostname === "localhost" || 
+                      window.location.hostname === "127.0.0.1";
+      
+      // En GameDistribution (CDN, iframes de portales asociados o con ?gd=1) activamos el SDK de GD
+      if (!isOwnSite || window.location.search.includes("gd=1")) {
+        window["GD_OPTIONS"] = {
+          "gameId": "d49c747be6564b50b1e93571d8b0ad58",
+          "onEvent": function(event) {
+            switch (event.name) {
+              case "SDK_GAME_START":
+                console.log("[GameDistribution] Reanudar audio y juego");
+                break;
+              case "SDK_GAME_PAUSE":
+                console.log("[GameDistribution] Pausar juego durante anuncio");
+                break;
+              case "SDK_READY":
+                console.log("[GameDistribution] SDK listo para servir anuncios");
+                break;
+              case "SDK_ERROR":
+                console.warn("[GameDistribution] Notificación SDK:", event);
+                break;
+            }
+          }
+        };
+        (function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s);
+          js.id = id;
+          js.src = "https://html5.api.gamedistribution.com/main.min.js";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'gamedistribution-jssdk'));
       }
-    };
-    (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s);
-      js.id = id;
-      js.src = "https://html5.api.gamedistribution.com/main.min.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'gamedistribution-jssdk'));
+    })();
   </script>
 </head>
 <body>
