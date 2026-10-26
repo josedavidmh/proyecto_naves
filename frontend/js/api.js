@@ -3,9 +3,12 @@
  * CERO MOCKS: Todas las solicitudes viajan al backend y se validan contra SQLite.
  */
 
-const API_BASE_URL = (window.location.protocol === "file:" || (window.location.port && window.location.port !== "5000"))
+const isLocalhost = (typeof window !== "undefined") && 
+  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:");
+
+const API_BASE_URL = isLocalhost
   ? "http://127.0.0.1:5000"
-  : window.location.origin;
+  : "https://space-assault.onrender.com";
 
 export const ApiService = {
   // Almacenamiento seguro del token JWT real emitido por el backend

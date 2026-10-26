@@ -1035,5 +1035,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (elLives) elLives.textContent = 5 + bonus;
     socialShare.updateLobbyBannerRewardStatus();
   });
+
+  // Botones de validación directa de GameDistribution SDK
+  const btnTestGDInterstitial = document.getElementById("btn-test-gd-interstitial");
+  if (btnTestGDInterstitial) {
+    btnTestGDInterstitial.addEventListener("click", () => {
+      console.log("[GameDistribution] Solicitando anuncio Interstitial de prueba...");
+      if (window.gdsdk && typeof window.gdsdk.showAd === "function") {
+        window.gdsdk.showAd();
+      } else {
+        adsManager.showInterstitial(null, { force: true });
+      }
+    });
+  }
+
+  const btnTestGDRewarded = document.getElementById("btn-test-gd-rewarded");
+  if (btnTestGDRewarded) {
+    btnTestGDRewarded.addEventListener("click", () => {
+      console.log("[GameDistribution] Solicitando anuncio Rewarded de prueba...");
+      if (window.gdsdk && typeof window.gdsdk.showAd === "function") {
+        window.gdsdk.showAd("rewarded");
+      } else {
+        adsManager.showRewardedAd();
+      }
+    });
+  }
 });
 

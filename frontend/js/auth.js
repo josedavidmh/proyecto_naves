@@ -215,6 +215,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Botón de Despegue Rápido como Invitado (Sin registro requerido para portales)
+  const btnGuestPlay = document.getElementById("btn-guest-play");
+  if (btnGuestPlay) {
+    btnGuestPlay.addEventListener("click", () => {
+      const guestUser = {
+        id: 9999,
+        username: "Piloto Cadete",
+        email: "cadete@federacion.com",
+        created_at: new Date().toISOString()
+      };
+      showAuthenticatedUI(guestUser);
+      showAlert("Acceso concedido como Piloto Invitado. ¡Bienvenido al Hangar!", "success");
+    });
+  }
+
   // Botón de Cerrar Sesión
   btnLogout.addEventListener("click", () => {
     ApiService.clearToken();
