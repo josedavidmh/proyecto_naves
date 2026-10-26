@@ -43,6 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnPlayIntro = document.getElementById("btn-play-intro");
   const btnBriefingLaunch = document.getElementById("btn-briefing-launch");
   const btnBriefingCancel = document.getElementById("btn-briefing-cancel");
+  const btnReviveRewarded = document.getElementById("btn-revive-rewarded");
+  let hasRevivedInCurrentRun = false;
   const btnFullscreenHeader = document.getElementById("btn-fullscreen-header");
   const btnBattleFullscreen = document.getElementById("btn-battle-fullscreen");
   const btnFloatingFullscreen = document.getElementById("btn-floating-fullscreen");
@@ -259,11 +261,17 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       document.getElementById("go-score").textContent = stats.score.toLocaleString();
       document.getElementById("go-enemies").textContent = stats.enemies;
-      document.getElementById("go-bosses").textContent = stats.bosses;
+      if (btnReviveRewarded) {
+        if (hasRevivedInCurrentRun) {
+          btnReviveRewarded.classList.add("hidden");
+        } else {
+          btnReviveRewarded.classList.remove("hidden");
+        }
+      }
       gameOverModal.classList.remove("hidden");
       loadPilotStats();
-      // Anuncio post-partida compatible con CrazyGames / GameDistribution / Monetag
-      adsManager.showInterstitial();
+      // Anuncio post-partida con frecuencia equilibrada y cooldown anti-frustración
+      adsManager.showInterstitial(null, { context: "game_over" });
     },
     onStageVictory: (stats) => {
       // CUANDO SUPERA UN ÁREA SE LE OTORGA +1 VIDA EXTRA:
@@ -425,6 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Reintentar tras agotar vidas: reinicia desde el principio (Fase 1, vidas y puntuación reseteadas)
   btnRestartFromGameOver.addEventListener("click", () => {
+    hasRevivedInCurrentRun = false;
     gameOverModal.classList.add("hidden");
     activeRunSession = null;
     selectedStage = 1;
@@ -440,6 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   btnHangarFromGameOver.addEventListener("click", () => {
+    hasRevivedInCurrentRun = false;
     gameOverModal.classList.add("hidden");
     battleContainer.classList.add("hidden");
     lobbyContainer.classList.remove("hidden");
@@ -447,6 +457,43 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedStage = 1;
     loadPilotStats();
   });
+
+  // Botón voluntario de anuncio recompensado: Revivir nave en la fase actual
+  if (btnReviveRewarded) {
+    btnReviveRewarded.addEventListener("click", () => {
+      adsManager.showRewardedAd(
+        () => {
+          hasRevivedInCurrentRun = true;
+          if (btnReviveRewarded) btnReviveRewarded.classList.add("hidden");
+          gameOverModal.classList.add("hidden");
+
+          const shipToDeploy = selectedShip || (availableShips && availableShips.length > 0 ? availableShips[0] : null);
+          const currentStage = (latestGameStats && latestGameStats.stage) ? latestGameStats.stage : (selectedStage || 1);
+          const currentScore = (latestGameStats && latestGameStats.score) ? latestGameStats.score : 0;
+          const currentEnemies = (latestGameStats && latestGameStats.enemies) ? latestGameStats.enemies : 0;
+          const currentBosses = (latestGameStats && latestGameStats.bosses) ? latestGameStats.bosses : 0;
+
+          activeRunSession = {
+            preserveHistory: true,
+            score: currentScore,
+            enemies: currentEnemies,
+            bosses: currentBosses,
+            lives: 2, // 2 vidas de rescate
+            weaponLevel: (activeRunSession && activeRunSession.weaponLevel) ? activeRunSession.weaponLevel : 2,
+            upgradeHitsReceived: 0,
+            bombs: 1
+          };
+
+          if (shipToDeploy) {
+            startMission(shipToDeploy, currentStage, activeRunSession);
+          }
+        },
+        () => {
+          console.log("[AdsManager] Video de recompensa cerrado o cancelado.");
+        }
+      );
+    });
+  }
 
   // Continuar y ubicar directamente en la siguiente fase tras victoria conservando historial
   btnNextStageVictory.addEventListener("click", () => {
@@ -870,16 +917,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnBriefingLaunch) {
       btnBriefingLaunch.addEventListener("click", () => {
-        // Ejecuta el anuncio si la plataforma lo requiere, o despega de inmediato en web propia
-        adsManager.showInterstitial(() => {
-          finalizeMissionLaunch();
-        });
+        // Despegue directo sin interrumpir con anuncios el inicio del combate
+        finalizeMissionLaunch();
       });
     }
   }
 
   // Iniciar la misión de combate en el Canvas 60 FPS
   function startMission(ship, stageNumber, runState = null) {
+    adsManager.markMissionStart();
     battleContainer.classList.remove("hidden");
     hudShipName.textContent = ship.name.toUpperCase();
     const elStageBadge = document.getElementById("hud-stage-badge");
