@@ -24,3 +24,9 @@ instance/
 .vscode/
 .idea/
 *.log
+
+# Directorios de pruebas locales y archivos temporales
+scratch/
+frontend/dist/
+*.zip
+
