@@ -346,6 +346,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       victoryModal.classList.remove("hidden");
       loadPilotStats();
+      // Anuncio en transición de victoria de fase
+      adsManager.showInterstitial(null, { context: "stage_victory" });
     }
   });
 

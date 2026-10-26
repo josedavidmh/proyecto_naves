@@ -39,18 +39,18 @@ export const ADS_CONFIG = {
   // Timeout de seguridad en milisegundos (para que el jugador NUNCA quede congelado si falla un anuncio)
   AD_TIMEOUT_MS: 4000,
 
-  // --- POLÍTICAS DE EQUILIBRIO Y ANTI-FRUSTRACIÓN ---
-  // Intervalo mínimo entre anuncios automáticos (3.5 minutos = 210,000 ms)
-  MIN_COOLDOWN_MS: 210000,
+  // --- POLÍTICAS DE EQUILIBRIO DINÁMICO DE ANUNCIOS ---
+  // Intervalo mínimo entre anuncios automáticos (75 segundos = 1 min 15 seg)
+  MIN_COOLDOWN_MS: 75000,
 
-  // Duración mínima de la partida para considerar mostrar anuncio (45 segundos)
-  MIN_PLAYTIME_FOR_AD_MS: 45000,
+  // Duración mínima de la partida para considerar mostrar anuncio (18 segundos)
+  MIN_PLAYTIME_FOR_AD_MS: 18000,
 
-  // Cortesía inicial: La primera partida de cada sesión es 100% libre de anuncios
-  FIRST_GAME_FREE: true,
+  // Se evalúa desde la primera partida completada
+  FIRST_GAME_FREE: false,
 
-  // Límite de anuncios intersticiales automáticos por sesión del jugador
-  MAX_ADS_PER_SESSION: 5
+  // Límite ampliado de anuncios intersticiales por sesión
+  MAX_ADS_PER_SESSION: 20
 };
 
 // Aliases para retrocompatibilidad con código existente
@@ -268,7 +268,8 @@ class UniversalAdsManager {
         return;
       }
 
-      // 4. Fallback Web Propia (Continúa inmediatamente y muestra banners)
+      // 4. Fallback Web Propia / Monetag: Disparar activamente el Vignette Banner
+      this._triggerMonetagVignette();
       clearTimeout(timer);
       safeComplete();
 
@@ -276,6 +277,27 @@ class UniversalAdsManager {
       console.warn("[AdsManager] Excepción al invocar anuncio:", e);
       clearTimeout(timer);
       safeComplete();
+    }
+  }
+
+  /**
+   * Invoca activamente el Vignette Banner de Monetag reinyectando el script si es necesario
+   */
+  _triggerMonetagVignette() {
+    if (typeof document === "undefined") return;
+    try {
+      console.log(`[AdsManager] 📺 Invocando Vignette Banner de Monetag (Zona: ${ADS_CONFIG.MONETAG_ZONE_ID})...`);
+      const existing = document.getElementById("monetag-vignette-dynamic");
+      if (existing) existing.remove();
+
+      const script = document.createElement("script");
+      script.id = "monetag-vignette-dynamic";
+      script.dataset.zone = ADS_CONFIG.MONETAG_ZONE_ID;
+      script.src = "https://n6wxm.com/vignette.min.js";
+      script.async = true;
+      document.body.appendChild(script);
+    } catch (err) {
+      console.warn("[AdsManager] Error al inyectar Vignette de Monetag:", err);
     }
   }
 
