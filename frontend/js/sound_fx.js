@@ -676,3 +676,4 @@ class SoundSystem {
 }
 
 export const Sound = new SoundSystem();
+if (typeof window !== "undefined") window.Sound = Sound;

@@ -123,6 +123,31 @@
       }
     })();
   </script>
+
+  <!-- CrazyGames HTML5 SDK v3 Oficial (Solo activo en CrazyGames o con ?cg=1) -->
+  <script type="text/javascript">
+    (function() {
+      var isCrazyGames = window.location.hostname.includes("crazygames.com") || 
+                         window.location.hostname.includes("crazygames.io") || 
+                         window.location.search.includes("cg=1");
+      if (isCrazyGames) {
+        var s = document.createElement("script");
+        s.src = "https://sdk.crazygames.com/crazygames-sdk-v3.js";
+        s.async = true;
+        s.onload = async function() {
+          if (window.CrazyGames && window.CrazyGames.SDK) {
+            try {
+              await window.CrazyGames.SDK.init();
+              console.log("[CrazyGames SDK v3] Inicializado exitosamente.");
+            } catch (err) {
+              console.warn("[CrazyGames SDK v3] Error al inicializar:", err);
+            }
+          }
+        };
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
 </head>
 <body>
   <div class="scanlines"></div>

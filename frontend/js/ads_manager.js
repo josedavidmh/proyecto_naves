@@ -303,16 +303,21 @@ class UniversalAdsManager {
 
     try {
       // 1. CrazyGames
-      if (this.currentPlatform === "CRAZYGAMES" && this.crazyGamesSDK) {
+      if (this.currentPlatform === "CRAZYGAMES" && this.crazyGamesSDK && this.crazyGamesSDK.ad) {
         this.crazyGamesSDK.ad.requestAd("midgame", {
-          adStarted: () => console.log("[CrazyGames] Anuncio iniciado"),
+          adStarted: () => {
+            console.log("[CrazyGames] Anuncio midgame iniciado");
+            if (typeof window !== "undefined" && window.Sound && window.Sound.stopMusic) window.Sound.stopMusic();
+          },
           adFinished: () => {
             clearTimeout(timer);
+            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
             safeComplete();
           },
           adError: (error) => {
-            console.warn("[CrazyGames] Error en anuncio:", error);
+            console.warn("[CrazyGames] Error en anuncio midgame:", error);
             clearTimeout(timer);
+            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
             safeComplete();
           }
         });
@@ -431,15 +436,20 @@ class UniversalAdsManager {
   showRewardedAd(onRewarded, onDismissed) {
     try {
       // 1. CrazyGames Rewarded Video
-      if (this.currentPlatform === "CRAZYGAMES" && this.crazyGamesSDK) {
+      if (this.currentPlatform === "CRAZYGAMES" && this.crazyGamesSDK && this.crazyGamesSDK.ad) {
         this.crazyGamesSDK.ad.requestAd("rewarded", {
-          adStarted: () => console.log("[CrazyGames] Video de recompensa iniciado"),
+          adStarted: () => {
+            console.log("[CrazyGames] Video de recompensa iniciado");
+            if (typeof window !== "undefined" && window.Sound && window.Sound.stopMusic) window.Sound.stopMusic();
+          },
           adFinished: () => {
             console.log("[CrazyGames] Recompensa completada.");
+            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
             if (typeof onRewarded === "function") onRewarded();
           },
           adError: (error) => {
             console.warn("[CrazyGames] Error o descarte en video recompensado:", error);
+            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
             if (typeof onDismissed === "function") onDismissed();
           }
         });

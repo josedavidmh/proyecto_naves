@@ -225,7 +225,12 @@ export class GameEngine {
   }
 
   start(shipData, stageNumber = 1, pilotName = "PILOTO", runState = null) {
-    if (typeof window !== "undefined") window.__sa_combat_active = true;
+    if (typeof window !== "undefined") {
+      window.__sa_combat_active = true;
+      if (window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.game) {
+        try { window.CrazyGames.SDK.game.gameplayStart(); } catch (_) {}
+      }
+    }
     document.body.classList.add("battle-locked");
     this.ship = shipData;
     this.currentStage = stageNumber;
@@ -315,7 +320,12 @@ export class GameEngine {
 
   stop() {
     this.isRunning = false;
-    if (typeof window !== "undefined") window.__sa_combat_active = false;
+    if (typeof window !== "undefined") {
+      window.__sa_combat_active = false;
+      if (window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.game) {
+        try { window.CrazyGames.SDK.game.gameplayStop(); } catch (_) {}
+      }
+    }
     Sound.stopMusic();
     document.body.classList.remove("battle-locked");
     if (this.animationFrameId) {
@@ -326,7 +336,18 @@ export class GameEngine {
   togglePause() {
     if (!this.isRunning) return;
     this.isPaused = !this.isPaused;
-    if (typeof window !== "undefined") window.__sa_combat_active = !this.isPaused;
+    if (typeof window !== "undefined") {
+      window.__sa_combat_active = !this.isPaused;
+      if (window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.game) {
+        try {
+          if (this.isPaused) {
+            window.CrazyGames.SDK.game.gameplayStop();
+          } else {
+            window.CrazyGames.SDK.game.gameplayStart();
+          }
+        } catch (_) {}
+      }
+    }
     if (!this.isPaused) {
       this.lastTime = performance.now();
       this.loop(performance.now());
@@ -1879,6 +1900,10 @@ export class GameEngine {
     this.stop();
     Sound.stopMusic();
     Sound.playVictory();
+
+    if (typeof window !== "undefined" && window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.game) {
+      try { window.CrazyGames.SDK.game.happytime(); } catch (_) {}
+    }
 
     const isCampaignVictory = this.currentStage === 5;
     const bonusScore = isCampaignVictory ? 15000 : 5000;
