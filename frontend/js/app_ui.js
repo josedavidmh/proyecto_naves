@@ -363,6 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
     shipSelectContainer.classList.add("hidden");
     lobbyContainer.classList.remove("hidden");
     loadPilotStats();
+    adsManager.checkPeriodicHourlyAd(false);
   });
 
   btnBackToShips.addEventListener("click", () => {
@@ -456,6 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
     activeRunSession = null;
     selectedStage = 1;
     loadPilotStats();
+    adsManager.checkPeriodicHourlyAd(false);
   });
 
   // Botón voluntario de anuncio recompensado: Revivir nave en la fase actual
@@ -529,6 +531,7 @@ document.addEventListener("DOMContentLoaded", () => {
     battleContainer.classList.add("hidden");
     stageSelectContainer.classList.remove("hidden");
     loadStages();
+    adsManager.checkPeriodicHourlyAd(false);
   });
 
   // Cargar las 5 naves desde SQLite mediante API

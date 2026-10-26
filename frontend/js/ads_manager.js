@@ -54,6 +54,9 @@ export const ADS_CONFIG = {
   // Se evalúa desde la primera partida completada
   FIRST_GAME_FREE: false,
 
+  // Intervalo de publicidad periódica normal (1 vez cada hora = 3600000 ms)
+  PERIODIC_HOURLY_INTERVAL_MS: 3600000,
+
   // Límite ampliado de anuncios intersticiales por sesión
   MAX_ADS_PER_SESSION: 25
 };
@@ -73,8 +76,10 @@ class UniversalAdsManager {
     this.sessionAdsCount = 0;
     this.gamesPlayedCount = 0;
     this.lastAdTimestamp = this._loadLastAdTimestamp();
+    this.lastPeriodicAdTimestamp = this._loadLastPeriodicAdTimestamp();
 
     this.detectPlatform();
+    this._startPeriodicChecker();
   }
 
   _loadLastAdTimestamp() {
@@ -93,6 +98,59 @@ class UniversalAdsManager {
         sessionStorage.setItem("sa_last_ad_time", ts.toString());
       }
     } catch (_) {}
+  }
+
+  _loadLastPeriodicAdTimestamp() {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        return parseInt(localStorage.getItem("sa_last_hourly_ad") || "0", 10);
+      }
+    } catch (_) {}
+    return 0;
+  }
+
+  _saveLastPeriodicAdTimestamp(ts) {
+    this.lastPeriodicAdTimestamp = ts;
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        localStorage.setItem("sa_last_hourly_ad", ts.toString());
+      }
+    } catch (_) {}
+  }
+
+  /**
+   * Verifica periódicamente si ha transcurrido 1 hora para mostrar anuncio normal fuera de combate
+   */
+  checkPeriodicHourlyAd(isInCombat = false) {
+    if (isInCombat) {
+      return false; // Jamás interrumpir al jugador en medio de disparos o combate activo
+    }
+    const now = Date.now();
+    const timeSinceLastHourly = now - this.lastPeriodicAdTimestamp;
+
+    // Si ha transcurrido al menos 1 hora (o primera sesión tras 1 hora)
+    if (this.lastPeriodicAdTimestamp > 0 && timeSinceLastHourly >= ADS_CONFIG.PERIODIC_HOURLY_INTERVAL_MS) {
+      console.log(`[AdsManager] ⏱️ Intervalo horario cumplido (${Math.round(timeSinceLastHourly / 60000)} min transcurridos). Mostrando anuncio de cortesía en el hangar.`);
+      this._saveLastPeriodicAdTimestamp(now);
+      this.showInterstitial(null, { force: true, context: "periodic_hourly" });
+      return true;
+    } else if (this.lastPeriodicAdTimestamp === 0) {
+      // Iniciar el reloj de 1 hora desde el primer ingreso
+      this._saveLastPeriodicAdTimestamp(now);
+    }
+    return false;
+  }
+
+  /**
+   * Monitor en segundo plano que evalúa el temporizador de 1 hora
+   */
+  _startPeriodicChecker() {
+    if (typeof window === "undefined") return;
+    setInterval(() => {
+      const battleContainer = document.getElementById("battle-container");
+      const isBattleActive = battleContainer && !battleContainer.classList.contains("hidden");
+      this.checkPeriodicHourlyAd(isBattleActive);
+    }, 120000); // Revisa cada 2 minutos sin impactar rendimiento
   }
 
   /**
