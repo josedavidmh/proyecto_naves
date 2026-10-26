@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" width="100%" height="100%">
+  <defs>
+    <filter id="glow-c" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" /></filter>
+    <linearGradient id="bg-flw" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617" />
+      <stop offset="50%" stop-color="#0b132b" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="ar-fl" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" /></marker>
+    <marker id="ar-war" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#ef4444" /></marker>
+    <marker id="ar-win" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#10b981" /></marker>
+    <marker id="ar-ad" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#f59e0b" /></marker>
+  </defs>
+
+  <rect width="1600" height="1100" fill="url(#bg-flw)" />
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1540" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#00f3ff" letter-spacing="2">DIAGRAMA DE FLUJO GENERAL DEL SISTEMA (USER JOURNEY &amp; ENGINE)</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Recorrido Completo: Punto de Entrada, Aislamiento de Portales, Bucle de Juego, Puntos de Monetización y Rejugabilidad</text>
+  <text x="1390" y="60" font-family="monospace" font-size="11" fill="#38bdf8" font-weight="bold">SYSTEM FLOW</text>
+
+  <!-- ETAPA 1: ENTRADA Y DETECCIÓN -->
+  <g transform="translate(50, 120)">
+    <rect width="320" height="230" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="320" height="35" rx="10" fill="#0284c7" />
+    <text x="160" y="23" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">1. DETECCIÓN DE ENTORNO</text>
+    <text x="20" y="60" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Comprueba hostname y parent window</text>
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="12" fill="#38bdf8">  - Caso A: Render Web Directa</text>
+    <text x="20" y="100" font-family="'Rajdhani', sans-serif" font-size="12" fill="#f59e0b">  - Caso B: GameDistribution Iframe</text>
+    <text x="20" y="120" font-family="'Rajdhani', sans-serif" font-size="12" fill="#c084fc">  - Caso C: CrazyGames SDK Iframe</text>
+    <text x="20" y="145" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Carga condicional de scripts SDK</text>
+    <text x="20" y="165" font-family="'Rajdhani', sans-serif" font-size="12" fill="#10b981">• Previene 'Domain Lock' en web directa</text>
+    <text x="20" y="195" font-family="monospace" font-size="11" fill="#00f3ff">UniversalAdsManager.init()</text>
+  </g>
+
+  <!-- Flecha 1 -> 2 -->
+  <line x1="370" y1="235" x2="430" y2="235" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-fl)" />
+
+  <!-- ETAPA 2: ACCESO Y PERFIL -->
+  <g transform="translate(430, 120)">
+    <rect width="320" height="230" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="320" height="35" rx="10" fill="#0e7490" />
+    <text x="160" y="23" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">2. ACCESO &amp; AUTENTICACIÓN</text>
+    <text x="20" y="60" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Modal de Bienvenida Cyberpunk</text>
+    <text x="20" y="85" font-family="'Rajdhani', sans-serif" font-size="12" fill="#38bdf8">  [Opción 1] Iniciar Sesión / Registro</text>
+    <text x="20" y="105" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">    - Emisión de JWT persistente</text>
+    <text x="20" y="120" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">    - Tabla de Clasificación Mundial</text>
+    <text x="20" y="145" font-family="'Rajdhani', sans-serif" font-size="12" fill="#10b981">  [Opción 2] 'Jugar como Invitado'</text>
+    <text x="20" y="165" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">    - 1 solo clic (Fricción Cero para GD)</text>
+    <text x="20" y="180" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">    - Score local guardado en Session</text>
+    <text x="20" y="205" font-family="monospace" font-size="11" fill="#00f3ff">Token / Guest Session Listo</text>
+  </g>
+
+  <!-- Flecha 2 -> 3 -->
+  <line x1="750" y1="235" x2="810" y2="235" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-fl)" />
+
+  <!-- ETAPA 3: HANGAR & SELECCIÓN -->
+  <g transform="translate(810, 120)">
+    <rect width="340" height="230" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="340" height="35" rx="10" fill="#0284c7" />
+    <text x="170" y="23" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">3. HANGAR DE LA NAVE &amp; AUDIO</text>
+    <text x="20" y="60" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Renderizado de Fondo con Campo Estelar</text>
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Selector de Modelos de Naves:</text>
+    <text x="35" y="100" font-family="'Rajdhani', sans-serif" font-size="11" fill="#38bdf8">- Aegis Interceptor (Velocidad)</text>
+    <text x="35" y="115" font-family="'Rajdhani', sans-serif" font-size="11" fill="#38bdf8">- Titan Dreadnought (Armadura pesada)</text>
+    <text x="35" y="130" font-family="'Rajdhani', sans-serif" font-size="11" fill="#38bdf8">- Plasma Striker (Disparo múltiple)</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Controles de Sonido (SFX &amp; BGM Synth)</text>
+    <text x="20" y="175" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Botón "Ranking" &amp; Instrucciones</text>
+    <text x="20" y="205" font-family="monospace" font-size="11" fill="#00f3ff">BTN_START_MISSION -> Click</text>
+  </g>
+
+  <!-- Flecha 3 -> 4 -->
+  <line x1="1150" y1="235" x2="1210" y2="235" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-fl)" />
+
+  <!-- ETAPA 4: BRIEFING Y CANDADO DE ADS -->
+  <g transform="translate(1210, 120)">
+    <rect width="340" height="230" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#f59e0b" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="340" height="35" rx="10" fill="#b45309" />
+    <text x="170" y="23" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">4. BRIEFING &amp; COOLDOWN CHECK</text>
+    <text x="20" y="60" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Muestra Objetivos del Sector</text>
+    <text x="20" y="85" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbbf24">• EVALUACIÓN DE ADS INTERSTICIAL:</text>
+    <text x="35" y="105" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">- ¿Tiempo desde último Ad &gt; 75s?</text>
+    <text x="35" y="120" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">- ¿Tiempo de juego acumulado &gt; 18s?</text>
+    <text x="20" y="145" font-family="'Rajdhani', sans-serif" font-size="12" fill="#10b981">  SI CUMPLE: Despliega Viñeta Monetag</text>
+    <text x="20" y="165" font-family="'Rajdhani', sans-serif" font-size="12" fill="#94a3b8">  NO CUMPLE: Pasa directo a combate</text>
+    <text x="20" y="205" font-family="monospace" font-size="11" fill="#fbbf24">Inicia Cuenta Regresiva (3, 2, 1)</text>
+  </g>
+
+  <!-- Flecha 4 -> 5 (Hacia Abajo) -->
+  <path d="M 1380 350 L 1380 430 L 1150 430" fill="none" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-fl)" />
+
+  <!-- ETAPA 5: BUCLE DE COMBATE ESPACIAL -->
+  <g transform="translate(50, 400)">
+    <rect width="1100" height="260" rx="14" fill="rgba(8, 47, 73, 0.25)" stroke="#00f3ff" stroke-width="2" filter="url(#card-shadow)" />
+    <rect width="1100" height="35" rx="14" fill="#0e7490" />
+    <text x="550" y="24" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">5. NÚCLEO DE COMBATE AEROESPACIAL (GAME LOOP 60 FPS)</text>
+
+    <!-- Subcaja 5.1: Dogfight -->
+    <g transform="translate(30, 55)">
+      <rect width="320" height="180" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#38bdf8" stroke-width="1.5" />
+      <text x="160" y="25" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#38bdf8" text-anchor="middle">Oleadas 1 a 4 (Enjambre)</text>
+      <text x="15" y="55" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Cazas Ligeros, Bombarderos, Kamikazes</text>
+      <text x="15" y="75" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Movimientos en formación senoidal</text>
+      <text x="15" y="95" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Drops: Escudos, Triple Láser, Bombas</text>
+      <text x="15" y="115" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Efectos: Rayos láser, explosiones canvas</text>
+      <text x="15" y="145" font-family="monospace" font-size="11" fill="#38bdf8">Swarm Cleared -> Wave 5</text>
+    </g>
+
+    <!-- Subcaja 5.2: Jefe -->
+    <g transform="translate(380, 55)">
+      <rect width="340" height="180" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#ef4444" stroke-width="1.5" />
+      <text x="170" y="25" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#f87171" text-anchor="middle">Oleada 5: Boss Dreadnought</text>
+      <text x="15" y="55" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Barra de Vida Gigante en HUD</text>
+      <text x="15" y="75" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Fase 1: Cañones de Plasma frontales</text>
+      <text x="15" y="95" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Fase 2: Rayo Láser Devastador Cargado</text>
+      <text x="15" y="115" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Fase 3: Modo Furia + Drones escolta</text>
+      <text x="15" y="145" font-family="monospace" font-size="11" fill="#f87171">HP == 0 -> Sector Cleared!</text>
+    </g>
+
+    <!-- Subcaja 5.3: HUD y Telemetría -->
+    <g transform="translate(750, 55)">
+      <rect width="320" height="180" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#06b6d4" stroke-width="1.5" />
+      <text x="160" y="25" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#22d3ee" text-anchor="middle">HUD &amp; Controles en Vivo</text>
+      <text x="15" y="55" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Vidas Restantes: ★ ★ ★</text>
+      <text x="15" y="75" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Barra de Energía de Escudo y HP</text>
+      <text x="15" y="95" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Marcador de Score &amp; Multiplicador</text>
+      <text x="15" y="115" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">• Pausa Instantánea (ESC o Botón UI)</text>
+      <text x="15" y="145" font-family="monospace" font-size="11" fill="#22d3ee">Touch Pad Móvil / Teclas WASD</text>
+    </g>
+  </g>
+
+  <!-- BIFURCACIÓN DE SALIDA DE COMBATE: VICTORIA vs DERROTA -->
+  <!-- Salida A: Victoria (Verde) -->
+  <path d="M 600 660 L 600 730 L 300 730" fill="none" stroke="#10b981" stroke-width="2.5" marker-end="url(#ar-win)" />
+  <text x="420" y="720" font-family="monospace" font-size="11" font-weight="bold" fill="#10b981">[JEFE DERROTADO: VICTORIA]</text>
+
+  <!-- Salida B: Derrota (Rojo) -->
+  <path d="M 600 660 L 600 730 L 900 730" fill="none" stroke="#ef4444" stroke-width="2.5" marker-end="url(#ar-war)" />
+  <text x="680" y="720" font-family="monospace" font-size="11" font-weight="bold" fill="#f87171">[NAVE DESTRUIDA: 0 VIDAS]</text>
+
+  <!-- ETAPA 6A: CELEBRACIÓN DE VICTORIA -->
+  <g transform="translate(50, 750)">
+    <rect width="360" height="230" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#10b981" stroke-width="2" filter="url(#card-shadow)" />
+    <rect width="360" height="35" rx="10" fill="#047857" />
+    <text x="180" y="23" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">6A. VICTORIA DE SECTOR</text>
+    <text x="20" y="60" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Bonificación Masiva de Puntos (+5000)</text>
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Desbloqueo de Nuevos Skins y Naves</text>
+    <text x="20" y="105" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbbf24">• Disparo Interstitial según Cooldown (75s)</text>
+    <text x="20" y="130" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Opciones para el Piloto:</text>
+    <text x="35" y="150" font-family="'Rajdhani', sans-serif" font-size="11" fill="#34d399">- "Continuar al Siguiente Sector" (Loop)</text>
+    <text x="35" y="165" font-family="'Rajdhani', sans-serif" font-size="11" fill="#38bdf8">- "Volver al Hangar a Mejorar Armas"</text>
+    <text x="20" y="205" font-family="monospace" font-size="11" fill="#10b981">Sync Score -> Leaderboard</text>
+  </g>
+
+  <!-- ETAPA 6B: MONETIZACIÓN DE REVIVE & DERROTA -->
+  <g transform="translate(460, 750)">
+    <rect width="450" height="230" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#f59e0b" stroke-width="2" filter="url(#card-shadow)" />
+    <rect width="450" height="35" rx="10" fill="#b45309" />
+    <text x="225" y="23" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">6B. PIVOTE MONETIZADO: REWARDED REVIVE</text>
+    <text x="20" y="60" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Pantalla con Cuenta Regresiva de 5 segundos</text>
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbbf24">• Botón Dorado: "Ver Video y Revivir con Escudo"</text>
+    <text x="20" y="105" font-family="'Rajdhani', sans-serif" font-size="12" fill="#34d399">  [SI EL JUGADOR DA CLIC]:</text>
+    <text x="35" y="125" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">  - Llama a `adsManager.showRewardedRevive()`</text>
+    <text x="35" y="140" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">  - Video de alta conversión CPM</text>
+    <text x="35" y="155" font-family="'Rajdhani', sans-serif" font-size="11" fill="#34d399">  - Callback revive() restaura la nave de inmediato</text>
+    <text x="20" y="180" font-family="'Rajdhani', sans-serif" font-size="12" fill="#f87171">  [SI DEJA PASAR EL TIEMPO O DA SKIP]:</text>
+    <text x="35" y="200" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">  - Avanza a Game Over Definitivo</text>
+  </g>
+
+  <!-- Flecha Revive de vuelta a Combate -->
+  <path d="M 685 750 L 685 680 L 760 680 L 760 660" fill="none" stroke="#10b981" stroke-width="2.5" marker-end="url(#ar-win)" />
+  <text x="700" y="695" font-family="monospace" font-size="10" font-weight="bold" fill="#10b981">Revive 100% HP</text>
+
+  <!-- ETAPA 7: GAME OVER DEFINITIVO & PERSISTENCIA -->
+  <g transform="translate(960, 750)">
+    <rect width="590" height="230" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#ef4444" stroke-width="2" filter="url(#card-shadow)" />
+    <rect width="590" height="35" rx="10" fill="#991b1b" />
+    <text x="295" y="23" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">7. GAME OVER, MONETIZACIÓN FINAL &amp; PERSISTENCIA</text>
+    <text x="20" y="60" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Comprueba Cooldown (75s) -> Si aplica, lanza Viñeta Monetag</text>
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">• Muestra Resumen: Score Final, Oleada Alcanzada, Precisión de Disparo</text>
+    <text x="20" y="105" font-family="'Rajdhani', sans-serif" font-size="12" fill="#38bdf8">• Sincronización Automática vía API REST:</text>
+    <text x="35" y="125" font-family="monospace" font-size="11" fill="#818cf8">  POST https://space-assault.onrender.com/api/scores</text>
+    <text x="35" y="145" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">  Payload: { score: 14200, stage: 5, user_id: 12 }</text>
+    <text x="20" y="175" font-family="'Rajdhani', sans-serif" font-size="12" fill="#10b981">• Actualiza Leaderboard Top 10 Mundial</text>
+    <text x="20" y="200" font-family="'Rajdhani', sans-serif" font-size="12" fill="#00f3ff">• Botón "Jugar de Nuevo" -> Reinicia en el Hangar (Loop Virtuoso)</text>
+  </g>
+
+  <!-- Flechas de 6B a 7 -->
+  <line x1="910" y1="865" x2="960" y2="865" stroke="#ef4444" stroke-width="2" marker-end="url(#ar-war)" />
+
+  <!-- Bucle de Rejugabilidad hacia el Hangar -->
+  <path d="M 1255 980 L 1255 1030 L 980 1030 L 980 350" fill="none" stroke="#00f3ff" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#ar-fl)" />
+  <text x="1000" y="1020" font-family="monospace" font-size="11" fill="#00f3ff">[Ciclo de Rejugabilidad: Retorno al Hangar]</text>
+</svg>

@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1450 980" width="100%" height="100%">
+  <defs>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+    <linearGradient id="bg-grad-c2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#0c1938" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="ac" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" /></marker>
+    <marker id="ae" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#10b981" /></marker>
+    <marker id="ap" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#c084fc" /></marker>
+    <marker id="aa" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#f59e0b" /></marker>
+  </defs>
+
+  <rect width="1450" height="980" fill="url(#bg-grad-c2)" />
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1390" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#00f3ff" letter-spacing="2">MODELO C4 · NIVEL 2: DIAGRAMA DE CONTENEDORES</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Arquitectura de Contenedores de Alto Nivel: Frontend SPA, Backend API RESTful, Persistencia SQLite y Adaptadores Publicitarios</text>
+  <text x="1220" y="60" font-family="monospace" font-size="11" fill="#38bdf8" font-weight="bold">C4 CONTAINER</text>
+
+  <!-- Límite del Sistema -->
+  <rect x="40" y="115" width="1020" height="770" rx="14" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,6" opacity="0.6" />
+  <text x="60" y="145" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#38bdf8">LÍMITE DEL SISTEMA: SPACE ASSAULT v2.0</text>
+
+  <!-- Contenedor 1: Frontend SPA -->
+  <g transform="translate(70, 180)">
+    <rect width="440" height="320" rx="12" fill="rgba(8, 47, 73, 0.9)" stroke="#38bdf8" stroke-width="2" filter="url(#card-shadow)" />
+    <rect x="0" y="0" width="440" height="50" rx="12" fill="#0369a1" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="15" font-weight="bold" fill="#ffffff">Frontend Web SPA</text>
+    <text x="330" y="32" font-family="monospace" font-size="11" fill="#bae6fd">[Container: JS]</text>
+
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="13" fill="#e0f2fe">Aplicación de una sola página (Single Page Application).</text>
+    <text x="20" y="98" font-family="'Rajdhani', sans-serif" font-size="13" fill="#e0f2fe">Entrega el bucle de juego a 60 FPS en Canvas 2D, HUD en tiempo real,</text>
+    <text x="20" y="116" font-family="'Rajdhani', sans-serif" font-size="13" fill="#e0f2fe">sintetizador de audio Web Audio API y controles táctiles para móvil.</text>
+
+    <!-- Subbloques -->
+    <rect x="20" y="140" width="190" height="70" rx="6" fill="#075985" stroke="#38bdf8" stroke-width="1" />
+    <text x="30" y="162" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Motor Canvas 60 FPS</text>
+    <text x="30" y="180" font-family="'Rajdhani', sans-serif" font-size="11" fill="#bae6fd">engine.js, scenario.js</text>
+    <text x="30" y="196" font-family="'Rajdhani', sans-serif" font-size="11" fill="#bae6fd">ship_renderer, bosses.js</text>
+
+    <rect x="230" y="140" width="190" height="70" rx="6" fill="#075985" stroke="#38bdf8" stroke-width="1" />
+    <text x="240" y="162" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Capa de UI &amp; Auth</text>
+    <text x="240" y="180" font-family="'Rajdhani', sans-serif" font-size="11" fill="#bae6fd">app_ui.js, auth.js</text>
+    <text x="240" y="196" font-family="'Rajdhani', sans-serif" font-size="11" fill="#bae6fd">social_share.js, dialogs</text>
+
+    <rect x="20" y="225" width="400" height="75" rx="6" fill="#0369a1" stroke="#00f3ff" stroke-width="1.5" />
+    <text x="35" y="248" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff">Universal Ads Manager (Submódulo)</text>
+    <text x="35" y="268" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e0f2fe">Control de cooldown (75s), protección &lt;18s, Rewarded Video</text>
+    <text x="35" y="285" font-family="monospace" font-size="10" fill="#38bdf8">ads_manager.js · Inyección dinámica Monetag &amp; GD SDK</text>
+  </g>
+
+  <!-- Contenedor 2: Backend API -->
+  <g transform="translate(580, 180)">
+    <rect width="440" height="320" rx="12" fill="rgba(42, 20, 61, 0.9)" stroke="#c084fc" stroke-width="2" filter="url(#card-shadow)" />
+    <rect x="0" y="0" width="440" height="50" rx="12" fill="#7e22ce" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="15" font-weight="bold" fill="#ffffff">Backend API RESTful</text>
+    <text x="300" y="32" font-family="monospace" font-size="11" fill="#f3e8ff">[Container: Python / Flask]</text>
+
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="13" fill="#f3e8ff">Servicio de servidor en Python 3.11 impulsado por Flask y Gunicorn.</text>
+    <text x="20" y="98" font-family="'Rajdhani', sans-serif" font-size="13" fill="#f3e8ff">Proporciona endpoints REST autenticados mediante tokens JWT criptográficos,</text>
+    <text x="20" y="116" font-family="'Rajdhani', sans-serif" font-size="13" fill="#f3e8ff">seguridad CORS global (*) para embebidos externos y control de salud.</text>
+
+    <!-- Subbloques -->
+    <rect x="20" y="140" width="190" height="70" rx="6" fill="#581c87" stroke="#c084fc" stroke-width="1" />
+    <text x="30" y="162" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Blueprints de Rutas</text>
+    <text x="30" y="180" font-family="'Rajdhani', sans-serif" font-size="11" fill="#e9d5ff">auth_routes.py (/api/auth)</text>
+    <text x="30" y="196" font-family="'Rajdhani', sans-serif" font-size="11" fill="#e9d5ff">game_routes.py (/api/game)</text>
+
+    <rect x="230" y="140" width="190" height="70" rx="6" fill="#581c87" stroke="#c084fc" stroke-width="1" />
+    <text x="240" y="162" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Seguridad &amp; Guards</text>
+    <text x="240" y="180" font-family="'Rajdhani', sans-serif" font-size="11" fill="#e9d5ff">auth_guard.py (JWT Verify)</text>
+    <text x="240" y="196" font-family="'Rajdhani', sans-serif" font-size="11" fill="#e9d5ff">CORS headers, Pass Hashes</text>
+
+    <rect x="20" y="225" width="400" height="75" rx="6" fill="#4c1d95" stroke="#a855f7" stroke-width="1.5" />
+    <text x="35" y="248" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff">Capa de Modelos ORM (SQLAlchemy)</text>
+    <text x="35" y="268" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e9d5ff">User (Piloto), Ship (Catálogo Naves), PlayerProgress,</text>
+    <text x="35" y="285" font-family="monospace" font-size="10" fill="#c084fc">GameScore (Puntuaciones y Récords)</text>
+  </g>
+
+  <!-- Contenedor 3: Base de Datos SQLite -->
+  <g transform="translate(580, 560)">
+    <rect width="440" height="260" rx="12" fill="rgba(69, 26, 3, 0.9)" stroke="#f59e0b" stroke-width="2" filter="url(#card-shadow)" />
+    <rect x="0" y="0" width="440" height="50" rx="12" fill="#b45309" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="15" font-weight="bold" fill="#ffffff">Base de Datos SQLite</text>
+    <text x="280" y="32" font-family="monospace" font-size="11" fill="#fef3c7">[Container: Relational DB / File]</text>
+
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="13" fill="#fef3c7">Almacena de forma relacional y atómica los pilotos, contraseñas</text>
+    <text x="20" y="98" font-family="'Rajdhani', sans-serif" font-size="13" fill="#fef3c7">hasheadas con Werkzeug (PBKDF2-SHA256), estado de desbloqueo,</text>
+    <text x="20" y="116" font-family="'Rajdhani', sans-serif" font-size="13" fill="#fef3c7">historial de misiones y la tabla de clasificación mundial.</text>
+
+    <rect x="20" y="140" width="400" height="95" rx="6" fill="#78350f" stroke="#f59e0b" stroke-width="1" />
+    <text x="35" y="165" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff">Tablas Principales:</text>
+    <text x="35" y="185" font-family="monospace" font-size="11" fill="#fde68a">• users (id, username, email, password_hash, created_at)</text>
+    <text x="35" y="202" font-family="monospace" font-size="11" fill="#fde68a">• ships (id, name, speed, shield, weapon, is_unlocked)</text>
+    <text x="35" y="219" font-family="monospace" font-size="11" fill="#fde68a">• game_scores (id, user_id, score, stage_reached, is_victory)</text>
+  </g>
+
+  <!-- Contenedor 4: Adaptador y Redes de Anuncios -->
+  <g transform="translate(70, 560)">
+    <rect width="440" height="260" rx="12" fill="rgba(4, 47, 46, 0.9)" stroke="#10b981" stroke-width="2" filter="url(#card-shadow)" />
+    <rect x="0" y="0" width="440" height="50" rx="12" fill="#047857" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="15" font-weight="bold" fill="#ffffff">Subsistema de Publicidad</text>
+    <text x="290" y="32" font-family="monospace" font-size="11" fill="#a7f3d0">[Container: Client SDKs]</text>
+
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="13" fill="#d1fae5">Orquesta la monetización sin fricción entre múltiples redes.</text>
+    <text x="20" y="98" font-family="'Rajdhani', sans-serif" font-size="13" fill="#d1fae5">Detecta el entorno de ejecución para servir el anuncio adecuado</text>
+    <text x="20" y="116" font-family="'Rajdhani', sans-serif" font-size="13" fill="#d1fae5">y administra el botón de revivir con rescate táctico.</text>
+
+    <rect x="20" y="140" width="400" height="95" rx="6" fill="#065f46" stroke="#34d399" stroke-width="1" />
+    <text x="35" y="165" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Redes Integradas:</text>
+    <text x="35" y="185" font-family="'Rajdhani', sans-serif" font-size="12" fill="#a7f3d0">• Monetag (Web Render): Vignette Banner (Zona 12128966)</text>
+    <text x="35" y="202" font-family="'Rajdhani', sans-serif" font-size="12" fill="#a7f3d0">• GameDistribution (1,000+ Portales): SDK oficial (GUID d49c747...)</text>
+    <text x="35" y="219" font-family="'Rajdhani', sans-serif" font-size="12" fill="#a7f3d0">• CrazyGames SDK: Midgame &amp; Rewarded Video</text>
+  </g>
+
+  <!-- SISTEMAS EXTERNOS Y NAVEGADORES (Derecha) -->
+  <!-- Navegador / Dispositivo -->
+  <g transform="translate(1120, 180)">
+    <rect width="280" height="150" rx="10" fill="#0f172a" stroke="#00f3ff" stroke-width="2" filter="url(#card-shadow)" />
+    <text x="140" y="35" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#00f3ff" text-anchor="middle">Navegador del Usuario</text>
+    <text x="140" y="52" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">[Chrome, Firefox, Safari, Edge]</text>
+    <text x="140" y="80" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e2e8f0" text-anchor="middle">Ejecuta el Canvas 2D a 60 FPS,</text>
+    <text x="140" y="98" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e2e8f0" text-anchor="middle">gestiona LocalStorage (JWT, vidas)</text>
+    <text x="140" y="116" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e2e8f0" text-anchor="middle">y captura teclado, mouse y táctil.</text>
+  </g>
+
+  <!-- Redes Externas -->
+  <g transform="translate(1120, 480)">
+    <rect width="280" height="280" rx="10" fill="#140821" stroke="#ec4899" stroke-width="2" filter="url(#card-shadow)" />
+    <text x="140" y="35" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ec4899" text-anchor="middle">Redes Publicitarias</text>
+    <text x="140" y="52" font-family="monospace" font-size="10" fill="#f472b6" text-anchor="middle">[Servidores Externos]</text>
+
+    <text x="25" y="85" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbcfe8">• Monetag Ad Servers (n6wxm.com)</text>
+    <text x="25" y="105" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbcfe8">• GameDistribution API (Azerion)</text>
+    <text x="25" y="125" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbcfe8">• CrazyGames Ad Network</text>
+    <text x="25" y="145" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbcfe8">• Google AdSense CDN</text>
+
+    <rect x="20" y="170" width="240" height="85" rx="6" fill="#2a143d" stroke="#f472b6" stroke-width="1" />
+    <text x="30" y="195" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Liquidación y Reportes:</text>
+    <text x="30" y="215" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fbcfe8">Pagos en dólares / PayPal / Banco</text>
+    <text x="30" y="232" font-family="monospace" font-size="10" fill="#94a3b8">reports.gamedistribution.com</text>
+  </g>
+
+  <!-- FLECHAS DE CONEXIÓN ENTRE CONTENEDORES -->
+  <!-- Navegador -> Frontend SPA -->
+  <path d="M 1120 250 L 510 250" fill="none" stroke="#00f3ff" stroke-width="2" marker-end="url(#ac)" />
+  <text x="780" y="240" font-family="monospace" font-size="10" fill="#00f3ff">Carga index.html / CSS / JS</text>
+
+  <!-- Frontend SPA -> Backend API -->
+  <path d="M 510 340 L 580 340" fill="none" stroke="#c084fc" stroke-width="2" marker-end="url(#ap)" />
+  <text x="525" y="330" font-family="monospace" font-size="9" fill="#c084fc">JSON / JWT</text>
+
+  <!-- Backend API -> SQLite DB -->
+  <path d="M 800 500 L 800 560" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#aa)" />
+  <text x="810" y="535" font-family="monospace" font-size="10" fill="#fbbf24">SQLAlchemy (SQL / ORM)</text>
+
+  <!-- Frontend SPA -> Subsistema Publicidad -->
+  <path d="M 290 500 L 290 560" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#ae)" />
+  <text x="300" y="535" font-family="monospace" font-size="10" fill="#34d399">showInterstitial() / Rewarded</text>
+
+  <!-- Subsistema Publicidad -> Redes Externas -->
+  <path d="M 510 690 L 1120 620" fill="none" stroke="#ec4899" stroke-width="2" marker-end="url(#ap)" stroke-dasharray="4,4" />
+  <text x="770" y="665" font-family="monospace" font-size="10" fill="#f472b6">Solicitudes de Anuncios (Vignette / Video)</text>
+
+  <!-- Leyenda inferior -->
+  <g transform="translate(40, 910)">
+    <rect width="1370" height="50" rx="6" fill="rgba(15, 23, 42, 0.85)" stroke="#334155" />
+    <text x="25" y="30" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#00f3ff">CONTENEDORES C4:</text>
+    <rect x="180" y="18" width="16" height="16" rx="3" fill="#0369a1" />
+    <text x="205" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Frontend SPA (Cliente)</text>
+    <rect x="390" y="18" width="16" height="16" rx="3" fill="#7e22ce" />
+    <text x="415" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Backend REST API (Servidor)</text>
+    <rect x="620" y="18" width="16" height="16" rx="3" fill="#b45309" />
+    <text x="645" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Base de Datos (Persistencia)</text>
+    <rect x="850" y="18" width="16" height="16" rx="3" fill="#047857" />
+    <text x="875" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Ads Manager (Publicidad)</text>
+    <rect x="1070" y="18" width="16" height="16" rx="3" fill="#140821" stroke="#ec4899" />
+    <text x="1095" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Servicios Externos / Portales</text>
+  </g>
+</svg>

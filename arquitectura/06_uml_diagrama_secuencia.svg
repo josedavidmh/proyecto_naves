@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1550 1150" width="100%" height="100%">
+  <defs>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" /></filter>
+    <linearGradient id="bg-grad-seq" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#0a1226" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="asc" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" /></marker>
+    <marker id="ase" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#10b981" /></marker>
+    <marker id="asp" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#ec4899" /></marker>
+    <marker id="asa" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#f59e0b" /></marker>
+  </defs>
+
+  <rect width="1550" height="1150" fill="url(#bg-grad-seq)" />
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1490" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#00f3ff" letter-spacing="2">UML · DIAGRAMA DE SECUENCIA INTEGRAL</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Líneas de Vida: Bucle de Combate 60 FPS, Game Over, Evaluación de Cooldown, Rescate Rewarded y Registro de Récord</text>
+  <text x="1330" y="60" font-family="monospace" font-size="11" fill="#38bdf8" font-weight="bold">UML SEQUENCE</text>
+
+  <!-- LÍNEAS DE VIDA (Lifelines) -->
+  <!-- 1. Piloto (Jugador) -->
+  <g transform="translate(80, 110)">
+    <rect width="130" height="45" rx="6" fill="#082f49" stroke="#38bdf8" stroke-width="2" />
+    <text x="65" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">Piloto</text>
+    <line x1="65" y1="45" x2="65" y2="980" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,4" />
+  </g>
+
+  <!-- 2. UI Controller (app_ui.js) -->
+  <g transform="translate(270, 110)">
+    <rect width="150" height="45" rx="6" fill="#075985" stroke="#00f3ff" stroke-width="2" />
+    <text x="75" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">UI Controller</text>
+    <line x1="75" y1="45" x2="75" y2="980" stroke="#00f3ff" stroke-width="1.5" stroke-dasharray="4,4" />
+  </g>
+
+  <!-- 3. Game Engine (engine.js) -->
+  <g transform="translate(480, 110)">
+    <rect width="150" height="45" rx="6" fill="#0369a1" stroke="#38bdf8" stroke-width="2" />
+    <text x="75" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">Game Engine</text>
+    <line x1="75" y1="45" x2="75" y2="980" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,4" />
+  </g>
+
+  <!-- 4. Universal Ads Manager -->
+  <g transform="translate(710, 110)">
+    <rect width="180" height="45" rx="6" fill="#140821" stroke="#ec4899" stroke-width="2" />
+    <text x="90" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">Ads Manager</text>
+    <line x1="90" y1="45" x2="90" y2="980" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4,4" />
+  </g>
+
+  <!-- 5. Ad Networks (Monetag / GD) -->
+  <g transform="translate(970, 110)">
+    <rect width="160" height="45" rx="6" fill="#2a143d" stroke="#f472b6" stroke-width="2" />
+    <text x="80" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">Ad Networks</text>
+    <line x1="80" y1="45" x2="80" y2="980" stroke="#f472b6" stroke-width="1.5" stroke-dasharray="4,4" />
+  </g>
+
+  <!-- 6. Flask Backend API -->
+  <g transform="translate(1200, 110)">
+    <rect width="150" height="45" rx="6" fill="#581c87" stroke="#c084fc" stroke-width="2" />
+    <text x="75" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">Backend API</text>
+    <line x1="75" y1="45" x2="75" y2="980" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="4,4" />
+  </g>
+
+  <!-- 7. Base de Datos SQLite -->
+  <g transform="translate(1400, 110)">
+    <rect width="120" height="45" rx="6" fill="#78350f" stroke="#f59e0b" stroke-width="2" />
+    <text x="60" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">SQLite DB</text>
+    <line x1="60" y1="45" x2="60" y2="980" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4" />
+  </g>
+
+  <!-- ACTIVACIONES Y MENSAJES SECUENCIALES -->
+  <!-- PASO 1: Despegue a Misión -->
+  <g transform="translate(0, 180)">
+    <line x1="145" y1="0" x2="345" y2="0" stroke="#00f3ff" stroke-width="2" marker-end="url(#asc)" />
+    <text x="245" y="-8" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="600" fill="#00f3ff" text-anchor="middle">1. Clic "DESPEGAR" (Briefing)</text>
+
+    <line x1="345" y1="25" x2="555" y2="25" stroke="#00f3ff" stroke-width="2" marker-end="url(#asc)" />
+    <text x="450" y="17" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="600" fill="#00f3ff" text-anchor="middle">2. startMission(ship, stage)</text>
+
+    <line x1="555" y1="50" x2="800" y2="50" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#asc)" />
+    <text x="677" y="42" font-family="'Rajdhani', sans-serif" font-size="11" fill="#bae6fd" text-anchor="middle">3. adsManager.markMissionStart()</text>
+  </g>
+
+  <!-- PASO 2: Loop de Combate a 60 FPS -->
+  <g transform="translate(0, 280)">
+    <rect x="520" y="-10" width="70" height="70" rx="4" fill="rgba(3, 105, 161, 0.4)" stroke="#38bdf8" />
+    <path d="M 555 10 C 600 0, 600 35, 555 35" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#asc)" />
+    <text x="620" y="22" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#e0f2fe">4. GameLoop 60 FPS (Físicas, Láseres, Audio Synthwave)</text>
+
+    <line x1="145" y1="55" x2="555" y2="55" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#asc)" />
+    <text x="350" y="47" font-family="'Rajdhani', sans-serif" font-size="11" fill="#bae6fd" text-anchor="middle">Mover nave, disparar, Bomba Táctica [B]</text>
+  </g>
+
+  <!-- PASO 3: Destrucción de la Nave y Game Over -->
+  <g transform="translate(0, 390)">
+    <line x1="555" y1="0" x2="345" y2="0" stroke="#f43f5e" stroke-width="2" marker-end="url(#asc)" />
+    <text x="450" y="-8" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#f43f5e" text-anchor="middle">5. onGameOver(stats) [Vidas = 0]</text>
+
+    <line x1="345" y1="30" x2="800" y2="30" stroke="#ec4899" stroke-width="2" marker-end="url(#asp)" />
+    <text x="572" y="22" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#f472b6" text-anchor="middle">6. adsManager.showInterstitial({context: "game_over"})</text>
+  </g>
+
+  <!-- PASO 4: Evaluación de Cooldown y Reglas Anti-Frustración -->
+  <g transform="translate(0, 460)">
+    <!-- Fragmento Alt (Evaluación de Reglas) -->
+    <rect x="680" y="0" width="580" height="155" rx="8" fill="rgba(20, 8, 33, 0.7)" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4,4" />
+    <rect x="680" y="0" width="80" height="22" rx="4" fill="#831843" />
+    <text x="720" y="15" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">[alt: Reglas]</text>
+
+    <!-- Caso A: Cooldown superado (> 75s y partida > 18s) -->
+    <text x="770" y="38" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#34d399">[Cooldown OK &gt; 75s y Partida &gt; 18s]:</text>
+    <line x1="800" y1="50" x2="1050" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#asp)" />
+    <text x="925" y="42" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fbcfe8" text-anchor="middle">7A. Inyecta Vignette / gdsdk.showAd()</text>
+
+    <line x1="1050" y1="75" x2="800" y2="75" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#asp)" />
+    <text x="925" y="68" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fbcfe8" text-anchor="middle">Anuncio mostrado ➔ safeComplete()</text>
+
+    <line x1="680" y1="88" x2="1260" y2="88" stroke="#ec4899" stroke-width="1" stroke-dasharray="2,2" />
+
+    <!-- Caso B: Cooldown activo (< 75s o partida breve) -->
+    <text x="770" y="108" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#f59e0b">[Cooldown Activo &lt; 75s o muerte rápida &lt; 18s]:</text>
+    <line x1="800" y1="125" x2="345" y2="125" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#asc)" />
+    <text x="572" y="117" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a" text-anchor="middle">7B. Omisión silenciosa por cortesía ➔ Flujo inmediato sin esperas</text>
+  </g>
+
+  <!-- PASO 5: Decisión del Piloto en Game Over -->
+  <g transform="translate(0, 650)">
+    <rect x="120" y="0" width="1000" height="190" rx="8" fill="rgba(4, 47, 46, 0.6)" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,4" />
+    <rect x="120" y="0" width="130" height="22" rx="4" fill="#065f46" />
+    <text x="185" y="15" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">[alt: Elección Piloto]</text>
+
+    <!-- Opción 1: Rewarded Ad (Revivir Nave con Escudo al 100%) -->
+    <text x="260" y="38" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#34d399">Opción A: Clic en "⚡ REVIVIR NAVE CON ESCUDO AL 100% (+2 VIDAS)":</text>
+    <line x1="145" y1="52" x2="345" y2="52" stroke="#10b981" stroke-width="2" marker-end="url(#ase)" />
+    <text x="245" y="45" font-family="'Rajdhani', sans-serif" font-size="11" fill="#a7f3d0" text-anchor="middle">Clic Revivir</text>
+
+    <line x1="345" y1="75" x2="800" y2="75" stroke="#10b981" stroke-width="2" marker-end="url(#ase)" />
+    <text x="572" y="67" font-family="'Rajdhani', sans-serif" font-size="11" fill="#a7f3d0" text-anchor="middle">showRewardedAd(onRewarded)</text>
+
+    <line x1="800" y1="95" x2="1050" y2="95" stroke="#10b981" stroke-width="2" marker-end="url(#ase)" />
+    <text x="925" y="87" font-family="'Rajdhani', sans-serif" font-size="11" fill="#a7f3d0" text-anchor="middle">gdsdk.showAd("rewarded") / CrazyGames</text>
+
+    <line x1="1050" y1="120" x2="555" y2="120" stroke="#10b981" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#asc)" />
+    <text x="800" y="112" font-family="'Rajdhani', sans-serif" font-size="11" font-weight="bold" fill="#34d399" text-anchor="middle">Recompensa completada: startMission(ship, stage, {lives: 2, shield: 100%})</text>
+
+    <line x1="120" y1="135" x2="1120" y2="135" stroke="#10b981" stroke-width="1" stroke-dasharray="2,2" />
+
+    <!-- Opción 2: Reiniciar Campaña desde Fase 1 -->
+    <text x="260" y="155" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#f43f5e">Opción B: Clic en "🔄 REINICIAR DESDE FASE 1":</text>
+    <line x1="145" y1="172" x2="555" y2="172" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#asc)" />
+    <text x="350" y="165" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fda4af" text-anchor="middle">startMission(ship, 1, null) [Progreso reseteado a Fase 1]</text>
+  </g>
+
+  <!-- PASO 6: Persistencia de Puntuación en Base de Datos -->
+  <g transform="translate(0, 870)">
+    <line x1="345" y1="0" x2="1275" y2="0" stroke="#c084fc" stroke-width="2" marker-end="url(#asp)" />
+    <text x="810" y="-8" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#c084fc" text-anchor="middle">8. POST /api/game/score {score, stage, enemies, bosses} (Bearer JWT)</text>
+
+    <line x1="1275" y1="30" x2="1460" y2="30" stroke="#f59e0b" stroke-width="2" marker-end="url(#asa)" />
+    <text x="1367" y="22" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a" text-anchor="middle">9. INSERT INTO game_scores</text>
+
+    <line x1="1460" y1="55" x2="1275" y2="55" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#asa)" />
+    <text x="1367" y="47" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a" text-anchor="middle">Commit seguro ACID</text>
+
+    <line x1="1275" y1="75" x2="345" y2="75" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#asc)" />
+    <text x="810" y="67" font-family="'Rajdhani', sans-serif" font-size="11" fill="#e9d5ff" text-anchor="middle">200 OK {success: true, new_record: true/false}</text>
+  </g>
+
+  <!-- Leyenda inferior -->
+  <g transform="translate(80, 1070)">
+    <rect width="1390" height="45" rx="6" fill="rgba(15, 23, 42, 0.85)" stroke="#334155" />
+    <text x="25" y="28" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#00f3ff">CONVENCIONES UML:</text>
+    <text x="230" y="28" font-family="'Rajdhani', sans-serif" font-size="12" fill="#00f3ff">───► Llamada Síncrona</text>
+    <text x="440" y="28" font-family="'Rajdhani', sans-serif" font-size="12" fill="#38bdf8">- - -► Retorno Asíncrono / Callback</text>
+    <text x="730" y="28" font-family="'Rajdhani', sans-serif" font-size="12" fill="#ec4899">■ Bloque [alt] (Condición de Bifurcación)</text>
+    <text x="1090" y="28" font-family="'Rajdhani', sans-serif" font-size="12" fill="#34d399">● Ciclo de Vida Respetuoso con el Jugador</text>
+  </g>
+</svg>

@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1550 1050" width="100%" height="100%">
+  <defs>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" /></filter>
+    <linearGradient id="bg-stm" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#0c1124" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="ar-s" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" /></marker>
+    <marker id="ar-rev" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#10b981" /></marker>
+    <marker id="ar-war" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#ef4444" /></marker>
+    <marker id="ar-ad" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#f59e0b" /></marker>
+  </defs>
+
+  <rect width="1550" height="1050" fill="url(#bg-stm)" />
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1490" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#00f3ff" letter-spacing="2">UML · DIAGRAMA DE MÁQUINA DE ESTADOS (GAME LOOP &amp; ADS)</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Ciclo de Vida de Ejecución: Transiciones de Combate, Pausa, Derrota, Revive Recompensado e Inserción de Ads</text>
+  <text x="1330" y="60" font-family="monospace" font-size="11" fill="#38bdf8" font-weight="bold">UML STATE</text>
+
+  <!-- Estado Inicial -->
+  <circle cx="90" cy="190" r="14" fill="#00f3ff" filter="url(#glow-cyan)" />
+  <circle cx="90" cy="190" r="8" fill="#ffffff" />
+  <text x="90" y="160" font-family="monospace" font-size="11" fill="#00f3ff" text-anchor="middle">&lt;&lt;Initial State&gt;&gt;</text>
+
+  <!-- ESTADO 1: BOOT &amp; SDK_INIT -->
+  <g transform="translate(170, 150)">
+    <rect width="220" height="80" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="110" y="32" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">BOOT_AND_INIT</text>
+    <line x1="10" y1="42" x2="210" y2="42" stroke="#334155" />
+    <text x="15" y="60" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">entry / DetectPlatform()</text>
+    <text x="15" y="74" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">entry / InitAdsManager()</text>
+  </g>
+
+  <line x1="104" y1="190" x2="170" y2="190" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-s)" />
+
+  <!-- ESTADO 2: AUTH_OR_GUEST -->
+  <g transform="translate(460, 150)">
+    <rect width="220" height="80" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="110" y="32" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">AUTH_OR_GUEST</text>
+    <line x1="10" y1="42" x2="210" y2="42" stroke="#334155" />
+    <text x="15" y="60" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">do / ShowLoginModal()</text>
+    <text x="15" y="74" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">or / GuestQuickPlay()</text>
+  </g>
+
+  <line x1="390" y1="190" x2="460" y2="190" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-s)" />
+  <text x="400" y="180" font-family="monospace" font-size="10" fill="#00f3ff">SDK Ready</text>
+
+  <!-- ESTADO 3: HANGAR_MENU -->
+  <g transform="translate(760, 150)">
+    <rect width="240" height="90" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#00f3ff" stroke-width="2" filter="url(#card-shadow)" />
+    <text x="120" y="30" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#00f3ff" text-anchor="middle">HANGAR_MENU</text>
+    <line x1="10" y1="42" x2="230" y2="42" stroke="#334155" />
+    <text x="15" y="58" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">entry / RenderStarfield()</text>
+    <text x="15" y="72" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">do / SelectShip() / Upgrades</text>
+    <text x="15" y="85" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">exit / CachePlayerConfig()</text>
+  </g>
+
+  <line x1="680" y1="190" x2="760" y2="190" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-s)" />
+  <text x="690" y="180" font-family="monospace" font-size="10" fill="#00f3ff">Logged / Guest</text>
+
+  <!-- Transición de HANGAR_MENU a COMBAT -->
+  <!-- ESTADO 4: ACTIVE_COMBAT_60FPS (Super-Estado Compuesto) -->
+  <g transform="translate(480, 320)">
+    <rect width="640" height="300" rx="16" fill="rgba(8, 47, 73, 0.25)" stroke="#00f3ff" stroke-width="2" />
+    <text x="30" y="30" font-family="'Orbitron', monospace" font-size="14" font-weight="bold" fill="#00f3ff">ESTADO COMPUESTO :: ACTIVE_COMBAT_60FPS</text>
+    
+    <!-- Sub-estado A: DOGFIGHT_WAVES -->
+    <g transform="translate(30, 60)">
+      <rect width="240" height="80" rx="10" fill="rgba(15, 23, 42, 0.9)" stroke="#38bdf8" stroke-width="1.5" />
+      <text x="120" y="28" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">DOGFIGHT_WAVES</text>
+      <text x="15" y="50" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">UpdateSwarm(), Shoot(), Collisions</text>
+      <text x="15" y="68" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">DropPowerUps(), AccrueXP</text>
+    </g>
+
+    <!-- Sub-estado B: BOSS_ENCOUNTER -->
+    <g transform="translate(360, 60)">
+      <rect width="250" height="80" rx="10" fill="rgba(15, 23, 42, 0.9)" stroke="#ef4444" stroke-width="1.5" />
+      <text x="125" y="28" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#f87171" text-anchor="middle">BOSS_DREADNOUGHT</text>
+      <text x="15" y="50" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">Phase 1/2/3, BossLaserBarrage</text>
+      <text x="15" y="68" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">SpecialMusicTrackActive()</text>
+    </g>
+
+    <line x1="270" y1="100" x2="360" y2="100" stroke="#ef4444" stroke-width="2" marker-end="url(#ar-war)" />
+    <text x="280" y="90" font-family="monospace" font-size="10" fill="#f87171">Wave 5 Complete</text>
+
+    <!-- Sub-estado C: PAUSED -->
+    <g transform="translate(200, 180)">
+      <rect width="240" height="80" rx="10" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="1.5" />
+      <text x="120" y="28" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#fbbf24" text-anchor="middle">PAUSED_STATE</text>
+      <text x="15" y="50" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">StopAudioStream()</text>
+      <text x="15" y="68" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">ShowPauseOverlay()</text>
+    </g>
+
+    <!-- Flechas entre Dogfight y Pause -->
+    <path d="M 120 140 L 120 220 L 200 220" fill="none" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#ar-ad)" />
+    <text x="40" y="185" font-family="monospace" font-size="10" fill="#f59e0b">[Key ESC / P]</text>
+
+    <path d="M 200 240 L 100 240 L 100 140" fill="none" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#ar-s)" />
+    <text x="110" y="255" font-family="monospace" font-size="10" fill="#38bdf8">[Resume]</text>
+  </g>
+
+  <!-- Flecha HANGAR -> COMBAT -->
+  <path d="M 880 240 L 880 320" fill="none" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-s)" />
+  <text x="890" y="280" font-family="monospace" font-size="10" fill="#00f3ff">[BTN_LAUNCH_MISSION]</text>
+
+  <!-- ESTADO 5: REWARDED_AD_OFFER (DESICIÓN AL MORIR) -->
+  <g transform="translate(1180, 380)">
+    <rect width="290" height="110" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="2" filter="url(#card-shadow)" />
+    <text x="145" y="30" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#f59e0b" text-anchor="middle">REWARDED_REVIVE_OFFER</text>
+    <line x1="10" y1="42" x2="280" y2="42" stroke="#334155" />
+    <text x="15" y="60" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">entry / CheckReviveAvailable()</text>
+    <text x="15" y="75" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">do / 5-Second Countdown Timer</text>
+    <text x="15" y="90" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">[GD / CrazyGames Rewarded Video]</text>
+  </g>
+
+  <!-- Flecha Combat -> Rewarded Offer -->
+  <path d="M 1120 440 L 1180 440" fill="none" stroke="#ef4444" stroke-width="2" marker-end="url(#ar-war)" />
+  <text x="1125" y="430" font-family="monospace" font-size="10" fill="#f87171">Player HP &lt;= 0 &amp;&amp; Lives==0</text>
+
+  <!-- Si acepta Rewarded Ad: streaming y revive -->
+  <g transform="translate(1180, 560)">
+    <rect width="290" height="90" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#10b981" stroke-width="2" />
+    <text x="145" y="30" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#10b981" text-anchor="middle">STREAMING_REWARDED_AD</text>
+    <line x1="10" y1="42" x2="280" y2="42" stroke="#334155" />
+    <text x="15" y="60" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">Show SDK Rewarded Player</text>
+    <text x="15" y="75" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">onRewardSuccess() -> emit revive</text>
+  </g>
+
+  <line x1="1325" y1="490" x2="1325" y2="560" stroke="#10b981" stroke-width="2" marker-end="url(#ar-rev)" />
+  <text x="1335" y="525" font-family="monospace" font-size="10" fill="#34d399">[Click "Watch Ad &amp; Revive"]</text>
+
+  <!-- Vuelta de Rewarded a Combat -->
+  <path d="M 1180 605 L 1050 605 L 1050 620" fill="none" stroke="#10b981" stroke-width="2.5" marker-end="url(#ar-rev)" />
+  <text x="1060" y="595" font-family="monospace" font-size="11" font-weight="bold" fill="#10b981">Revive with 3s Shield!</text>
+
+  <!-- ESTADO 6: GAME_OVER &amp; INTERSTITIAL EVALUATION -->
+  <g transform="translate(680, 690)">
+    <rect width="320" height="110" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#ef4444" stroke-width="2" filter="url(#card-shadow)" />
+    <text x="160" y="30" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#f87171" text-anchor="middle">GAME_OVER_SUMMARY</text>
+    <line x1="10" y1="42" x2="310" y2="42" stroke="#334155" />
+    <text x="15" y="60" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">entry / SubmitScoreToBackendAPI()</text>
+    <text x="15" y="75" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">do / CheckCooldown(75s) &amp;&amp; ShowInterstitial()</text>
+    <text x="15" y="90" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">render / FinalScore, HighScore, RankBadge</text>
+  </g>
+
+  <!-- Flecha Rewarded Offer declinado -> Game Over -->
+  <path d="M 1250 490 L 1250 745 L 1000 745" fill="none" stroke="#ef4444" stroke-width="2" marker-end="url(#ar-war)" />
+  <text x="1100" y="735" font-family="monospace" font-size="10" fill="#f87171">[Skip / Timer Expired]</text>
+
+  <!-- ESTADO 7: STAGE_VICTORY -->
+  <g transform="translate(180, 480)">
+    <rect width="250" height="90" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#10b981" stroke-width="2" />
+    <text x="125" y="30" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#34d399" text-anchor="middle">STAGE_VICTORY</text>
+    <line x1="10" y1="42" x2="240" y2="42" stroke="#334155" />
+    <text x="15" y="60" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">entry / BossDefeatedBonus()</text>
+    <text x="15" y="75" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1">trigger / InterstitialAdIfCooldownElapsed()</text>
+  </g>
+
+  <path d="M 480 470 L 430 490" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#ar-rev)" />
+  <text x="440" y="470" font-family="monospace" font-size="10" fill="#34d399">Boss HP == 0</text>
+
+  <!-- Vuelta de Stage Victory a Hangar o Próximo Stage -->
+  <path d="M 250 480 L 250 210 L 760 210" fill="none" stroke="#00f3ff" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#ar-s)" />
+  <text x="260" y="340" font-family="monospace" font-size="10" fill="#00f3ff">[Next Sector / Return Hangar]</text>
+
+  <!-- Vuelta de Game Over a Hangar -->
+  <path d="M 680 745 L 560 745 L 560 240 L 760 240" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#ar-s)" />
+  <text x="570" y="730" font-family="monospace" font-size="10" fill="#38bdf8">[Click "Hangar / Play Again"]</text>
+
+  <!-- Estado Final -->
+  <g transform="translate(1360, 745)">
+    <circle cx="0" cy="0" r="16" fill="none" stroke="#ef4444" stroke-width="2" />
+    <circle cx="0" cy="0" r="10" fill="#ef4444" />
+    <text x="0" y="30" font-family="monospace" font-size="10" fill="#f87171" text-anchor="middle">&lt;&lt;Session End&gt;&gt;</text>
+  </g>
+
+  <!-- Leyenda inferior -->
+  <g transform="translate(60, 930)">
+    <rect width="1430" height="75" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#334155" />
+    <text x="25" y="28" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#00f3ff">REGLAS DE TRANSICIÓN DE ESTADO:</text>
+    <text x="25" y="50" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">1. Al morir el jugador, el estado se suspende y se abre la ventana de 5s para Revive Recompensado (Rewarded Ad).</text>
+    <text x="25" y="68" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">2. Al completarse exitosamente el video publicitario, se restaura el estado COMBAT_60FPS otorgando escudo de gracia de 3 segundos.</text>
+    <text x="800" y="50" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">3. Los anuncios intersticiales / viñetas respetan siempre el candado de enfriamiento (cooldown) de 75 segundos.</text>
+  </g>
+</svg>

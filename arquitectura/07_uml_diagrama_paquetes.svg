@@ -1,0 +1,227 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1050" width="100%" height="100%">
+  <defs>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" /></filter>
+    <linearGradient id="bg-pkg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#091328" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="ar-c" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" /></marker>
+    <marker id="ar-p" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#c084fc" /></marker>
+    <marker id="ar-g" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#10b981" /></marker>
+  </defs>
+
+  <rect width="1500" height="1050" fill="url(#bg-pkg)" />
+
+  <!-- Cuadrícula sutil -->
+  <g opacity="0.05" stroke="#00f3ff" stroke-width="1">
+    <line x1="0" y1="0" x2="0" y2="1050" /><line x1="50" y1="0" x2="50" y2="1050" /><line x1="100" y1="0" x2="100" y2="1050" /><line x1="150" y1="0" x2="150" y2="1050" /><line x1="200" y1="0" x2="200" y2="1050" /><line x1="250" y1="0" x2="250" y2="1050" /><line x1="300" y1="0" x2="300" y2="1050" /><line x1="350" y1="0" x2="350" y2="1050" /><line x1="400" y1="0" x2="400" y2="1050" /><line x1="450" y1="0" x2="450" y2="1050" /><line x1="500" y1="0" x2="500" y2="1050" /><line x1="550" y1="0" x2="550" y2="1050" /><line x1="600" y1="0" x2="600" y2="1050" /><line x1="650" y1="0" x2="650" y2="1050" /><line x1="700" y1="0" x2="700" y2="1050" /><line x1="750" y1="0" x2="750" y2="1050" /><line x1="800" y1="0" x2="800" y2="1050" /><line x1="850" y1="0" x2="850" y2="1050" /><line x1="900" y1="0" x2="900" y2="1050" /><line x1="950" y1="0" x2="950" y2="1050" /><line x1="1000" y1="0" x2="1000" y2="1050" /><line x1="1050" y1="0" x2="1050" y2="1050" /><line x1="1100" y1="0" x2="1100" y2="1050" /><line x1="1150" y1="0" x2="1150" y2="1050" /><line x1="1200" y1="0" x2="1200" y2="1050" /><line x1="1250" y1="0" x2="1250" y2="1050" /><line x1="1300" y1="0" x2="1300" y2="1050" /><line x1="1350" y1="0" x2="1350" y2="1050" /><line x1="1400" y1="0" x2="1400" y2="1050" /><line x1="1450" y1="0" x2="1450" y2="1050" />
+    <line x1="0" y1="0" x2="1500" y2="0" /><line x1="0" y1="50" x2="1500" y2="50" /><line x1="0" y1="100" x2="1500" y2="100" /><line x1="0" y1="150" x2="1500" y2="150" /><line x1="0" y1="200" x2="1500" y2="200" /><line x1="0" y1="250" x2="1500" y2="250" /><line x1="0" y1="300" x2="1500" y2="300" /><line x1="0" y1="350" x2="1500" y2="350" /><line x1="0" y1="400" x2="1500" y2="400" /><line x1="0" y1="450" x2="1500" y2="450" /><line x1="0" y1="500" x2="1500" y2="500" /><line x1="0" y1="550" x2="1500" y2="550" /><line x1="0" y1="600" x2="1500" y2="600" /><line x1="0" y1="650" x2="1500" y2="650" /><line x1="0" y1="700" x2="1500" y2="700" /><line x1="0" y1="750" x2="1500" y2="750" /><line x1="0" y1="800" x2="1500" y2="800" /><line x1="0" y1="850" x2="1500" y2="850" /><line x1="0" y1="900" x2="1500" y2="900" /><line x1="0" y1="950" x2="1500" y2="950" /><line x1="0" y1="1000" x2="1500" y2="1000" />
+  </g>
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1440" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#00f3ff" letter-spacing="2">UML · DIAGRAMA DE PAQUETES DE SOFTWARE</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Organización Modular del Frontend HTML5 Canvas, Backend Flask API y Capas de Integración Externa</text>
+  <text x="1270" y="60" font-family="monospace" font-size="11" fill="#38bdf8" font-weight="bold">UML PACKAGES</text>
+
+  <!-- ==================== CONTENEDOR FRONTEND ==================== -->
+  <rect x="40" y="110" width="880" height="900" rx="12" fill="rgba(8, 47, 73, 0.2)" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="6,4" />
+  <text x="60" y="138" font-family="'Orbitron', monospace" font-size="14" font-weight="bold" fill="#38bdf8">PAQUETE RAÍZ :: FRONTEND (Vanilla JS ES6 / Canvas)</text>
+
+  <!-- Subpaquete: frontend.core -->
+  <g transform="translate(60, 160)">
+    <path d="M 0 0 L 100 0 L 115 15 L 260 15 L 260 180 L 0 180 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#00f3ff">pkg core</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">space.game.core</text>
+    <line x1="15" y1="52" x2="245" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ GameEngine (game.js)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ GameLoop (60 FPS tick)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ CollisionDetector</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ InputController (Keyboard/Touch)</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ AudioManager (audio.js)</text>
+  </g>
+
+  <!-- Subpaquete: frontend.entities -->
+  <g transform="translate(350, 160)">
+    <path d="M 0 0 L 110 0 L 125 15 L 270 15 L 270 180 L 0 180 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#00f3ff">pkg entities</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">space.game.entities</text>
+    <line x1="15" y1="52" x2="255" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ PlayerShip (player.js)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ Enemy / Swarm (enemies.js)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ BossDreadnought (boss.js)</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ WeaponSystem (weapons.js)</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ PowerUpDrops (shields/nukes)</text>
+  </g>
+
+  <!-- Subpaquete: frontend.renderers -->
+  <g transform="translate(640, 160)">
+    <path d="M 0 0 L 110 0 L 125 15 L 250 15 L 250 180 L 0 180 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#00f3ff">pkg renderers</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">space.game.gfx</text>
+    <line x1="15" y1="52" x2="235" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ StarfieldParallax (bg.js)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ ParticleEmitter (sparks)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ LaserRayTracer</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ ShockwaveDistortion</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ PostProcessGlow</text>
+  </g>
+
+  <!-- Subpaquete: frontend.ui -->
+  <g transform="translate(60, 420)">
+    <path d="M 0 0 L 90 0 L 105 15 L 260 15 L 260 190 L 0 190 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#38bdf8">pkg ui</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">space.ui.hud</text>
+    <line x1="15" y1="52" x2="245" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ AppUI (app_ui.js)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ HangarCustomizer</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ InGameHUD (HP/Shield/XP)</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ GameOverModal</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ LeaderboardModal</text>
+    <text x="20" y="175" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ GuestQuickPlayBanner</text>
+  </g>
+
+  <!-- Subpaquete: frontend.ads (SISTEMA DE MONETIZACIÓN) -->
+  <g transform="translate(350, 420)">
+    <path d="M 0 0 L 90 0 L 105 15 L 270 15 L 270 210 L 0 210 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#f59e0b" stroke-width="2" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#f59e0b">pkg ads</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#fbbf24">space.ads.engine</text>
+    <line x1="15" y1="52" x2="255" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" font-weight="bold" fill="#fde68a">+ UniversalAdsManager</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ MonetagAdapter (Vignette)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ GameDistributionAdapter</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ CrazyGamesAdapter</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ AdSenseAdapter (Direct Web)</text>
+    <text x="20" y="175" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ CooldownGate (75s check)</text>
+    <text x="20" y="195" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ RewardedReviveBridge</text>
+  </g>
+
+  <!-- Subpaquete: frontend.network -->
+  <g transform="translate(640, 420)">
+    <path d="M 0 0 L 110 0 L 125 15 L 250 15 L 250 190 L 0 190 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#10b981" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#10b981">pkg network</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">space.net.api</text>
+    <line x1="15" y1="52" x2="235" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ ApiClient (api.js)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ SessionStorage (JWT token)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ GuestLocalCache</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ LeaderboardSync</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ HealthPoller</text>
+    <text x="20" y="175" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ TelemetryCollector</text>
+  </g>
+
+  <!-- Subpaquete: frontend.assets -->
+  <g transform="translate(200, 710)">
+    <path d="M 0 0 L 100 0 L 115 15 L 500 15 L 500 140 L 0 140 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#64748b" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#94a3b8">pkg assets</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">space.assets.static</text>
+    <line x1="15" y1="52" x2="485" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ audio/ (sfx: lasers, explosions, warp, synthwave bgm)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ css/ (style.css, animations, glassmorphism, HUD telemetry)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ images/ (icons, promo banners 1280x720, thumbnails)</text>
+  </g>
+
+  <!-- ==================== CONTENEDOR BACKEND ==================== -->
+  <rect x="960" y="110" width="500" height="900" rx="12" fill="rgba(67, 24, 255, 0.08)" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="6,4" />
+  <text x="980" y="138" font-family="'Orbitron', monospace" font-size="14" font-weight="bold" fill="#a5b4fc">PAQUETE RAÍZ :: BACKEND (Python 3.11 / Flask WSGI)</text>
+
+  <!-- Subpaquete: backend.api (Blueprints) -->
+  <g transform="translate(980, 160)">
+    <path d="M 0 0 L 110 0 L 125 15 L 450 15 L 450 180 L 0 180 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#818cf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#a5b4fc">pkg api</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">backend.api.routes</text>
+    <line x1="15" y1="52" x2="435" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ AuthBlueprint (/api/register, /api/login)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ ScoreBlueprint (/api/scores, /api/leaderboard)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ ProgressBlueprint (/api/progress, /api/sync)</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ HealthBlueprint (/api/health, /ping)</text>
+    <text x="20" y="155" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ AdminBlueprint (/api/admin/metrics)</text>
+  </g>
+
+  <!-- Subpaquete: backend.models -->
+  <g transform="translate(980, 380)">
+    <path d="M 0 0 L 110 0 L 125 15 L 450 15 L 450 150 L 0 150 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#c084fc" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#c084fc">pkg models</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">backend.database.models</text>
+    <line x1="15" y1="52" x2="435" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ User (id, username, password_hash, email)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ GameScore (id, user_id, score, stage, boss_down)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ PlayerProgress (unlocked_ships, upgrades, credits)</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ AdImpressionAudit (session_id, platform, ts)</text>
+  </g>
+
+  <!-- Subpaquete: backend.services & utils -->
+  <g transform="translate(980, 570)">
+    <path d="M 0 0 L 110 0 L 125 15 L 450 15 L 450 150 L 0 150 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#10b981" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#10b981">pkg services</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">backend.core.services</text>
+    <line x1="15" y1="52" x2="435" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ JWTTokenManager (PyJWT, exp 24h)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ PasswordHasher (bcrypt / pbkdf2)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ AntiCheatScoreValidator (heuristic max score/sec)</text>
+    <text x="20" y="135" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ CORSConfig (flask_cors for GD/CrazyGames)</text>
+  </g>
+
+  <!-- Subpaquete: backend.storage -->
+  <g transform="translate(980, 760)">
+    <path d="M 0 0 L 110 0 L 125 15 L 450 15 L 450 140 L 0 140 Z" fill="rgba(15, 23, 42, 0.85)" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="15" y="12" font-family="'Orbitron', monospace" font-size="10" font-weight="bold" fill="#38bdf8">pkg storage</text>
+    <text x="20" y="42" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">backend.data.persistence</text>
+    <line x1="15" y1="52" x2="435" y2="52" stroke="#334155" stroke-width="1" />
+    <text x="20" y="75" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ SQLiteEngine (space_assault.db local)</text>
+    <text x="20" y="95" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ PostgreSQLAdapter (Render Production)</text>
+    <text x="20" y="115" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">+ MigrationRunner &amp; SeedData</text>
+  </g>
+
+  <!-- FLECHAS DE DEPENDENCIA ENTRE PAQUETES (UML <<import>> / <<use>>) -->
+  <!-- core -> entities -->
+  <path d="M 320 250 L 350 250" fill="none" stroke="#00f3ff" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-c)" />
+  <text x="325" y="240" font-family="monospace" font-size="10" fill="#00f3ff">&lt;&lt;use&gt;&gt;</text>
+
+  <!-- core -> renderers -->
+  <path d="M 485 340 L 485 380 L 760 380 L 760 340" fill="none" stroke="#00f3ff" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-c)" />
+  <text x="600" y="372" font-family="monospace" font-size="10" fill="#00f3ff">&lt;&lt;render&gt;&gt;</text>
+
+  <!-- core -> ads -->
+  <path d="M 230 340 L 230 380 L 410 380 L 410 420" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#ar-c)" />
+  <text x="300" y="395" font-family="monospace" font-size="10" fill="#f59e0b">&lt;&lt;request ads&gt;&gt;</text>
+
+  <!-- ui -> core -->
+  <path d="M 190 420 L 190 340" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-c)" />
+  <text x="120" y="380" font-family="monospace" font-size="10" fill="#38bdf8">&lt;&lt;control&gt;&gt;</text>
+
+  <!-- ui -> ads -->
+  <path d="M 320 520 L 350 520" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-c)" />
+  <text x="322" y="512" font-family="monospace" font-size="10" fill="#f59e0b">&lt;&lt;btn&gt;&gt;</text>
+
+  <!-- network -> backend.api (HTTP / REST) -->
+  <path d="M 890 515 L 980 250" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#ar-g)" />
+  <text x="895" y="390" font-family="monospace" font-size="11" font-weight="bold" fill="#10b981">HTTPS / REST</text>
+
+  <!-- backend.api -> services -->
+  <path d="M 1205 340 L 1205 570" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-p)" />
+  <text x="1215" y="470" font-family="monospace" font-size="10" fill="#a5b4fc">&lt;&lt;delegate&gt;&gt;</text>
+
+  <!-- backend.services -> models -->
+  <path d="M 1120 570 L 1120 530" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-p)" />
+
+  <!-- backend.models -> storage -->
+  <path d="M 1205 530 L 1205 760" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-c)" />
+  <text x="1215" y="740" font-family="monospace" font-size="10" fill="#38bdf8">&lt;&lt;persist&gt;&gt;</text>
+
+  <!-- Leyenda inferior -->
+  <g transform="translate(60, 970)">
+    <rect width="1380" height="50" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#334155" />
+    <text x="25" y="30" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#00f3ff">CONVENCIONES UML:</text>
+    <rect x="180" y="18" width="18" height="18" rx="2" fill="none" stroke="#00f3ff" stroke-width="1.5" />
+    <text x="205" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Paquete Frontend</text>
+    <rect x="360" y="18" width="18" height="18" rx="2" fill="none" stroke="#818cf8" stroke-width="1.5" />
+    <text x="385" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Paquete Backend</text>
+    <rect x="540" y="18" width="18" height="18" rx="2" fill="none" stroke="#f59e0b" stroke-width="2" />
+    <text x="565" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Subsistema Monetización / Ads</text>
+    <line x1="800" y1="27" x2="840" y2="27" stroke="#00f3ff" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#ar-c)" />
+    <text x="850" y="31" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Dependencia de Paquete (&lt;&lt;use&gt;&gt; / &lt;&lt;import&gt;&gt;)</text>
+  </g>
+</svg>

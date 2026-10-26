@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="100%" height="100%">
+  <defs>
+    <filter id="glow-c" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" /></filter>
+    <linearGradient id="bg-act" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#091326" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="ar-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#00f3ff" /></marker>
+    <marker id="ar-y" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#10b981" /></marker>
+    <marker id="ar-n" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#ef4444" /></marker>
+    <marker id="ar-ad" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#f59e0b" /></marker>
+  </defs>
+
+  <rect width="1600" height="1200" fill="url(#bg-act)" />
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1540" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#00f3ff" letter-spacing="2">UML · DIAGRAMA DE ACTIVIDAD (SWIMLANES MULTICARRIL)</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Flujo Operativo de Combate, Bifurcaciones de Decisión, Política de Cooldown Ads y Recompensa de Revive</text>
+  <text x="1370" y="60" font-family="monospace" font-size="11" fill="#38bdf8" font-weight="bold">UML ACTIVITY</text>
+
+  <!-- SWIMLANES -->
+  <!-- Carril 1: Piloto (Usuario) -->
+  <rect x="30" y="110" width="370" height="1040" fill="rgba(15, 23, 42, 0.5)" stroke="#334155" />
+  <rect x="30" y="110" width="370" height="40" fill="#0369a1" />
+  <text x="215" y="135" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">PILOTO (JUGADOR)</text>
+
+  <!-- Carril 2: Frontend Game Loop & Canvas -->
+  <rect x="400" y="110" width="420" height="1040" fill="rgba(15, 23, 42, 0.35)" stroke="#334155" />
+  <rect x="400" y="110" width="420" height="40" fill="#0e7490" />
+  <text x="610" y="135" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">FRONTEND (CANVAS / ENGINE)</text>
+
+  <!-- Carril 3: Universal Ads Manager -->
+  <rect x="820" y="110" width="380" height="1040" fill="rgba(15, 23, 42, 0.5)" stroke="#334155" />
+  <rect x="820" y="110" width="380" height="40" fill="#b45309" />
+  <text x="1010" y="135" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">UNIVERSAL ADS MEDIATION</text>
+
+  <!-- Carril 4: Backend API & Base de Datos -->
+  <rect x="1200" y="110" width="370" height="1040" fill="rgba(15, 23, 42, 0.35)" stroke="#334155" />
+  <rect x="1200" y="110" width="370" height="40" fill="#4338ca" />
+  <text x="1385" y="135" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">BACKEND FLASK &amp; STORAGE</text>
+
+  <!-- NODO INICIAL -->
+  <circle cx="215" cy="180" r="14" fill="#00f3ff" filter="url(#glow-c)" />
+  <circle cx="215" cy="180" r="8" fill="#ffffff" />
+
+  <!-- Actividad 1: Abre Web / Iframe -->
+  <g transform="translate(105, 220)">
+    <rect width="220" height="45" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#38bdf8" stroke-width="1.5" />
+    <text x="110" y="27" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">Abre Juego (Web / GD Iframe)</text>
+  </g>
+  <line x1="215" y1="194" x2="215" y2="220" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+
+  <!-- Fluye a Frontend: Detección Entorno -->
+  <g transform="translate(480, 220)">
+    <rect width="260" height="45" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#00f3ff" stroke-width="1.5" />
+    <text x="130" y="27" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#00f3ff" text-anchor="middle">Detecta Host &amp; Carga Adapters Ads</text>
+  </g>
+  <line x1="325" y1="242" x2="480" y2="242" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+
+  <!-- Fluye a Ads Manager: Inicializa SDK -->
+  <g transform="translate(870, 220)">
+    <rect width="280" height="45" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="1.5" />
+    <text x="140" y="27" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#fbbf24" text-anchor="middle">UniversalAdsManager.init()</text>
+  </g>
+  <line x1="740" y1="242" x2="870" y2="242" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar-ad)" />
+
+  <!-- Bifurcación: Login o Invitado -->
+  <g transform="translate(145, 300)">
+    <polygon points="70 0, 140 30, 70 60, 0 30" fill="rgba(15, 23, 42, 0.9)" stroke="#00f3ff" stroke-width="1.5" />
+    <text x="70" y="34" font-family="monospace" font-size="10" fill="#00f3ff" text-anchor="middle">¿Sesión?</text>
+  </g>
+  <path d="M 610 265 L 610 330 L 285 330" fill="none" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+
+  <!-- Si Registrado: Envía auth al Backend -->
+  <g transform="translate(1250, 310)">
+    <rect width="260" height="45" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#818cf8" stroke-width="1.5" />
+    <text x="130" y="27" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#a5b4fc" text-anchor="middle">Valida JWT / Emite Token</text>
+  </g>
+  <path d="M 215 360 L 215 390 L 1250 390 L 1250 355" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-a)" />
+  <text x="450" y="380" font-family="monospace" font-size="10" fill="#818cf8">[Login Exitoso]</text>
+
+  <!-- Actividad: Hangar y Configuración -->
+  <g transform="translate(105, 420)">
+    <rect width="220" height="45" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#38bdf8" stroke-width="1.5" />
+    <text x="110" y="27" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">Selecciona Nave / Clic "Despegar"</text>
+  </g>
+  <path d="M 215 360 L 215 420" fill="none" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+  <text x="160" y="400" font-family="monospace" font-size="10" fill="#00f3ff">[Guest Play]</text>
+
+  <!-- Actividad: Bucle de Combate 60FPS -->
+  <g transform="translate(480, 480)">
+    <rect width="260" height="60" rx="14" fill="rgba(15, 23, 42, 0.9)" stroke="#00f3ff" stroke-width="2" />
+    <text x="130" y="26" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#00f3ff" text-anchor="middle">EJECUCIÓN DE COMBATE (60 FPS)</text>
+    <text x="130" y="46" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1" text-anchor="middle">Oleadas, Partículas, Colisiones &amp; Jefes</text>
+  </g>
+  <path d="M 215 465 L 215 510 L 480 510" fill="none" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+
+  <!-- Rombo de Decisión: ¿HP &lt;= 0 y Vidas == 0? -->
+  <g transform="translate(540, 580)">
+    <polygon points="70 0, 140 35, 70 70, 0 35" fill="rgba(15, 23, 42, 0.9)" stroke="#ef4444" stroke-width="2" />
+    <text x="70" y="32" font-family="monospace" font-size="10" fill="#f87171" text-anchor="middle">¿HP&lt;=0 y</text>
+    <text x="70" y="46" font-family="monospace" font-size="10" fill="#f87171" text-anchor="middle">Vidas==0?</text>
+  </g>
+  <line x1="610" y1="540" x2="610" y2="580" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+
+  <!-- Si NO: Sigue el bucle -->
+  <path d="M 680 615 L 770 615 L 770 510 L 740 510" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#ar-y)" />
+  <text x="695" y="605" font-family="monospace" font-size="10" fill="#10b981">[No: Continúa]</text>
+
+  <!-- Si SÍ: Pausa el loop y abre ventana de Revive -->
+  <g transform="translate(480, 690)">
+    <rect width="260" height="50" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="1.5" />
+    <text x="130" y="22" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#fbbf24" text-anchor="middle">VENTANA REVIVE (5s)</text>
+    <text x="130" y="40" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1" text-anchor="middle">Ofrece Anuncio Recompensado</text>
+  </g>
+  <line x1="610" y1="650" x2="610" y2="690" stroke="#ef4444" stroke-width="2" marker-end="url(#ar-n)" />
+  <text x="615" y="675" font-family="monospace" font-size="10" fill="#f87171">[Sí: Muerto]</text>
+
+  <!-- Piloto decide ver Rewarded Ad -->
+  <g transform="translate(145, 695)">
+    <polygon points="70 0, 140 30, 70 60, 0 30" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="2" />
+    <text x="70" y="34" font-family="monospace" font-size="9" fill="#fbbf24" text-anchor="middle">¿Acepta Ad?</text>
+  </g>
+  <line x1="480" y1="720" x2="285" y2="720" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar-ad)" />
+
+  <!-- Si ACEPTA: Solicita Video Recompensado en Ads Manager -->
+  <g transform="translate(870, 690)">
+    <rect width="280" height="50" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#10b981" stroke-width="2" />
+    <text x="140" y="22" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#10b981" text-anchor="middle">REPRODUCE REWARDED VIDEO</text>
+    <text x="140" y="40" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1" text-anchor="middle">GD SDK / CrazyGames SDK</text>
+  </g>
+  <path d="M 215 695 L 215 660 L 1010 660 L 1010 690" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#ar-y)" />
+  <text x="240" y="650" font-family="monospace" font-size="10" fill="#10b981">[Acepta Revive]</text>
+
+  <!-- Al terminar el video con éxito: Revive al jugador en Frontend -->
+  <path d="M 1010 740 L 1010 770 L 610 770 L 610 740" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#ar-y)" />
+  <text x="780" y="765" font-family="monospace" font-size="10" font-weight="bold" fill="#10b981">[onRewardedSuccess: Otorga 100% HP + Escudo 3s]</text>
+
+  <!-- Si RECHAZA o EXPIRA: Fin de Partida (Game Over) -->
+  <g transform="translate(480, 810)">
+    <rect width="260" height="50" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#ef4444" stroke-width="2" />
+    <text x="130" y="22" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#f87171" text-anchor="middle">MODAL GAME OVER</text>
+    <text x="130" y="40" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1" text-anchor="middle">Calcula Score Final &amp; Nivel</text>
+  </g>
+  <path d="M 215 755 L 215 835 L 480 835" fill="none" stroke="#ef4444" stroke-width="2" marker-end="url(#ar-n)" />
+  <text x="230" y="825" font-family="monospace" font-size="10" fill="#f87171">[Rechaza / Timeout 5s]</text>
+
+  <!-- Evaluación de Cooldown para Interstitial / Viñeta -->
+  <g transform="translate(940, 810)">
+    <polygon points="70 0, 140 30, 70 60, 0 30" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="2" />
+    <text x="70" y="28" font-family="monospace" font-size="9" fill="#fbbf24" text-anchor="middle">¿Cooldown</text>
+    <text x="70" y="42" font-family="monospace" font-size="9" fill="#fbbf24" text-anchor="middle">&gt; 75s?</text>
+  </g>
+  <line x1="740" y1="835" x2="940" y2="835" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar-ad)" />
+
+  <!-- Si Cooldown > 75s: Muestra Interstitial o Viñeta Monetag -->
+  <g transform="translate(870, 910)">
+    <rect width="280" height="50" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="2" />
+    <text x="140" y="22" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#fbbf24" text-anchor="middle">DISPARA VIGNETTE / INTERSTITIAL</text>
+    <text x="140" y="40" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1" text-anchor="middle">Monetag Zone 12128966 / GD showAd</text>
+  </g>
+  <line x1="1010" y1="870" x2="1010" y2="910" stroke="#10b981" stroke-width="2" marker-end="url(#ar-y)" />
+  <text x="1015" y="890" font-family="monospace" font-size="10" fill="#10b981">[Sí]</text>
+
+  <!-- Si Cooldown &lt;= 75s: Omite Ad respetando UX -->
+  <path d="M 1080 840 L 1170 840 L 1170 990 L 1010 990" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-a)" />
+  <text x="1090" y="830" font-family="monospace" font-size="10" fill="#94a3b8">[No: Silencioso]</text>
+
+  <!-- Envío de Puntaje a Backend -->
+  <g transform="translate(1250, 910)">
+    <rect width="260" height="50" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#818cf8" stroke-width="1.5" />
+    <text x="130" y="22" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#a5b4fc" text-anchor="middle">POST /api/scores</text>
+    <text x="130" y="40" font-family="'Rajdhani', sans-serif" font-size="11" fill="#cbd5e1" text-anchor="middle">Valida Anti-Cheat &amp; Guarda DB</text>
+  </g>
+  <path d="M 740 850 L 800 850 L 800 935 L 1250 935" fill="none" stroke="#818cf8" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#ar-a)" />
+  <text x="810" y="900" font-family="monospace" font-size="10" fill="#818cf8">[Sync Telemetría]</text>
+
+  <!-- Retorno al Hangar -->
+  <g transform="translate(105, 960)">
+    <rect width="220" height="45" rx="12" fill="rgba(15, 23, 42, 0.9)" stroke="#00f3ff" stroke-width="1.5" />
+    <text x="110" y="27" font-family="'Rajdhani', sans-serif" font-size="12" font-weight="bold" fill="#00f3ff" text-anchor="middle">Retorna al Hangar / Reintentar</text>
+  </g>
+  <path d="M 1250 945 L 610 945 L 610 982 L 325 982" fill="none" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+
+  <!-- NODO FINAL -->
+  <circle cx="215" cy="1070" r="16" fill="none" stroke="#ef4444" stroke-width="2" />
+  <circle cx="215" cy="1070" r="10" fill="#ef4444" />
+  <line x1="215" y1="1005" x2="215" y2="1054" stroke="#00f3ff" stroke-width="2" marker-end="url(#ar-a)" />
+  <text x="215" y="1110" font-family="monospace" font-size="11" fill="#f87171" text-anchor="middle">Fin de Flujo</text>
+
+  <!-- Leyenda inferior -->
+  <g transform="translate(480, 1030)">
+    <rect width="700" height="60" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#334155" />
+    <text x="20" y="25" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#00f3ff">NOTACIÓN DE ACTIVIDAD:</text>
+    <text x="20" y="45" font-family="'Rajdhani', sans-serif" font-size="12" fill="#cbd5e1">Los carriles segregan responsabilidades: Jugador (Acciones), Engine (Cómputo), Ads (Monetización) y API (Persistencia).</text>
+  </g>
+</svg>

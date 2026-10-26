@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1550 1150" width="100%" height="100%">
+  <defs>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" /></filter>
+    <linearGradient id="bg-cls" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#0a1226" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="ar-herencia" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="1 1, 9 5, 1 9" fill="#000000" stroke="#00f3ff" stroke-width="1.5" />
+    </marker>
+    <marker id="ar-asoc" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#38bdf8" /></marker>
+    <marker id="ar-ads" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#f59e0b" /></marker>
+  </defs>
+
+  <rect width="1550" height="1150" fill="url(#bg-cls)" />
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1490" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#00f3ff" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#00f3ff" letter-spacing="2">UML · DIAGRAMA DE CLASES DEL SISTEMA</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Estructura Estática de Objetos: Game Engine, Jerarquía de Naves/Jefes, Ads Manager y Modelos ORM</text>
+  <text x="1330" y="60" font-family="monospace" font-size="11" fill="#38bdf8" font-weight="bold">UML CLASS</text>
+
+  <!-- CLASE 1: GameEngine (Centro Neurálgico) -->
+  <g transform="translate(480, 115)">
+    <rect width="320" height="260" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#00f3ff" stroke-width="2" filter="url(#card-shadow)" />
+    <rect width="320" height="35" rx="8" fill="#0e7490" />
+    <text x="160" y="23" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">GameEngine</text>
+    <!-- Atributos -->
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#cbd5e1">- canvas: HTMLCanvasElement</text>
+    <text x="15" y="73" font-family="monospace" font-size="11" fill="#cbd5e1">- ctx: CanvasRenderingContext2D</text>
+    <text x="15" y="91" font-family="monospace" font-size="11" fill="#cbd5e1">- state: GameState (MENU, RUNNING, PAUSED)</text>
+    <text x="15" y="109" font-family="monospace" font-size="11" fill="#cbd5e1">- player: PlayerShip</text>
+    <text x="15" y="127" font-family="monospace" font-size="11" fill="#cbd5e1">- enemies: List&lt;Enemy&gt;</text>
+    <text x="15" y="145" font-family="monospace" font-size="11" fill="#cbd5e1">- boss: BossDreadnought</text>
+    <text x="15" y="163" font-family="monospace" font-size="11" fill="#cbd5e1">- adsManager: UniversalAdsManager</text>
+    <line x1="10" y1="173" x2="310" y2="173" stroke="#334155" stroke-width="1" />
+    <!-- Métodos -->
+    <text x="15" y="193" font-family="monospace" font-size="11" fill="#38bdf8">+ init(): void</text>
+    <text x="15" y="210" font-family="monospace" font-size="11" fill="#38bdf8">+ gameLoop(timestamp: number): void</text>
+    <text x="15" y="227" font-family="monospace" font-size="11" fill="#38bdf8">+ onPlayerDeath(): void</text>
+    <text x="15" y="244" font-family="monospace" font-size="11" fill="#38bdf8">+ revivePlayerWithShield(): void</text>
+  </g>
+
+  <!-- CLASE 2: PlayerShip -->
+  <g transform="translate(60, 115)">
+    <rect width="320" height="260" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="320" height="35" rx="8" fill="#0369a1" />
+    <text x="160" y="23" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">PlayerShip</text>
+    <!-- Atributos -->
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#cbd5e1">+ x: float, y: float</text>
+    <text x="15" y="73" font-family="monospace" font-size="11" fill="#cbd5e1">+ hp: int, maxHp: int</text>
+    <text x="15" y="91" font-family="monospace" font-size="11" fill="#cbd5e1">+ shield: float, maxShield: float</text>
+    <text x="15" y="109" font-family="monospace" font-size="11" fill="#cbd5e1">+ lives: int = 3</text>
+    <text x="15" y="127" font-family="monospace" font-size="11" fill="#cbd5e1">+ weapon: WeaponSystem</text>
+    <text x="15" y="145" font-family="monospace" font-size="11" fill="#cbd5e1">+ isInvulnerable: boolean</text>
+    <line x1="10" y1="155" x2="310" y2="155" stroke="#334155" stroke-width="1" />
+    <!-- Métodos -->
+    <text x="15" y="175" font-family="monospace" font-size="11" fill="#38bdf8">+ update(dt: float): void</text>
+    <text x="15" y="192" font-family="monospace" font-size="11" fill="#38bdf8">+ render(ctx: CanvasRenderingContext2D): void</text>
+    <text x="15" y="209" font-family="monospace" font-size="11" fill="#38bdf8">+ fire(): Projectile[]</text>
+    <text x="15" y="226" font-family="monospace" font-size="11" fill="#38bdf8">+ takeDamage(amount: int): void</text>
+    <text x="15" y="243" font-family="monospace" font-size="11" fill="#38bdf8">+ triggerReviveGracePeriod(): void</text>
+  </g>
+
+  <!-- CLASE 3: Enemy (Clase Base Abstracta) -->
+  <g transform="translate(900, 115)">
+    <rect width="280" height="220" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4,2" filter="url(#card-shadow)" />
+    <rect width="280" height="35" rx="8" fill="#9d174d" />
+    <text x="140" y="23" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">&lt;&lt;Abstract&gt;&gt; Enemy</text>
+    <!-- Atributos -->
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#cbd5e1">+ x: float, y: float</text>
+    <text x="15" y="73" font-family="monospace" font-size="11" fill="#cbd5e1">+ hp: int</text>
+    <text x="15" y="91" font-family="monospace" font-size="11" fill="#cbd5e1">+ scoreValue: int</text>
+    <text x="15" y="109" font-family="monospace" font-size="11" fill="#cbd5e1">+ speed: float</text>
+    <line x1="10" y1="120" x2="270" y2="120" stroke="#334155" stroke-width="1" />
+    <!-- Métodos -->
+    <text x="15" y="140" font-family="monospace" font-size="11" fill="#f472b6">+ update(dt: float): void</text>
+    <text x="15" y="157" font-family="monospace" font-size="11" fill="#f472b6">+ render(ctx): void</text>
+    <text x="15" y="174" font-family="monospace" font-size="11" fill="#f472b6">+ onKilled(): Particle[]</text>
+    <text x="15" y="191" font-family="monospace" font-size="11" fill="#f472b6">+ dropLoot(): PowerUp</text>
+  </g>
+
+  <!-- CLASES HIJAS DE ENEMY (HERENCIA) -->
+  <!-- ScoutEnemy -->
+  <g transform="translate(860, 390)">
+    <rect width="180" height="90" rx="6" fill="rgba(15, 23, 42, 0.9)" stroke="#ec4899" stroke-width="1" />
+    <rect width="180" height="24" rx="6" fill="#831843" />
+    <text x="90" y="17" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">ScoutEnemy</text>
+    <text x="10" y="42" font-family="monospace" font-size="10" fill="#cbd5e1">+ zigzagSpeed: float</text>
+    <text x="10" y="60" font-family="monospace" font-size="10" fill="#f472b6">+ swoopAttack(): void</text>
+  </g>
+
+  <!-- BossDreadnought -->
+  <g transform="translate(1080, 390)">
+    <rect width="210" height="130" rx="6" fill="rgba(15, 23, 42, 0.9)" stroke="#ef4444" stroke-width="1.5" />
+    <rect width="210" height="24" rx="6" fill="#991b1b" />
+    <text x="105" y="17" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">BossDreadnought</text>
+    <text x="10" y="42" font-family="monospace" font-size="10" fill="#cbd5e1">+ phase: int (1, 2, 3)</text>
+    <text x="10" y="60" font-family="monospace" font-size="10" fill="#cbd5e1">+ shieldRegenRate: float</text>
+    <text x="10" y="78" font-family="monospace" font-size="10" fill="#cbd5e1">+ laserBeamCharge: float</text>
+    <line x1="10" y1="88" x2="200" y2="88" stroke="#334155" />
+    <text x="10" y="104" font-family="monospace" font-size="10" fill="#f87171">+ unleashBarrage(): void</text>
+    <text x="10" y="120" font-family="monospace" font-size="10" fill="#f87171">+ spawnEscorts(): void</text>
+  </g>
+
+  <!-- Flechas Herencia Enemy -->
+  <path d="M 950 390 L 950 355 L 1000 355 L 1000 335" fill="none" stroke="#ec4899" stroke-width="1.5" marker-end="url(#ar-herencia)" />
+  <path d="M 1160 390 L 1160 355 L 1070 355 L 1070 335" fill="none" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ar-herencia)" />
+
+  <!-- CLASE 4: UniversalAdsManager (MONETIZACIÓN COMPLETA) -->
+  <g transform="translate(480, 430)">
+    <rect width="340" height="270" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="2" filter="url(#card-shadow)" />
+    <rect width="340" height="35" rx="8" fill="#b45309" />
+    <text x="170" y="23" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">UniversalAdsManager</text>
+    <!-- Atributos -->
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#cbd5e1">+ platform: 'monetag'|'gamedistribution'|'crazygames'</text>
+    <text x="15" y="73" font-family="monospace" font-size="11" fill="#cbd5e1">+ cooldownSeconds: int = 75</text>
+    <text x="15" y="91" font-family="monospace" font-size="11" fill="#cbd5e1">+ minPlaytimeSeconds: int = 18</text>
+    <text x="15" y="109" font-family="monospace" font-size="11" fill="#cbd5e1">+ lastAdTimestamp: float</text>
+    <text x="15" y="127" font-family="monospace" font-size="11" fill="#cbd5e1">+ isVignetteLoaded: boolean</text>
+    <text x="15" y="145" font-family="monospace" font-size="11" fill="#cbd5e1">+ hasReviveUsedThisRun: boolean</text>
+    <line x1="10" y1="155" x2="330" y2="155" stroke="#334155" stroke-width="1" />
+    <!-- Métodos -->
+    <text x="15" y="175" font-family="monospace" font-size="11" fill="#fbbf24">+ init(): Promise&lt;boolean&gt;</text>
+    <text x="15" y="192" font-family="monospace" font-size="11" fill="#fbbf24">+ showInterstitial(reason: string): void</text>
+    <text x="15" y="209" font-family="monospace" font-size="11" fill="#fbbf24">+ showRewardedRevive(onSuccess, onFail): void</text>
+    <text x="15" y="226" font-family="monospace" font-size="11" fill="#fbbf24">+ _triggerMonetagVignette(): void</text>
+    <text x="15" y="243" font-family="monospace" font-size="11" fill="#fbbf24">+ _checkCooldown(): boolean</text>
+  </g>
+
+  <!-- CLASE 5: ApiService (Frontend HTTP) -->
+  <g transform="translate(60, 430)">
+    <rect width="320" height="230" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#10b981" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="320" height="35" rx="8" fill="#047857" />
+    <text x="160" y="23" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle">ApiService</text>
+    <!-- Atributos -->
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#cbd5e1">+ baseUrl: string</text>
+    <text x="15" y="73" font-family="monospace" font-size="11" fill="#cbd5e1">+ jwtToken: string | null</text>
+    <text x="15" y="91" font-family="monospace" font-size="11" fill="#cbd5e1">+ isGuest: boolean</text>
+    <line x1="10" y1="103" x2="310" y2="103" stroke="#334155" stroke-width="1" />
+    <!-- Métodos -->
+    <text x="15" y="125" font-family="monospace" font-size="11" fill="#34d399">+ register(user, pass): Promise&lt;Res&gt;</text>
+    <text x="15" y="142" font-family="monospace" font-size="11" fill="#34d399">+ login(user, pass): Promise&lt;Token&gt;</text>
+    <text x="15" y="159" font-family="monospace" font-size="11" fill="#34d399">+ submitScore(score, stage): Promise&lt;Res&gt;</text>
+    <text x="15" y="176" font-family="monospace" font-size="11" fill="#34d399">+ getLeaderboard(): Promise&lt;Leader[]&gt;</text>
+    <text x="15" y="193" font-family="monospace" font-size="11" fill="#34d399">+ healthCheck(): Promise&lt;boolean&gt;</text>
+  </g>
+
+  <!-- CLASE 6: WeaponSystem -->
+  <g transform="translate(60, 710)">
+    <rect width="320" height="180" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#06b6d4" stroke-width="1.5" />
+    <rect width="320" height="32" rx="8" fill="#0e7490" />
+    <text x="160" y="21" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">WeaponSystem</text>
+    <text x="15" y="52" font-family="monospace" font-size="11" fill="#cbd5e1">+ type: 'LASER'|'PLASMA'|'MISSILES'</text>
+    <text x="15" y="70" font-family="monospace" font-size="11" fill="#cbd5e1">+ fireRate: float</text>
+    <text x="15" y="88" font-family="monospace" font-size="11" fill="#cbd5e1">+ level: int (1..5)</text>
+    <line x1="10" y1="98" x2="310" y2="98" stroke="#334155" />
+    <text x="15" y="118" font-family="monospace" font-size="11" fill="#22d3ee">+ shoot(originX, originY): Projectile[]</text>
+    <text x="15" y="135" font-family="monospace" font-size="11" fill="#22d3ee">+ upgrade(): void</text>
+  </g>
+
+  <!-- CLASES BACKEND (ORM / Database Models) -->
+  <!-- User Model -->
+  <g transform="translate(900, 710)">
+    <rect width="280" height="180" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#818cf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="280" height="32" rx="8" fill="#4338ca" />
+    <text x="140" y="21" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">User (ORM Model)</text>
+    <text x="15" y="52" font-family="monospace" font-size="11" fill="#cbd5e1">+ id: Integer (PK)</text>
+    <text x="15" y="70" font-family="monospace" font-size="11" fill="#cbd5e1">+ username: String (Unique)</text>
+    <text x="15" y="88" font-family="monospace" font-size="11" fill="#cbd5e1">+ password_hash: String</text>
+    <text x="15" y="106" font-family="monospace" font-size="11" fill="#cbd5e1">+ created_at: DateTime</text>
+    <line x1="10" y1="116" x2="270" y2="116" stroke="#334155" />
+    <text x="15" y="136" font-family="monospace" font-size="11" fill="#a5b4fc">+ check_password(pass): bool</text>
+    <text x="15" y="153" font-family="monospace" font-size="11" fill="#a5b4fc">+ to_dict(): dict</text>
+  </g>
+
+  <!-- GameScore Model -->
+  <g transform="translate(1220, 710)">
+    <rect width="280" height="180" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#c084fc" stroke-width="1.5" filter="url(#card-shadow)" />
+    <rect width="280" height="32" rx="8" fill="#7e22ce" />
+    <text x="140" y="21" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">GameScore (ORM Model)</text>
+    <text x="15" y="52" font-family="monospace" font-size="11" fill="#cbd5e1">+ id: Integer (PK)</text>
+    <text x="15" y="70" font-family="monospace" font-size="11" fill="#cbd5e1">+ user_id: Integer (FK -> User.id)</text>
+    <text x="15" y="88" font-family="monospace" font-size="11" fill="#cbd5e1">+ score: Integer</text>
+    <text x="15" y="106" font-family="monospace" font-size="11" fill="#cbd5e1">+ stage_reached: Integer</text>
+    <line x1="10" y1="116" x2="270" y2="116" stroke="#334155" />
+    <text x="15" y="136" font-family="monospace" font-size="11" fill="#e879f9">+ get_top_leaderboard(limit): List</text>
+    <text x="15" y="153" font-family="monospace" font-size="11" fill="#e879f9">+ validate_score_integrity(): bool</text>
+  </g>
+
+  <!-- RELACIONES Y ASOCIACIONES -->
+  <!-- GameEngine -> PlayerShip -->
+  <line x1="480" y1="200" x2="380" y2="200" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#ar-asoc)" />
+  <text x="400" y="190" font-family="monospace" font-size="10" fill="#38bdf8">1 controls 1</text>
+
+  <!-- GameEngine -> Enemy -->
+  <line x1="800" y1="200" x2="900" y2="200" stroke="#ec4899" stroke-width="1.5" marker-end="url(#ar-asoc)" />
+  <text x="820" y="190" font-family="monospace" font-size="10" fill="#ec4899">1 manages 0..*</text>
+
+  <!-- GameEngine -> UniversalAdsManager -->
+  <line x1="640" y1="375" x2="640" y2="430" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar-ads)" />
+  <text x="650" y="410" font-family="monospace" font-size="10" fill="#f59e0b">1 delegates to 1</text>
+
+  <!-- PlayerShip -> WeaponSystem -->
+  <line x1="220" y1="375" x2="220" y2="710" stroke="#06b6d4" stroke-width="1.5" marker-end="url(#ar-asoc)" />
+  <text x="225" y="550" font-family="monospace" font-size="10" fill="#22d3ee">1 equips 1</text>
+
+  <!-- User -> GameScore (1 a Muchos) -->
+  <line x1="1180" y1="790" x2="1220" y2="790" stroke="#c084fc" stroke-width="2" marker-end="url(#ar-asoc)" />
+  <text x="1185" y="775" font-family="monospace" font-size="10" fill="#c084fc">1 has N</text>
+
+  <!-- ApiService -> Backend Models (Representación Conceptual) -->
+  <path d="M 380" y="540" L 900 790" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#ar-asoc)" />
+  <text x="560" y="730" font-family="monospace" font-size="11" fill="#10b981">HTTPS JSON Payloads</text>
+
+  <!-- Leyenda -->
+  <g transform="translate(60, 950)">
+    <rect width="1430" height="80" rx="8" fill="rgba(15, 23, 42, 0.9)" stroke="#334155" />
+    <text x="25" y="32" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#00f3ff">NOTACIÓN DE CLASES:</text>
+    <polygon points="170 25, 185 30, 170 35" fill="#000" stroke="#00f3ff" stroke-width="1.5" />
+    <text x="200" y="32" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">Herencia / Generalización (&lt;&lt;Abstract&gt;&gt; Enemy -> Subclasses)</text>
+    <line x1="620" y1="30" x2="660" y2="30" stroke="#38bdf8" stroke-width="2" marker-end="url(#ar-asoc)" />
+    <text x="670" y="32" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">Asociación / Composición Directa</text>
+    <line x1="970" y1="30" x2="1010" y2="30" stroke="#10b981" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#ar-asoc)" />
+    <text x="1020" y="32" font-family="'Rajdhani', sans-serif" font-size="13" fill="#cbd5e1">Dependencia / Interfaz Remota (API REST)</text>
+    <text x="25" y="62" font-family="'Rajdhani', sans-serif" font-size="12" fill="#94a3b8">Modificadores de Acceso: (+) Público | (-) Privado | (#) Protegido</text>
+  </g>
+</svg>

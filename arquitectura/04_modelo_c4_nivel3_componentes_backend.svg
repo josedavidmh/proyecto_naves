@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1450 960" width="100%" height="100%">
+  <defs>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.65" /></filter>
+    <linearGradient id="bg-grad-c3b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#030712" />
+      <stop offset="50%" stop-color="#180b26" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <marker id="ap" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#c084fc" /></marker>
+    <marker id="aa" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#f59e0b" /></marker>
+    <marker id="ae" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#10b981" /></marker>
+  </defs>
+
+  <rect width="1450" height="960" fill="url(#bg-grad-c3b)" />
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1390" height="70" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="#c084fc" stroke-width="1.5" filter="url(#card-shadow)" />
+  <text x="55" y="52" font-family="'Orbitron', monospace, sans-serif" font-size="20" font-weight="900" fill="#c084fc" letter-spacing="2">MODELO C4 · NIVEL 3: COMPONENTES DEL BACKEND RESTFUL</text>
+  <text x="55" y="74" font-family="'Rajdhani', sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Arquitectura Interna Flask: Blueprints, Middleware JWT, ORM SQLAlchemy y Base de Datos SQLite</text>
+  <text x="1220" y="60" font-family="monospace" font-size="11" fill="#c084fc" font-weight="bold">C4 COMPONENT (BACK)</text>
+
+  <!-- Límite del Contenedor Backend -->
+  <rect x="40" y="110" width="960" height="780" rx="14" fill="none" stroke="#7e22ce" stroke-width="2" stroke-dasharray="6,6" opacity="0.6" />
+  <text x="60" y="135" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#c084fc">CONTENEDOR: BACKEND API RESTFUL (PYTHON 3.11 / FLASK / GUNICORN)</text>
+
+  <!-- Componente 1: App Factory & Server Entry -->
+  <g transform="translate(60, 160)">
+    <rect width="440" height="150" rx="10" fill="#2e1065" stroke="#a855f7" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">App Factory &amp; Config (app.py)</text>
+    <text x="320" y="32" font-family="monospace" font-size="10" fill="#e9d5ff">[Flask Core]</text>
+    <text x="20" y="65" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e9d5ff">create_app(): Fábrica de aplicación, inicialización de db,</text>
+    <text x="20" y="82" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e9d5ff">sembrado automático de naves (Ship.seed_default_ships),</text>
+    <text x="20" y="99" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e9d5ff">restauración de usuarios de backup y servicio estático /.</text>
+    <text x="20" y="125" font-family="monospace" font-size="10" fill="#c084fc">CORS(app, resources={r"/api/*": {"origins": "*"}}) ➔ Embebidos Globales</text>
+  </g>
+
+  <!-- Componente 2: Middleware Auth Guard (JWT) -->
+  <g transform="translate(530, 160)">
+    <rect width="440" height="150" rx="10" fill="#3b0764" stroke="#c084fc" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">Middleware Auth Guard (auth_guard.py)</text>
+    <text x="320" y="32" font-family="monospace" font-size="10" fill="#f3e8ff">[Security JWT]</text>
+    <text x="20" y="65" font-family="'Rajdhani', sans-serif" font-size="12" fill="#f3e8ff">Decorador @token_required: Valida cabecera HTTP</text>
+    <text x="20" y="82" font-family="'Rajdhani', sans-serif" font-size="12" fill="#f3e8ff">"Authorization: Bearer &lt;JWT&gt;" con pyjwt y SECRET_KEY.</text>
+    <text x="20" y="99" font-family="'Rajdhani', sans-serif" font-size="12" fill="#f3e8ff">Inyecta el objeto current_user en los endpoints protegidos</text>
+    <text x="20" y="125" font-family="monospace" font-size="10" fill="#e9d5ff">Expira a las 24 horas · Rechaza 401 Unauthorized</text>
+  </g>
+
+  <!-- Componente 3: Auth Routes Blueprint -->
+  <g transform="translate(60, 340)">
+    <rect width="440" height="240" rx="10" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">Auth Blueprint (auth_routes.py)</text>
+    <text x="320" y="32" font-family="monospace" font-size="10" fill="#c7d2fe">[/api/auth]</text>
+    <text x="20" y="65" font-family="'Rajdhani', sans-serif" font-size="12" fill="#c7d2fe">Endpoints de Control de Acceso y Gestión de Pilotos:</text>
+    <text x="20" y="90" font-family="monospace" font-size="10" fill="#ffffff">• POST /api/auth/register</text>
+    <text x="20" y="106" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">  (Alta de piloto con password hash PBKDF2-SHA256)</text>
+    <text x="20" y="126" font-family="monospace" font-size="10" fill="#ffffff">• POST /api/auth/login</text>
+    <text x="20" y="142" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">  (Autenticación contra SQLite y emisión de JWT)</text>
+    <text x="20" y="162" font-family="monospace" font-size="10" fill="#ffffff">• GET /api/auth/profile</text>
+    <text x="20" y="178" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">  (Obtención de datos del piloto activo autenticado)</text>
+    <text x="20" y="198" font-family="monospace" font-size="10" fill="#ffffff">• POST /api/auth/forgot-password &amp; change-password</text>
+  </g>
+
+  <!-- Componente 4: Game Routes Blueprint -->
+  <g transform="translate(530, 340)">
+    <rect width="440" height="240" rx="10" fill="#064e3b" stroke="#34d399" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="13" font-weight="bold" fill="#ffffff">Game Blueprint (game_routes.py)</text>
+    <text x="320" y="32" font-family="monospace" font-size="10" fill="#a7f3d0">[/api/game &amp; /api]</text>
+    <text x="20" y="65" font-family="'Rajdhani', sans-serif" font-size="12" fill="#a7f3d0">Endpoints de Lógica de Misión y Clasificación:</text>
+    <text x="20" y="90" font-family="monospace" font-size="10" fill="#ffffff">• GET /api/game/ships</text>
+    <text x="20" y="106" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">  (Catálogo de naves con atributos de combate y estado)</text>
+    <text x="20" y="126" font-family="monospace" font-size="10" fill="#ffffff">• POST /api/game/score</text>
+    <text x="20" y="142" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">  (Registro de puntuación al terminar misión / victoria)</text>
+    <text x="20" y="162" font-family="monospace" font-size="10" fill="#ffffff">• GET /api/game/leaderboard</text>
+    <text x="20" y="178" font-family="'Rajdhani', sans-serif" font-size="11" fill="#94a3b8">  (Top 10 pilotos mundiales con ordenamiento DESC)</text>
+    <text x="20" y="198" font-family="monospace" font-size="10" fill="#ffffff">• GET /api/health (Endpoint de estado [ONLINE])</text>
+  </g>
+
+  <!-- Componente 5: Modelos ORM SQLAlchemy -->
+  <g transform="translate(60, 610)">
+    <rect width="910" height="250" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" filter="url(#card-shadow)" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="14" font-weight="bold" fill="#38bdf8">Capa de Dominio y Modelos de Datos (SQLAlchemy ORM)</text>
+    <text x="750" y="32" font-family="monospace" font-size="10" fill="#94a3b8">backend/models/</text>
+
+    <!-- 4 Entidades -->
+    <g transform="translate(20, 50)">
+      <rect width="200" height="175" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
+      <text x="15" y="25" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff">User (Piloto)</text>
+      <text x="15" y="42" font-family="monospace" font-size="9" fill="#38bdf8">user.py</text>
+      <text x="15" y="65" font-family="monospace" font-size="10" fill="#e2e8f0">• id (PK, int)</text>
+      <text x="15" y="82" font-family="monospace" font-size="10" fill="#e2e8f0">• username (str)</text>
+      <text x="15" y="99" font-family="monospace" font-size="10" fill="#e2e8f0">• email (str)</text>
+      <text x="15" y="116" font-family="monospace" font-size="10" fill="#e2e8f0">• password_hash</text>
+      <text x="15" y="133" font-family="monospace" font-size="10" fill="#e2e8f0">• created_at</text>
+      <text x="15" y="155" font-family="'Rajdhani', sans-serif" font-size="10" fill="#94a3b8">set_password() / check()</text>
+    </g>
+
+    <g transform="translate(245, 50)">
+      <rect width="200" height="175" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
+      <text x="15" y="25" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff">Ship (Caza)</text>
+      <text x="15" y="42" font-family="monospace" font-size="9" fill="#38bdf8">ship.py</text>
+      <text x="15" y="65" font-family="monospace" font-size="10" fill="#e2e8f0">• id (PK, int)</text>
+      <text x="15" y="82" font-family="monospace" font-size="10" fill="#e2e8f0">• name (str)</text>
+      <text x="15" y="99" font-family="monospace" font-size="10" fill="#e2e8f0">• speed, shield</text>
+      <text x="15" y="116" font-family="monospace" font-size="10" fill="#e2e8f0">• weapon (str)</text>
+      <text x="15" y="133" font-family="monospace" font-size="10" fill="#e2e8f0">• is_unlocked (bool)</text>
+      <text x="15" y="155" font-family="'Rajdhani', sans-serif" font-size="10" fill="#94a3b8">seed_default_ships()</text>
+    </g>
+
+    <g transform="translate(470, 50)">
+      <rect width="200" height="175" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
+      <text x="15" y="25" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff">GameScore</text>
+      <text x="15" y="42" font-family="monospace" font-size="9" fill="#38bdf8">score.py</text>
+      <text x="15" y="65" font-family="monospace" font-size="10" fill="#e2e8f0">• id (PK, int)</text>
+      <text x="15" y="82" font-family="monospace" font-size="10" fill="#e2e8f0">• user_id (FK)</text>
+      <text x="15" y="99" font-family="monospace" font-size="10" fill="#e2e8f0">• score (int)</text>
+      <text x="15" y="116" font-family="monospace" font-size="10" fill="#e2e8f0">• stage_reached</text>
+      <text x="15" y="133" font-family="monospace" font-size="10" fill="#e2e8f0">• is_victory (bool)</text>
+      <text x="15" y="155" font-family="'Rajdhani', sans-serif" font-size="10" fill="#94a3b8">created_at (datetime)</text>
+    </g>
+
+    <g transform="translate(695, 50)">
+      <rect width="195" height="175" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
+      <text x="15" y="25" font-family="'Orbitron', monospace" font-size="12" font-weight="bold" fill="#ffffff">PlayerProgress</text>
+      <text x="15" y="42" font-family="monospace" font-size="9" fill="#38bdf8">progress.py</text>
+      <text x="15" y="65" font-family="monospace" font-size="10" fill="#e2e8f0">• id (PK, int)</text>
+      <text x="15" y="82" font-family="monospace" font-size="10" fill="#e2e8f0">• user_id (FK)</text>
+      <text x="15" y="99" font-family="monospace" font-size="10" fill="#e2e8f0">• unlocked_stage</text>
+      <text x="15" y="116" font-family="monospace" font-size="10" fill="#e2e8f0">• high_score (int)</text>
+      <text x="15" y="133" font-family="monospace" font-size="10" fill="#e2e8f0">• total_kills (int)</text>
+      <text x="15" y="155" font-family="'Rajdhani', sans-serif" font-size="10" fill="#94a3b8">updated_at (datetime)</text>
+    </g>
+  </g>
+
+  <!-- CONTENEDOR DERECHA: BASE DE DATOS SQLITE -->
+  <g transform="translate(1040, 260)">
+    <rect width="360" height="480" rx="12" fill="rgba(69, 26, 3, 0.95)" stroke="#f59e0b" stroke-width="2" filter="url(#card-shadow)" />
+    <rect x="0" y="0" width="360" height="50" rx="12" fill="#b45309" />
+    <text x="20" y="32" font-family="'Orbitron', monospace" font-size="14" font-weight="bold" fill="#ffffff">Base de Datos SQLite</text>
+    <text x="240" y="32" font-family="monospace" font-size="10" fill="#fde68a">[db.sqlite3 / Disk]</text>
+
+    <text x="20" y="80" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fde68a">Archivo binario SQLite ACID persistido en disco.</text>
+    <text x="20" y="98" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fde68a">Almacena relaciones foráneas con integridad:</text>
+    <text x="20" y="120" font-family="monospace" font-size="10" fill="#ffffff">• FK: game_scores.user_id ➔ users.id</text>
+    <text x="20" y="138" font-family="monospace" font-size="10" fill="#ffffff">• FK: player_progress.user_id ➔ users.id</text>
+
+    <rect x="20" y="170" width="320" height="130" rx="6" fill="#78350f" stroke="#f59e0b" stroke-width="1" />
+    <text x="35" y="195" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Sistema de Backup &amp; Resiliencia:</text>
+    <text x="35" y="215" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">• users_backup.json</text>
+    <text x="35" y="232" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">• restore_backup_if_empty() al iniciar</text>
+    <text x="35" y="250" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">• Protección contra reinicios de instancias en</text>
+    <text x="35" y="268" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">  servidores gratuitos efímeros de Render.</text>
+
+    <rect x="20" y="320" width="320" height="135" rx="6" fill="#451a03" stroke="#d97706" stroke-width="1" />
+    <text x="35" y="345" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#ffffff">Propiedades ACID:</text>
+    <text x="35" y="365" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">• Atomicidad en transacciones de score</text>
+    <text x="35" y="382" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">• Consistencia relacional con FK constraints</text>
+    <text x="35" y="400" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">• Aislamiento en lecturas concurrentes</text>
+    <text x="35" y="418" font-family="'Rajdhani', sans-serif" font-size="11" fill="#fde68a">• Durabilidad con WAL / commit seguro</text>
+  </g>
+
+  <!-- FLECHAS INTERNAS -->
+  <path d="M 500 235 L 530 235" fill="none" stroke="#c084fc" stroke-width="2" marker-end="url(#ap)" />
+  <path d="M 500 460 L 530 460" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#ae)" />
+  <path d="M 280 580 L 280 610" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#ap)" />
+  <path d="M 750 580 L 750 610" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#ae)" />
+
+  <!-- Modelos -> SQLite -->
+  <path d="M 970 735 L 1040 500" fill="none" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#aa)" />
+  <text x="960" y="600" font-family="monospace" font-size="10" fill="#fbbf24">SQL / Persistencia</text>
+
+  <!-- Leyenda inferior -->
+  <g transform="translate(40, 905)">
+    <rect width="1370" height="40" rx="6" fill="rgba(15, 23, 42, 0.85)" stroke="#334155" />
+    <text x="25" y="25" font-family="'Orbitron', monospace" font-size="11" font-weight="bold" fill="#c084fc">ARQUITECTURA BACKEND:</text>
+    <text x="240" y="25" font-family="'Rajdhani', sans-serif" font-size="12" fill="#e9d5ff">● app.py (Fábrica &amp; CORS)</text>
+    <text x="490" y="25" font-family="'Rajdhani', sans-serif" font-size="12" fill="#c7d2fe">● Blueprints Auth &amp; Game</text>
+    <text x="750" y="25" font-family="'Rajdhani', sans-serif" font-size="12" fill="#38bdf8">● Modelos ORM (User, Ship, Score, Progress)</text>
+    <text x="1150" y="25" font-family="'Rajdhani', sans-serif" font-size="12" fill="#fbbf24">● SQLite con Backup JSON</text>
+  </g>
+</svg>
