@@ -120,6 +120,22 @@ document.addEventListener("DOMContentLoaded", () => {
       serverStatusBadge.style.color = "#f87171";
     }
 
+    // En CrazyGames y portales asociados: entrar DIRECTAMENTE al Hangar sin pantalla de login externa
+    const isExternalPortal = window.location.hostname.includes("crazygames") || 
+                             window.location.hostname.includes("gamedistribution") ||
+                             window.location.search.includes("cg=1") ||
+                             window.location.search.includes("gd=1");
+    if (isExternalPortal) {
+      showAuthenticatedUI({
+        id: 999,
+        username: "Commander",
+        email: "pilot@crazygames.com",
+        created_at: new Date().toISOString()
+      });
+      if (btnLogout) btnLogout.style.display = "none";
+      return;
+    }
+
     const token = ApiService.getToken();
     if (!token) {
       showUnauthenticatedUI();

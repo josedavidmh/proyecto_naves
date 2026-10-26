@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Assault v2.0 - Tactical Aerial & Space Combat</title>
   
-  <!-- Monetag SDK Oficial (Zona 12128966 In-App/Vignette + Zona MultiTag 302008 Blindada) -->
+  <!-- Redes publicitarias externas (AdSense y Monetag: estrictamente condicionadas a dominio propio, NUNCA en CrazyGames) -->
   <script type="text/javascript">
     (function() {
       var isOwnSite = window.location.hostname.includes("onrender.com") || 
@@ -13,7 +13,14 @@
                       window.location.hostname === "127.0.0.1";
       if (!isOwnSite) return;
 
-      // 1. Creador oficial de manejador Monetag In-App Programático con cola asíncrona
+      // 1. Google AdSense dinámico (solo en web propia)
+      var sAd = document.createElement("script");
+      sAd.async = true;
+      sAd.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6261859133501243";
+      sAd.crossOrigin = "anonymous";
+      document.head.appendChild(sAd);
+
+      // 2. Monetag SDK Programático con cola asíncrona (solo en web propia)
       function initMonetagHandler(zoneId) {
         var sdkName = "show_" + zoneId;
         var queue = [];
@@ -25,7 +32,7 @@
           }
           return new Promise(function(resolve, reject) {
             if (isLoaded && typeof window[sdkName + "_raw"] !== "function") {
-              return reject(new Error("Monetag no disponible en este momento"));
+              return reject(new Error("Monetag no disponible"));
             }
             queue.push([options, resolve, reject]);
           });
@@ -56,10 +63,8 @@
         document.head.appendChild(script);
       }
 
-      // Iniciar el SDK programático para la zona 12128966
       initMonetagHandler("12128966");
 
-      // 2. MultiTag Oficial (Zona 302008) - Controlado por el Escudo Antibalas de Combate en ads_manager.js
       var sMulti = document.createElement("script");
       sMulti.src = "https://quge5.com/88/tag.min.js";
       sMulti.dataset.zone = "302008";
@@ -67,7 +72,6 @@
       sMulti.setAttribute("data-cfasync", "false");
       document.head.appendChild(sMulti);
 
-      // 3. Vignette Banner Oficial (Zona 12128966)
       var sVig = document.createElement("script");
       sVig.src = "https://n6wxm.com/vignette.min.js";
       sVig.dataset.zone = "12128966";
@@ -77,12 +81,23 @@
     })();
   </script>
 
-  <!-- Estilos Sci-Fi Arcade 100% autosuficientes y fuentes Google -->
-  <link rel="stylesheet" href="./css/style.css?v=3.5">
+  <!-- Estilos Sci-Fi Arcade 100% autosuficientes (Ruta relativa estática limpia sin query params) -->
+  <link rel="stylesheet" href="css/style.css">
 
-  <!-- Google AdSense SDK Oficial (Monetización de Misiones) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6261859133501243"
-     crossorigin="anonymous"></script>
+  <!-- CrazyGames HTML5 SDK v3 Oficial (Detección estática inmediata requerida por CrazyGames QA) -->
+  <script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
+  <script type="text/javascript">
+    window.addEventListener("DOMContentLoaded", async function() {
+      if (window.CrazyGames && window.CrazyGames.SDK) {
+        try {
+          await window.CrazyGames.SDK.init();
+          console.log("[CrazyGames SDK v3] Inicializado exitosamente.");
+        } catch (e) {
+          console.log("[CrazyGames SDK v3] Inicialización en entorno de prueba:", e);
+        }
+      }
+    });
+  </script>
 
   <!-- GameDistribution HTML5 SDK Oficial (Solo activo en la red de GameDistribution o embebidos externos) -->
   <script type="text/javascript">
@@ -90,9 +105,11 @@
       var isOwnSite = window.location.hostname.includes("onrender.com") || 
                       window.location.hostname === "localhost" || 
                       window.location.hostname === "127.0.0.1";
+      var isCrazyGames = window.location.hostname.includes("crazygames") || 
+                         window.location.search.includes("cg=1");
       
-      // En GameDistribution (CDN, iframes de portales asociados o con ?gd=1) activamos el SDK de GD
-      if (!isOwnSite || window.location.search.includes("gd=1")) {
+      // En GameDistribution activamos el SDK de GD (nunca en CrazyGames ni web propia)
+      if (!isOwnSite && !isCrazyGames && (window.location.search.includes("gd=1") || window.location.hostname.includes("gamedistribution"))) {
         window["GD_OPTIONS"] = {
           "gameId": "d49c747be6564b50b1e93571d8b0ad58",
           "onEvent": function(event) {
@@ -104,10 +121,7 @@
                 console.log("[GameDistribution] Pausar juego durante anuncio");
                 break;
               case "SDK_READY":
-                console.log("[GameDistribution] SDK listo para servir anuncios");
-                break;
-              case "SDK_ERROR":
-                console.warn("[GameDistribution] Notificación SDK:", event);
+                console.log("[GameDistribution] SDK listo");
                 break;
             }
           }
@@ -120,31 +134,6 @@
           js.src = "https://html5.api.gamedistribution.com/main.min.js";
           fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'gamedistribution-jssdk'));
-      }
-    })();
-  </script>
-
-  <!-- CrazyGames HTML5 SDK v3 Oficial (Solo activo en CrazyGames o con ?cg=1) -->
-  <script type="text/javascript">
-    (function() {
-      var isCrazyGames = window.location.hostname.includes("crazygames.com") || 
-                         window.location.hostname.includes("crazygames.io") || 
-                         window.location.search.includes("cg=1");
-      if (isCrazyGames) {
-        var s = document.createElement("script");
-        s.src = "https://sdk.crazygames.com/crazygames-sdk-v3.js";
-        s.async = true;
-        s.onload = async function() {
-          if (window.CrazyGames && window.CrazyGames.SDK) {
-            try {
-              await window.CrazyGames.SDK.init();
-              console.log("[CrazyGames SDK v3] Inicializado exitosamente.");
-            } catch (err) {
-              console.warn("[CrazyGames SDK v3] Error al inicializar:", err);
-            }
-          }
-        };
-        document.head.appendChild(s);
       }
     })();
   </script>
@@ -1158,8 +1147,8 @@
     <span>⛶</span> EXPANDIR JUEGO [F]
   </button>
 
-  <!-- Scripts Modulares -->
-  <script type="module" src="./js/auth.js?v=3.5"></script>
-  <script type="module" src="./js/app_ui.js?v=3.5"></script>
+  <!-- Scripts Modulares (Rutas limpias relativas sin query parameters) -->
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/app_ui.js"></script>
 </body>
 </html>
