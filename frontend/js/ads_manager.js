@@ -24,10 +24,11 @@ export const ADS_CONFIG = {
   CLIENT_ID: "ca-pub-6261859133501243",
   SLOT_PRE_MISSION: "1668600475",
 
-  // Configuración Monetag (Zona Vignette Limpia + Zona MultiTag)
+  // Configuración Monetag (Zona Vignette Limpia + Zona MultiTag + Direct Link)
   MONETAG_ZONE_ID: "12128966",
   MONETAG_ZONE_VIGNETTE: "12128966",
   MONETAG_ZONE_MULTITAG: "302008",
+  MONETAG_DIRECT_LINK_URL: (typeof localStorage !== "undefined" && localStorage.getItem("sa_monetag_direct_link")) || "",
 
   // Configuración GameDistribution (Game GUID asignado al crear el juego)
   GD_GAME_ID: "d49c747be6564b50b1e93571d8b0ad58",
@@ -64,6 +65,19 @@ export const ADS_CONFIG = {
 // Aliases para retrocompatibilidad con código existente
 export const CLIENT_ID = ADS_CONFIG.ADSENSE_CLIENT_ID;
 export const SLOT_PRE_MISSION = ADS_CONFIG.ADSENSE_SLOT_PRE_MISSION;
+
+// ESCUDO DE COMBATE: Previene que ventanas emergentes o popunders interrumpan los controles táctiles en combate
+if (typeof window !== "undefined") {
+  window.__sa_combat_active = false;
+  const _origOpen = window.open;
+  window.open = function(...args) {
+    if (window.__sa_combat_active) {
+      console.log("[AdsManager] 🛡️ Escudo de Combate: Ventana bloqueada para no interrumpir el vuelo activo.");
+      return null;
+    }
+    return _origOpen.apply(this, args);
+  };
+}
 
 class UniversalAdsManager {
   constructor() {
@@ -320,7 +334,7 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Monetag Programático (si se ha configurado función directa en la zona Vignette)
+      // 3. Monetag Programático (Zona 12128966 / Zona 302008)
       if (typeof window.show_12128966 === "function") {
         console.log("[AdsManager] 📺 Invocando Intersticial Monetag show_12128966...");
         try {
@@ -331,6 +345,7 @@ class UniversalAdsManager {
             })
             .catch((err) => {
               console.warn("[Monetag] Anuncio cerrado o no disponible:", err);
+              this._fallbackDirectLink();
               clearTimeout(timer);
               safeComplete();
             });
@@ -338,11 +353,23 @@ class UniversalAdsManager {
         } catch (e) {
           console.warn("[Monetag] Excepción al invocar show_12128966:", e);
         }
-      } else if (typeof window.show_monetag_ad === "function") {
-        try { window.show_monetag_ad(); } catch (_) {}
+      } else if (typeof window.show_302008 === "function") {
+        try {
+          window.show_302008({ type: 'end' })
+            .then(() => { clearTimeout(timer); safeComplete(); })
+            .catch(() => { this._fallbackDirectLink(); clearTimeout(timer); safeComplete(); });
+          return;
+        } catch (_) {}
       }
 
-      // 4. Fallback Web Propia / Monetag: Disparar activamente el Vignette Banner
+      // 4. Fallback Direct Link (si está configurado)
+      if (this._fallbackDirectLink()) {
+        clearTimeout(timer);
+        safeComplete();
+        return;
+      }
+
+      // 5. Fallback Web Propia / Monetag: Disparar activamente el Vignette Banner
       this._triggerMonetagVignette();
       clearTimeout(timer);
       safeComplete();
@@ -443,36 +470,53 @@ class UniversalAdsManager {
             })
             .catch((err) => {
               console.warn("[AdsManager] Recompensa Monetag cerrada o no disponible:", err);
-              // Conceder vida de rescate para no castigar al usuario por error de red publicitaria
+              this._fallbackDirectLink();
               if (typeof onRewarded === "function") onRewarded();
             });
           return;
         } catch (err) {
           console.warn("[AdsManager] Error al ejecutar show_12128966:", err);
         }
+      } else if (typeof window.show_302008 === "function") {
+        try {
+          window.show_302008({ type: 'inApp' })
+            .then(() => { if (typeof onRewarded === "function") onRewarded(); })
+            .catch(() => {
+              this._fallbackDirectLink();
+              if (typeof onRewarded === "function") onRewarded();
+            });
+          return;
+        } catch (_) {}
       }
 
-      if (typeof window.show_monetag_rewarded === "function") {
-        window.show_monetag_rewarded()
-          .then(() => {
-            if (typeof onRewarded === "function") onRewarded();
-          })
-          .catch(() => {
-            if (typeof onRewarded === "function") onRewarded();
-          });
-        return;
-      }
+      // 4. Fallback Direct Link si está configurado
+      this._fallbackDirectLink();
 
-      // 4. Fallback Web Propia: Conceder revivir de rescate al piloto
-      console.log("[AdsManager] Entorno Web Propia: Concediendo revivir de rescate al piloto.");
+      // 5. Conceder revivir de rescate al piloto
+      console.log("[AdsManager] Recompensa concedida: Revivir de rescate + escudo 100%.");
       if (typeof onRewarded === "function") {
-        setTimeout(onRewarded, 300);
+        setTimeout(onRewarded, 350);
       }
 
     } catch (e) {
       console.warn("[AdsManager] Fallo en anuncio recompensado:", e);
       if (typeof onDismissed === "function") onDismissed();
     }
+  }
+
+  /**
+   * Intenta abrir el Direct Link de Monetag en pestaña patrocinada si está configurado
+   */
+  _fallbackDirectLink() {
+    try {
+      const url = ADS_CONFIG.MONETAG_DIRECT_LINK_URL || (typeof localStorage !== "undefined" && localStorage.getItem("sa_monetag_direct_link"));
+      if (url && typeof window !== "undefined") {
+        console.log("[AdsManager] 🔗 Abriendo enlace patrocinado Direct Link de Monetag:", url);
+        window.open(url, "_blank");
+        return true;
+      }
+    } catch (_) {}
+    return false;
   }
 }
 

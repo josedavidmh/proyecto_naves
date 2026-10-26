@@ -270,8 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       gameOverModal.classList.remove("hidden");
       loadPilotStats();
-      // Anuncio post-partida con frecuencia equilibrada y cooldown anti-frustración
-      adsManager.showInterstitial(null, { context: "game_over" });
     },
     onStageVictory: (stats) => {
       // CUANDO SUPERA UN ÁREA SE LE OTORGA +1 VIDA EXTRA:

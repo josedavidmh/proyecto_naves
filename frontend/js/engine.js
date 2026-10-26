@@ -225,6 +225,7 @@ export class GameEngine {
   }
 
   start(shipData, stageNumber = 1, pilotName = "PILOTO", runState = null) {
+    if (typeof window !== "undefined") window.__sa_combat_active = true;
     document.body.classList.add("battle-locked");
     this.ship = shipData;
     this.currentStage = stageNumber;
@@ -314,6 +315,7 @@ export class GameEngine {
 
   stop() {
     this.isRunning = false;
+    if (typeof window !== "undefined") window.__sa_combat_active = false;
     Sound.stopMusic();
     document.body.classList.remove("battle-locked");
     if (this.animationFrameId) {
@@ -324,6 +326,7 @@ export class GameEngine {
   togglePause() {
     if (!this.isRunning) return;
     this.isPaused = !this.isPaused;
+    if (typeof window !== "undefined") window.__sa_combat_active = !this.isPaused;
     if (!this.isPaused) {
       this.lastTime = performance.now();
       this.loop(performance.now());
