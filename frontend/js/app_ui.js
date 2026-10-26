@@ -10,6 +10,7 @@ import { ADS_CONFIG, renderGoogleAd, adsManager } from "./ads_config.js";
 import { GAME_VERSION } from "./version.js";
 import { CyberDialog } from "./cyber_dialog.js";
 import { socialShare } from "./social_share.js";
+import { i18n, t } from "./i18n.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Sincronización automática de versión en badges y pestaña del navegador
@@ -59,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const btnAudioToggle = document.getElementById("btn-audio-toggle");
   const btnMusicToggle = document.getElementById("btn-music-toggle");
+  const btnLangToggle = document.getElementById("btn-lang-toggle");
 
   // Canvas y HUD
   const canvas = document.getElementById("game-canvas");
@@ -72,11 +74,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const hudBombsCount = document.getElementById("hud-bombs-count");
   const btnHudBomb = document.getElementById("btn-hud-bomb");
 
-  // --- CONTROLES DE AUDIO (WEB AUDIO API) ---
+  // --- CONTROLES DE AUDIO Y MULTI-IDIOMA ---
+  if (btnLangToggle) {
+    btnLangToggle.addEventListener("click", () => {
+      i18n.toggleLanguage();
+      updateFullscreenButtons(document.body.classList.contains("theater-mode-active") || !!document.fullscreenElement);
+      if (btnAudioToggle) btnAudioToggle.textContent = Sound.isMuted ? t("sfx_off") : t("sfx_on");
+      if (btnMusicToggle) btnMusicToggle.textContent = musicActive ? t("music_on") : t("music_off");
+    });
+  }
+
+  // Aplicar traducciones iniciales (inglés predeterminado en CrazyGames y global)
+  i18n.applyTranslations();
+
   if (btnAudioToggle) {
     btnAudioToggle.addEventListener("click", () => {
       const isMuted = Sound.toggleMute();
-      btnAudioToggle.textContent = isMuted ? "🔇 SFX: OFF" : "🔊 SFX: ON";
+      btnAudioToggle.textContent = isMuted ? t("sfx_off") : t("sfx_on");
       btnAudioToggle.style.color = isMuted ? "#94a3b8" : "#00f3ff";
     });
   }
@@ -86,18 +100,19 @@ document.addEventListener("DOMContentLoaded", () => {
     btnMusicToggle.addEventListener("click", () => {
       musicActive = !musicActive;
       Sound.setMusicEnabled(musicActive);
-      btnMusicToggle.textContent = musicActive ? "🎵 MÚSICA: ON" : "🔇 MÚSICA: OFF";
+      btnMusicToggle.textContent = musicActive ? t("music_on") : t("music_off");
       btnMusicToggle.style.color = musicActive ? "#00f3ff" : "#94a3b8";
     });
   }
 
   // --- CONTROL ROBUSTO DE PANTALLA COMPLETA HÍBRIDA ---
   function updateFullscreenButtons(isFs) {
+    const isEn = i18n.getLanguage() === "en";
     if (btnFullscreenHeader) {
-      btnFullscreenHeader.textContent = isFs ? "🗗 SALIR PANTALLA [F]" : "⛶ PANTALLA COMPLETA [F]";
+      btnFullscreenHeader.textContent = isFs ? (isEn ? "🗗 EXIT FULLSCREEN [F]" : "🗗 SALIR PANTALLA [F]") : (isEn ? "⛶ FULLSCREEN [F]" : "⛶ PANTALLA COMPLETA [F]");
     }
     if (btnBattleFullscreen) {
-      btnBattleFullscreen.textContent = isFs ? "🗗 SALIR [F]" : "⛶ PANTALLA COMPLETA [F]";
+      btnBattleFullscreen.textContent = isFs ? (isEn ? "🗗 EXIT [F]" : "🗗 SALIR [F]") : (isEn ? "⛶ FULLSCREEN [F]" : "⛶ PANTALLA COMPLETA [F]");
     }
     if (btnFloatingFullscreen) {
       // Remover cualquier botón flotante duplicado residual
@@ -106,7 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 1; i < extraFloating.length; i++) extraFloating[i].remove();
       }
 
-      btnFloatingFullscreen.innerHTML = isFs ? "<span>🗗</span> SALIR PANTALLA [F]" : "<span>⛶</span> EXPANDIR JUEGO [F]";
+      btnFloatingFullscreen.innerHTML = isFs 
+        ? `<span>🗗</span> ${isEn ? "RESTORE [F]" : "SALIR PANTALLA [F]"}` 
+        : `<span>⛶</span> ${isEn ? "EXPAND [F]" : "EXPANDIR JUEGO [F]"}`;
       if (isFs) {
         btnFloatingFullscreen.classList.add("is-active");
       } else {
@@ -316,22 +333,23 @@ document.addEventListener("DOMContentLoaded", () => {
         elRewardText.textContent = `+1 VIDA EXTRA (Total: ${rewardedLives} ❤️)`;
       }
 
+      const isEn = i18n.getLanguage() === "en";
       if (isFinal) {
-        if (elTitle) elTitle.textContent = "🏆 ¡VICTORIA TOTAL: CAMPAÑA CONQUISTADA!";
-        document.getElementById("vic-stage").textContent = "GENERAL VEKTOR DERROTADO · TODAS LAS ÁREAS SUPERADAS AL 100%";
-        if (elUnlocked) elUnlocked.textContent = "✔ ¡Felicidades comandante! Campaña militar completada y guardada en SQLite.";
+        if (elTitle) elTitle.textContent = isEn ? "🏆 TOTAL VICTORY: CAMPAIGN CONQUERED!" : "🏆 ¡VICTORIA TOTAL: CAMPAÑA CONQUISTADA!";
+        document.getElementById("vic-stage").textContent = isEn ? "GENERAL VEKTOR DEFEATED · ALL SECTORS 100% CLEARED" : "GENERAL VEKTOR DERROTADO · TODAS LAS ÁREAS SUPERADAS AL 100%";
+        if (elUnlocked) elUnlocked.textContent = isEn ? "✔ Congratulations commander! Campaign completed and recorded." : "✔ ¡Felicidades comandante! Campaña militar completada y guardada en SQLite.";
         if (elEpilogue) elEpilogue.classList.remove("hidden");
         btnNextStageVictory.style.display = "none";
-        btnHangarVictory.textContent = "🎖️ REGRESAR AL HANGAR CON HONORES";
+        btnHangarVictory.textContent = isEn ? "🎖️ RETURN TO HANGAR WITH HONORS" : "🎖️ REGRESAR AL HANGAR CON HONORES";
         btnHangarVictory.className = "btn-cyber-primary";
       } else {
-        if (elTitle) elTitle.textContent = `🎖️ ¡ÁREA ${stats.stageCompleted} SUPERADA!`;
-        document.getElementById("vic-stage").textContent = `¡JEFE PRINCIPAL ABATIDO! ÁREA ${stats.stageCompleted} DESPEJADA ➔ LISTO PARA FASE ${nextStageNum}`;
-        if (elUnlocked) elUnlocked.textContent = `✔ Área ${stats.stageCompleted} superada con éxito. Fase ${nextStageNum} desbloqueada en SQLite.`;
+        if (elTitle) elTitle.textContent = isEn ? `🎖️ AREA ${stats.stageCompleted} CLEARED!` : `🎖️ ¡ÁREA ${stats.stageCompleted} SUPERADA!`;
+        document.getElementById("vic-stage").textContent = isEn ? `FLAGSHIP DESTROYED! AREA ${stats.stageCompleted} SECURED ➔ READY FOR STAGE ${nextStageNum}` : `¡JEFE PRINCIPAL ABATIDO! ÁREA ${stats.stageCompleted} DESPEJADA ➔ LISTO PARA FASE ${nextStageNum}`;
+        if (elUnlocked) elUnlocked.textContent = isEn ? `✔ Area ${stats.stageCompleted} secured. Stage ${nextStageNum} unlocked.` : `✔ Área ${stats.stageCompleted} superada con éxito. Fase ${nextStageNum} desbloqueada en SQLite.`;
         if (elEpilogue) elEpilogue.classList.add("hidden");
         btnNextStageVictory.style.display = "block";
-        btnNextStageVictory.textContent = `🚀 DESPLEGAR A LA FASE ${nextStageNum} ➔`;
-        btnHangarVictory.textContent = "MAPA DE OPERACIONES";
+        btnNextStageVictory.textContent = isEn ? `🚀 DEPLOY TO STAGE ${nextStageNum} ➔` : `🚀 DESPLEGAR A LA FASE ${nextStageNum} ➔`;
+        btnHangarVictory.textContent = isEn ? "MAP OF OPERATIONS" : "MAPA DE OPERACIONES";
         btnHangarVictory.className = "btn-cyber-outline";
       }
 
@@ -371,14 +389,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Salir del combate y volver al hangar con Message Box Sci-Fi Táctico
   btnExitBattle.addEventListener("click", async () => {
+    const isEn = i18n.getLanguage() === "en";
     const confirmed = await CyberDialog.confirm({
-      title: "RETIRADA TÁCTICA // ALERTA",
-      message: "¿Deseas abortar la misión de combate y regresar al hangar?",
-      subtext: "⚠️ La incursión aérea se dará por fallida y el historial de la partida se reiniciará a Fase 1.",
+      title: isEn ? "TACTICAL RETREAT // ALERT" : "RETIRADA TÁCTICA // ALERTA",
+      message: isEn ? "Do you want to abort the combat mission and return to the hangar?" : "¿Deseas abortar la misión de combate y regresar al hangar?",
+      subtext: isEn ? "⚠️ The aerial incursion will be marked as failed and progress resets to Stage 1." : "⚠️ La incursión aérea se dará por fallida y el historial de la partida se reiniciará a Fase 1.",
       icon: "⚠️",
-      badge: "ALTO MANDO // PROTOCOLO DE EVACUACIÓN",
-      confirmText: "✕ ABORTAR MISIÓN",
-      cancelText: "CONTINUAR COMBATE",
+      badge: isEn ? "HIGH COMMAND // EVACUATION PROTOCOL" : "ALTO MANDO // PROTOCOLO DE EVACUACIÓN",
+      confirmText: isEn ? "✕ ABORT MISSION" : "✕ ABORTAR MISIÓN",
+      cancelText: isEn ? "CONTINUE BATTLE" : "CONTINUAR COMBATE",
       isDanger: true
     });
 

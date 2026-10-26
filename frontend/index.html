@@ -164,26 +164,29 @@
       </div>
 
       <div class="header-actions">
-        <button id="btn-fullscreen-header" class="btn-cyber-outline" style="border-color: #00f3ff; color: #00f3ff; font-weight: 800; background: rgba(0, 243, 255, 0.1);" title="Alternar Pantalla Completa (Tecla F o F11)">
-          ⛶ PANTALLA COMPLETA [F]
+        <button id="btn-lang-toggle" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800; background: rgba(56, 189, 248, 0.12);" title="Switch Language / Cambiar Idioma">
+          🌐 <span id="current-lang-text">EN</span>
         </button>
-        <button id="btn-audio-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Activar/Silenciar Efectos de Sonido">
+        <button id="btn-fullscreen-header" class="btn-cyber-outline" style="border-color: #00f3ff; color: #00f3ff; font-weight: 800; background: rgba(0, 243, 255, 0.1);" title="Toggle Fullscreen (Key F or F11)" data-i18n="btn_fullscreen">
+          ⛶ FULLSCREEN [F]
+        </button>
+        <button id="btn-audio-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Toggle SFX">
           🔊 SFX: ON
         </button>
-        <button id="btn-music-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Activar/Silenciar Música Synthwave">
-          🎵 MÚSICA: ON
+        <button id="btn-music-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Toggle Music">
+          🎵 MUSIC: ON
         </button>
-        <button id="btn-open-leaderboard" class="btn-cyber-outline">
+        <button id="btn-open-leaderboard" class="btn-cyber-outline" data-i18n="btn_leaderboard">
           🏆 RANKING
         </button>
-        <button id="btn-open-help" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8;" title="Ver Manual Táctico y Arquitectura del Juego">
-          📖 AYUDA
+        <button id="btn-open-help" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8;" title="Tactical Manual & Architecture" data-i18n="btn_help">
+          📖 MANUAL
         </button>
-        <button id="btn-open-share" class="btn-cyber-outline" style="border-color: #ec4899; color: #f472b6; font-size: 0.75rem; font-weight: 700; background: rgba(236, 72, 153, 0.12);" title="Recomendar Space Assault en Redes Sociales">
-          📢 COMPARTIR
+        <button id="btn-open-share" class="btn-cyber-outline" style="border-color: #ec4899; color: #f472b6; font-size: 0.75rem; font-weight: 700; background: rgba(236, 72, 153, 0.12);" title="Share Space Assault" data-i18n="btn_share">
+          📢 SHARE
         </button>
-        <span id="server-status-badge" class="badge-status">
-          ONLINE [SQLITE LISTO]
+        <span id="server-status-badge" class="badge-status" data-i18n="server_online">
+          ONLINE [READY]
         </span>
       </div>
     </div>
