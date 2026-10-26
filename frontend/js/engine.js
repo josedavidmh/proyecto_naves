@@ -116,21 +116,19 @@ export class GameEngine {
     });
 
     this.canvas.addEventListener("mousedown", (e) => {
-      e.stopPropagation();
       if (e.button === 0) {
         this.keys["Space"] = true;
       }
     });
 
     this.canvas.addEventListener("mouseup", (e) => {
-      e.stopPropagation();
       if (e.button === 0) {
         this.keys["Space"] = false;
       }
     });
 
-    this.canvas.addEventListener("click", (e) => {
-      e.stopPropagation();
+    this.canvas.addEventListener("click", () => {
+      // Evento permitido para burbujear hacia el documento para mediación de eventos
     });
 
     // --- CONTROLES TÁCTILES ULTRA-FLUIDOS PARA MÓVILES Y TABLETS ---

@@ -24,8 +24,10 @@ export const ADS_CONFIG = {
   CLIENT_ID: "ca-pub-6261859133501243",
   SLOT_PRE_MISSION: "1668600475",
 
-  // Configuración Monetag (Zona Vignette Banner Limpia)
+  // Configuración Monetag (Zona Vignette Limpia + Zona MultiTag)
   MONETAG_ZONE_ID: "12128966",
+  MONETAG_ZONE_VIGNETTE: "12128966",
+  MONETAG_ZONE_MULTITAG: "302008",
 
   // Configuración GameDistribution (Game GUID asignado al crear el juego)
   GD_GAME_ID: "d49c747be6564b50b1e93571d8b0ad58",
@@ -40,17 +42,20 @@ export const ADS_CONFIG = {
   AD_TIMEOUT_MS: 4000,
 
   // --- POLÍTICAS DE EQUILIBRIO DINÁMICO DE ANUNCIOS ---
-  // Intervalo mínimo entre anuncios automáticos (75 segundos = 1 min 15 seg)
-  MIN_COOLDOWN_MS: 75000,
+  // Intervalo estándar entre anuncios automáticos (50 segundos)
+  MIN_COOLDOWN_MS: 50000,
 
-  // Duración mínima de la partida para considerar mostrar anuncio (18 segundos)
-  MIN_PLAYTIME_FOR_AD_MS: 18000,
+  // Intervalo ágil para transiciones de fase superada (25 segundos)
+  STAGE_VICTORY_COOLDOWN_MS: 25000,
+
+  // Duración mínima de la partida para considerar mostrar anuncio (15 segundos)
+  MIN_PLAYTIME_FOR_AD_MS: 15000,
 
   // Se evalúa desde la primera partida completada
   FIRST_GAME_FREE: false,
 
   // Límite ampliado de anuncios intersticiales por sesión
-  MAX_ADS_PER_SESSION: 20
+  MAX_ADS_PER_SESSION: 25
 };
 
 // Aliases para retrocompatibilidad con código existente
@@ -110,23 +115,27 @@ class UniversalAdsManager {
       return true;
     }
 
-    // Regla 1: Primera partida de cortesía (100% libre de anuncios)
+    // Regla 1: Primera partida de cortesía (100% libre de anuncios si está activo)
     if (ADS_CONFIG.FIRST_GAME_FREE && this.gamesPlayedCount === 0) {
       console.log("[AdsManager] 🛡️ Cortesía inicial: Primera partida libre de anuncios para fidelizar al jugador.");
       return false;
     }
 
-    // Regla 2: Muerte instantánea o partida muy corta (< 45s) -> jamás molestar
-    if (playtime > 0 && playtime < ADS_CONFIG.MIN_PLAYTIME_FOR_AD_MS) {
+    // Regla 2: Muerte instantánea o partida muy corta (< 15s) -> jamás molestar en game over
+    if (context === "game_over" && playtime > 0 && playtime < ADS_CONFIG.MIN_PLAYTIME_FOR_AD_MS) {
       console.log(`[AdsManager] 🛡️ Partida breve (${Math.round(playtime / 1000)}s). Anuncio omitido para no frustrar tras caída rápida.`);
       return false;
     }
 
-    // Regla 3: Enfriamiento obligatorio entre anuncios (mínimo 3.5 minutos)
+    // Regla 3: Enfriamiento entre anuncios (si es victoria de fase, cooldown ágil de 25s; si es derrota, 50s)
+    const requiredCooldown = context === "stage_victory" 
+      ? ADS_CONFIG.STAGE_VICTORY_COOLDOWN_MS 
+      : ADS_CONFIG.MIN_COOLDOWN_MS;
+
     const timeSinceLastAd = now - this.lastAdTimestamp;
-    if (this.lastAdTimestamp > 0 && timeSinceLastAd < ADS_CONFIG.MIN_COOLDOWN_MS) {
-      const waitRemainingSec = Math.round((ADS_CONFIG.MIN_COOLDOWN_MS - timeSinceLastAd) / 1000);
-      console.log(`[AdsManager] ⏳ Cooldown activo (${waitRemainingSec}s restantes). Anuncio automático omitido.`);
+    if (this.lastAdTimestamp > 0 && timeSinceLastAd < requiredCooldown) {
+      const waitRemainingSec = Math.round((requiredCooldown - timeSinceLastAd) / 1000);
+      console.log(`[AdsManager] ⏳ Cooldown activo (${waitRemainingSec}s restantes para ${context}). Anuncio automático omitido.`);
       return false;
     }
 
@@ -253,19 +262,15 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Monetag Programático (si se ha configurado función directa en la zona)
+      // 3. Monetag Programático (si se ha configurado función directa en la zona o MultiTag)
+      if (typeof window.show_302008 === "function") {
+        try { window.show_302008(); } catch (_) {}
+      }
+      if (typeof window.show_12128966 === "function") {
+        try { window.show_12128966(); } catch (_) {}
+      }
       if (typeof window.show_monetag_ad === "function") {
-        window.show_monetag_ad()
-          .then(() => {
-            clearTimeout(timer);
-            safeComplete();
-          })
-          .catch((err) => {
-            console.warn("[Monetag] Error al reproducir anuncio:", err);
-            clearTimeout(timer);
-            safeComplete();
-          });
-        return;
+        try { window.show_monetag_ad(); } catch (_) {}
       }
 
       // 4. Fallback Web Propia / Monetag: Disparar activamente el Vignette Banner
@@ -281,23 +286,42 @@ class UniversalAdsManager {
   }
 
   /**
-   * Invoca activamente el Vignette Banner de Monetag reinyectando el script si es necesario
+   * Invoca activamente el Vignette Banner de Monetag y verifica estado de AdBlock
    */
   _triggerMonetagVignette() {
     if (typeof document === "undefined") return;
     try {
-      console.log(`[AdsManager] 📺 Invocando Vignette Banner de Monetag (Zona: ${ADS_CONFIG.MONETAG_ZONE_ID})...`);
-      const existing = document.getElementById("monetag-vignette-dynamic");
-      if (existing) existing.remove();
+      console.log(`[AdsManager] 📺 Invocando anuncios Monetag (Zona Vignette: ${ADS_CONFIG.MONETAG_ZONE_ID}, MultiTag: ${ADS_CONFIG.MONETAG_ZONE_MULTITAG})...`);
+      
+      // Notificar a listeners de navegación
+      document.dispatchEvent(new CustomEvent("stage_completed", { detail: { timestamp: Date.now() } }));
 
-      const script = document.createElement("script");
-      script.id = "monetag-vignette-dynamic";
-      script.dataset.zone = ADS_CONFIG.MONETAG_ZONE_ID;
-      script.src = "https://n6wxm.com/vignette.min.js";
-      script.async = true;
-      document.body.appendChild(script);
+      // Verificar si hay bloqueador de publicidad activo para informar al usuario
+      this.checkAdBlocker();
     } catch (err) {
-      console.warn("[AdsManager] Error al inyectar Vignette de Monetag:", err);
+      console.warn("[AdsManager] Error al invocar Monetag:", err);
+    }
+  }
+
+  /**
+   * Comprueba si el navegador tiene extensiones de AdBlock o Brave Shields activas
+   */
+  checkAdBlocker() {
+    try {
+      const bait = document.createElement("div");
+      bait.className = "pub_300x250 pub_728x90 text-ad textAd text_ad text-ads ad-server";
+      bait.style.cssText = "width: 1px !important; height: 1px !important; position: absolute !important; left: -10000px !important;";
+      document.body.appendChild(bait);
+      const isBlocked = bait.offsetHeight === 0 || bait.clientHeight === 0 || !bait.offsetParent;
+      bait.remove();
+      if (isBlocked) {
+        console.warn("[AdsManager] ⚠️ Se detectó un bloqueador de anuncios (AdBlock / Brave Shields) activo en el navegador. Para ver y monetizar con Monetag, desactiva el escudo o agrega este sitio a la lista de permitidos.");
+      } else {
+        console.log("[AdsManager] ✅ Verificación de red: Sin bloqueador de anuncios detectado.");
+      }
+      return isBlocked;
+    } catch (_) {
+      return false;
     }
   }
 
