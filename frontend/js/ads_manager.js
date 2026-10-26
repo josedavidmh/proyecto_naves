@@ -28,7 +28,7 @@ export const ADS_CONFIG = {
   MONETAG_ZONE_ID: "12128966",
 
   // Configuración GameDistribution (Game GUID asignado al crear el juego)
-  GD_GAME_ID: "",
+  GD_GAME_ID: "d49c747be6564b50b1e93571d8b0ad58",
 
   // Configuración CrazyGames
   CRAZYGAMES_ENABLED: false,
