@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Assault v2.0 - Tactical Aerial & Space Combat</title>
+  
+  <!-- External ads completely removed for CrazyGames submission compliance -->
+
+  <!-- Estilos Sci-Fi Arcade 100% autosuficientes (Ruta relativa estática limpia sin query params) -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- CrazyGames HTML5 SDK v3 Oficial (Detección estática inmediata requerida por CrazyGames QA) -->
+  <script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
+  <script type="text/javascript">
+    window.addEventListener("DOMContentLoaded", async function() {
+      if (window.CrazyGames && window.CrazyGames.SDK) {
+        try {
+          await window.CrazyGames.SDK.init();
+          console.log("[CrazyGames SDK v3] Inicializado exitosamente.");
+        } catch (e) {
+          console.log("[CrazyGames SDK v3] Inicialización en entorno de prueba:", e);
+        }
+      }
+    });
+  </script>
+
+  <!-- GameDistribution SDK removed for CrazyGames build -->
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <!-- Header / Barra Superior -->
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-icon">🚀</div>
+        <div>
+          <h1 class="brand-title">SPACE ASSAULT <span class="game-version-badge">v2.0</span></h1>
+          <p class="brand-subtitle">TACTICAL AERIAL & SPACE ASSAULT</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-lang-toggle" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800; background: rgba(56, 189, 248, 0.12);" title="Switch Language / Cambiar Idioma">
+          🌐 <span id="current-lang-text">EN</span>
+        </button>
+        <button id="btn-fullscreen-header" class="btn-cyber-outline" style="border-color: #00f3ff; color: #00f3ff; font-weight: 800; background: rgba(0, 243, 255, 0.1);" title="Toggle Fullscreen (Key F or F11)" data-i18n="btn_fullscreen">
+          ⛶ FULLSCREEN [F]
+        </button>
+        <button id="btn-audio-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Toggle SFX">
+          🔊 SFX: ON
+        </button>
+        <button id="btn-music-toggle" class="btn-cyber-outline" style="font-size: 0.75rem;" title="Toggle Music">
+          🎵 MUSIC: ON
+        </button>
+        <button id="btn-open-leaderboard" class="btn-cyber-outline" data-i18n="btn_leaderboard">
+          🏆 RANKING
+        </button>
+        <button id="btn-open-help" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8;" title="Tactical Manual & Architecture" data-i18n="btn_help">
+          📖 MANUAL
+        </button>
+        <button id="btn-open-share" class="btn-cyber-outline" style="border-color: #ec4899; color: #f472b6; font-size: 0.75rem; font-weight: 700; background: rgba(236, 72, 153, 0.12);" title="Share Space Assault" data-i18n="btn_share">
+          📢 SHARE
+        </button>
+        <span id="server-status-badge" class="badge-status" data-i18n="server_online">
+          ONLINE [READY]
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Central -->
+  <main class="main-content">
+
+    <!-- Notificador de Alertas -->
+    <div id="alert-box" class="alert-box alert-error hidden">
+      <span style="font-size: 1.25rem;">⚠️</span>
+      <span id="alert-message">Mensaje del sistema</span>
+    </div>
+
+    <!-- VISTA 1: Formularios de Login y Registro -->
+    <section id="auth-container" class="cyber-card cyber-card-auth hidden">
+      <!-- Banner Titular Elegante Space Assault -->
+      <div style="text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(0, 243, 255, 0.15);">
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+          <span style="font-size: 1rem; color: #00f3ff;">⚡</span>
+          <span style="font-family: 'Orbitron', monospace; font-size: 0.72rem; letter-spacing: 3px; color: #00f3ff; text-transform: uppercase; font-weight: 700;">SISTEMA TÁCTICO ORBITAL</span>
+          <span style="font-size: 1rem; color: #00f3ff;">⚡</span>
+        </div>
+        <h2 style="font-family: 'Orbitron', monospace; font-size: 2.25rem; font-weight: 900; letter-spacing: 5px; text-transform: uppercase; background: linear-gradient(135deg, #ffffff 0%, #00f3ff 35%, #38bdf8 70%, #f43f5e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.55)); margin: 0.25rem 0;">
+          SPACE ASSAULT <span class="game-version-badge" style="font-size: 0.82rem; vertical-align: middle;">v1.7</span>
+        </h2>
+        <p style="font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; color: #94a3b8; letter-spacing: 2px; font-weight: 600;">
+          DEFENSA AEROESPACIAL · 60 FPS ARCADE
+        </p>
+      </div>
+
+      <div class="tabs-header">
+        <button id="tab-login" class="tab-btn active">Acceso de Piloto</button>
+        <button id="tab-register" class="tab-btn">Alistamiento de Piloto</button>
+      </div>
+
+      <!-- Formulario Login -->
+      <form id="form-login">
+        <div class="form-group">
+          <label class="form-label" for="login-identifier">Piloto o Correo Electrónico</label>
+          <input 
+            type="text" 
+            id="login-identifier" 
+            class="form-input" 
+            required 
+            placeholder="ej. Maverick o piloto@naves.com"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Código de Acceso (Contraseña)</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            class="form-input" 
+            required 
+            placeholder="••••••••"
+          >
+        </div>
+
+        <button type="submit" class="btn-cyber-primary" style="margin-top: 0.5rem;">
+          INICIAR MISIÓN (LOGIN)
+        </button>
+
+        <button type="button" id="btn-guest-play" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8; width: 100%; margin-top: 0.75rem; padding: 0.75rem; font-weight: 800; background: rgba(56, 189, 248, 0.08);" title="Jugar directamente como Cadete Invitado sin registro">
+          🚀 DESPEGUE RÁPIDO (JUGAR COMO INVITADO)
+        </button>
+        <p style="text-align: center; margin-top: 1.15rem; font-size: 0.82rem; color: #94a3b8;">
+          ¿No tienes piloto registrado? 
+          <a href="javascript:void(0)" id="link-goto-register" style="color: #00f3ff; text-decoration: underline; font-weight: 700; cursor: pointer;">
+            Alista tu nuevo piloto aquí
+          </a>
+        </p>
+        <p style="text-align: center; margin-top: 0.5rem; font-size: 0.78rem; color: #64748b;">
+          ¿Olvidaste tu código de acceso? 
+          <a href="javascript:void(0)" id="link-open-forgot-pwd" style="color: #38bdf8; text-decoration: underline; font-weight: 600; cursor: pointer;">
+            Restablecer contraseña de piloto
+          </a>
+        </p>
+      </form>
+
+      <!-- Formulario Registro -->
+      <form id="form-register" class="hidden">
+        <div class="form-group">
+          <label class="form-label" for="reg-username">Identificador de Combate (Piloto)</label>
+          <input 
+            type="text" 
+            id="reg-username" 
+            class="form-input" 
+            required 
+            minlength="3"
+            placeholder="ej. starshoulder o Maverick"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Frecuencia de Correo (Opcional)</label>
+          <input 
+            type="email" 
+            id="reg-email" 
+            class="form-input" 
+            placeholder="piloto@naves.space (opcional)"
+          >
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Contraseña</label>
+            <input 
+              type="password" 
+              id="reg-password" 
+              class="form-input" 
+              required 
+              minlength="6" 
+              placeholder="Mínimo 6 caracteres"
+            >
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-password-confirm">Confirmar</label>
+            <input 
+              type="password" 
+              id="reg-password-confirm" 
+              class="form-input" 
+              required 
+              minlength="6" 
+              placeholder="Repite contraseña"
+            >
+          </div>
+        </div>
+
+        <button type="submit" class="btn-cyber-secondary" style="margin-top: 0.5rem;">
+          COMPLETAR ALISTAMIENTO (CREAR PILOTO)
+        </button>
+        <p style="text-align: center; margin-top: 1.15rem; font-size: 0.82rem; color: #94a3b8;">
+          ¿Ya tienes piloto registrado? 
+          <a href="javascript:void(0)" id="link-goto-login" style="color: #ec4899; text-decoration: underline; font-weight: 700; cursor: pointer;">
+            Accede al hangar aquí
+          </a>
+        </p>
+      </form>
+    </section>
+
+    <!-- VISTA 2: Hangar / Lobby Autenticado -->
+    <section id="lobby-container" class="cyber-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span style="font-size: 0.72rem; color: #34d399; font-family: monospace; letter-spacing: 1px;">● SESIÓN ACTIVA EN BASE DE DATOS SQLITE</span>
+          <h2 style="font-family: 'Orbitron', monospace; font-size: 1.75rem; color: #ffffff; margin-top: 0.25rem; letter-spacing: 2px;">SPACE ASSAULT <span class="game-version-badge">v1.7</span> · HANGAR DE COMBATE</h2>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <button id="btn-open-change-password" class="btn-cyber-outline" style="border-color: #38bdf8; color: #38bdf8; font-size: 0.78rem;">
+            🔑 CAMBIAR CONTRASEÑA
+          </button>
+          <button id="btn-open-delete-account" class="btn-cyber-outline" style="border-color: #ef4444; color: #f87171; font-size: 0.78rem;">
+            ⚠️ DARSE DE BAJA
+          </button>
+          <button id="btn-logout" class="btn-cyber-danger">
+            CERRAR SESIÓN
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas de datos del piloto -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem;">
+          <p style="font-size: 0.7rem; color: #64748b; font-family: monospace;">INDICATIVO DE PILOTO</p>
+          <p id="pilot-name" style="font-size: 1.25rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #00f3ff; margin-top: 0.25rem;">CARGANDO...</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem;">
+          <p style="font-size: 0.7rem; color: #64748b; font-family: monospace;">FRECUENCIA DE ENLACE</p>
+          <p id="pilot-email" style="font-size: 0.95rem; font-family: monospace; color: #cbd5e1; margin-top: 0.5rem; overflow: hidden; text-overflow: ellipsis;">CARGANDO...</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem;">
+          <p style="font-size: 0.7rem; color: #64748b; font-family: monospace;">FECHA DE ALTA EN BD</p>
+          <p id="pilot-joined" style="font-size: 0.95rem; font-family: monospace; color: #34d399; margin-top: 0.5rem;">CARGANDO...</p>
+        </div>
+      </div>
+
+      <!-- Resumen Estadístico de Carrera Militar en SQLite -->
+      <div id="pilot-stats-panel" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.75rem;">
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">MISIONES</p>
+          <p id="stat-missions" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #38bdf8; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">RÉCORD PUNTOS</p>
+          <p id="stat-best-score" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #34d399; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">ENEMIGOS ABATIDOS</p>
+          <p id="stat-enemies" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #f43f5e; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">JEFES DESTRUIDOS</p>
+          <p id="stat-bosses" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #fbbf24; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">VICTORIAS FINALES</p>
+          <p id="stat-victories" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #d946ef; margin-top: 0.2rem;">0</p>
+        </div>
+        <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
+          <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">VIDAS DE COMBATE</p>
+          <p id="stat-lives" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #f43f5e; margin-top: 0.2rem;">5</p>
+        </div>
+      </div>
+
+      <!-- Banner Táctico de Reclutamiento / Compartir en Redes -->
+      <div class="cyber-share-lobby-banner" style="margin-bottom: 1.5rem; padding: 1.15rem 1.35rem; background: linear-gradient(135deg, rgba(236, 72, 153, 0.12), rgba(15, 23, 42, 0.85)); border: 1px solid rgba(236, 72, 153, 0.35); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 0.85rem; max-width: 600px;">
+          <div style="font-size: 1.85rem; min-width: 48px; height: 48px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            📡
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+              <h4 style="font-family: 'Orbitron', monospace; font-size: 0.95rem; color: #f472b6; font-weight: bold; letter-spacing: 1px; margin: 0;">
+                TRANSMISIÓN DE RECLUTAMIENTO · REDES SOCIALES
+              </h4>
+              <span id="lobby-share-badge" style="font-size: 0.65rem; font-family: monospace; font-weight: 800; padding: 2px 7px; border-radius: 4px; border: 1px solid #10b981; background: rgba(16, 185, 129, 0.2); color: #34d399;">
+                🎁 +5 VIDAS DISPONIBLES
+              </span>
+            </div>
+            <p style="font-size: 0.82rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: #cbd5e1; margin-top: 0.25rem;">
+              Recomienda Space Assault con tus amigos en <b>Facebook, Instagram, X, WhatsApp o Telegram</b> y recibe <b>+5 VIDAS cada 24 horas</b>.
+            </p>
+          </div>
+        </div>
+        <button id="btn-lobby-open-share" class="btn-cyber-primary" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border-color: #ec4899; padding: 0.65rem 1.25rem; font-size: 0.8rem; font-weight: 800; white-space: nowrap;">
+          📢 RECLUTAR Y GANAR VIDAS ➔
+        </button>
+      </div>
+
+      <!-- Banner de despliegue a la selección de nave -->
+      <div style="background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(7, 9, 19, 0.8)); border: 1px solid rgba(0, 243, 255, 0.4); border-radius: 12px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+        <div>
+          <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #38bdf8; font-weight: bold;">SELECCIÓN DE NAVE Y PREPARACIÓN DE MISIÓN</h3>
+          <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem;">Elige una de las 5 naves de combate con sus armas personalizadas y habilidades únicas para iniciar la campaña.</p>
+        </div>
+        <button id="btn-go-to-ships" class="btn-cyber-primary" style="width: auto; padding: 0.85rem 1.75rem;">
+          SELECCIONAR NAVE ➔
+        </button>
+      </div>
+
+      <!-- Verificación JWT -->
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem; font-size: 0.8rem; font-family: monospace; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="color: #94a3b8;">Verificación criptográfica de token JWT contra SQLite:</span>
+          <button id="btn-verify-session" class="btn-cyber-outline" style="padding: 0.35rem 0.85rem; font-size: 0.75rem;">
+            Verificar /api/auth/me
+          </button>
+        </div>
+        <div id="verify-result" style="color: #64748b;"></div>
+      </div>
+    </section>
+
+    <!-- VISTA 3: Selector de las 5 Naves -->
+    <section id="ship-select-container" class="cyber-card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="font-family: 'Orbitron', monospace; font-size: 1.5rem; color: #ffffff;">CATÁLOGO DE NAVES DE COMBATE</h2>
+          <p style="font-size: 0.75rem; color: #64748b; font-family: monospace; margin-top: 0.25rem;">SELECCIONA TU VEHÍCULO SEGÚN SU ARMA Y HABILIDAD ESPECIAL</p>
+        </div>
+        <button id="btn-back-to-lobby" class="btn-cyber-outline">
+          ⬅ VOLVER AL HANGAR
+        </button>
+      </div>
+
+      <div id="ships-grid" class="ships-grid">
+        <!-- Renderizado dinámico desde SQLite vía API -->
+      </div>
+    </section>
+
+    <!-- VISTA 4: Selector de las 5 Fases -->
+    <section id="stage-select-container" class="cyber-card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="font-family: 'Orbitron', monospace; font-size: 1.5rem; color: #ffffff;">MAPA DE OPERACIONES (5 FASES)</h2>
+          <p style="font-size: 0.75rem; color: #64748b; font-family: monospace; margin-top: 0.25rem;">DESBLOQUEO SECUENCIAL OBLIGATORIO: DERROTA AL JEFE PREVIO PARA AVANZAR</p>
+        </div>
+        <button id="btn-back-to-ships" class="btn-cyber-outline">
+          ⬅ CAMBIAR DE NAVE
+        </button>
+      </div>
+
+      <div id="stages-list" style="display: flex; flex-direction: column; gap: 1rem;">
+        <!-- Renderizado dinámico según progreso del piloto -->
+      </div>
+    </section>
+
+    <!-- VISTA 5: Puesto de Combate (Canvas 60 FPS + HUD) -->
+    <section id="battle-container" class="battle-wrapper hidden">
+      <!-- HUD Táctico Superior -->
+      <div class="hud-bar">
+        <!-- Salud, Nave y Fase Actual -->
+        <div style="min-width: 150px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.25rem; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.35rem; overflow: hidden;">
+              <span id="hud-ship-name" style="color: #38bdf8; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">NAVE</span>
+              <span id="hud-stage-badge" style="font-family: 'Orbitron', monospace; font-size: 0.62rem; color: #fbbf24; font-weight: 800; border: 1px solid rgba(251, 191, 36, 0.4); padding: 1px 5px; border-radius: 3px; background: rgba(251, 191, 36, 0.15); white-space: nowrap;">FASE 1</span>
+            </div>
+            <span id="hud-health-text" style="color: #34d399; font-weight: bold;">100 / 100</span>
+          </div>
+          <div style="width: 100%; height: 10px; background: #0f172a; border-radius: 9999px; overflow: hidden; border: 1px solid #334155;">
+            <div id="hud-health-bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, #10b981, #00f3ff); transition: width 0.15s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Vidas de Combate del Jugador (5 Vidas Base + Bonos) -->
+        <div style="text-align: center; min-width: 75px;">
+          <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">VIDAS</span>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.3rem;">
+            <span style="font-size: 0.95rem; filter: drop-shadow(0 0 6px rgba(244,63,94,0.7));">❤️</span>
+            <span id="hud-lives-count" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 900; color: #f43f5e; text-shadow: 0 0 8px rgba(244,63,94,0.6);">5</span>
+          </div>
+        </div>
+
+        <!-- Nivel de Armas y Escudo de Mejora -->
+        <div style="text-align: center;">
+          <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">POTENCIA ARMAS</span>
+          <span id="hud-weapon-level" style="font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: bold; color: #38bdf8;">NV 1</span>
+        </div>
+
+        <!-- Bombas Tácticas de Pantalla Completa -->
+        <div>
+          <button id="btn-hud-bomb" class="btn-cyber-outline" style="padding: 0.28rem 0.65rem; font-size: 0.72rem; border-color: #f43f5e; color: #fda4af; display: flex; align-items: center; gap: 0.35rem;" title="Lanzar Bomba Táctica (Tecla B)">
+            <span>💣 BOMBAS:</span>
+            <span id="hud-bombs-count" style="font-family: 'Orbitron', monospace; font-weight: bold; color: #ffffff;">1</span>
+            <span style="font-size: 0.62rem; color: #f43f5e; border: 1px solid rgba(244,63,94,0.4); padding: 1px 4px; border-radius: 3px;">[B]</span>
+          </button>
+        </div>
+
+        <!-- Habilidad Especial -->
+        <div style="text-align: center;">
+          <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">HABILIDAD ESPECIAL</span>
+          <span id="hud-special-status" style="font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: bold; color: #34d399;">LISTO [E / SHIFT]</span>
+        </div>
+
+        <!-- Puntuación y Progreso -->
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="text-align: right;">
+            <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">PUNTUACIÓN</span>
+            <span id="hud-score-text" style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: bold; color: #38bdf8;">0</span>
+          </div>
+
+          <div style="min-width: 125px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.62rem; font-family: monospace; color: #64748b;">
+              <span>MISIÓN</span>
+              <span id="hud-progress-pct" style="color: #38bdf8; font-weight: bold;">0%</span>
+            </div>
+            <div style="position: relative; width: 100%; height: 9px; background: #0f172a; border-radius: 9999px; overflow: hidden; border: 1px solid #334155; margin-top: 2px;">
+              <div id="hud-stage-progress" style="height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #d946ef); transition: width 0.2s ease;"></div>
+              <!-- Marca Sublíder al 40% -->
+              <div style="position: absolute; left: 40%; top: 0; bottom: 0; width: 2px; background: #fbbf24; z-index: 2;" title="Sublíder de Fase (40%)"></div>
+              <!-- Marca Boss Final al 85% -->
+              <div style="position: absolute; left: 85%; top: 0; bottom: 0; width: 2px; background: #ff0055; z-index: 2;" title="Jefe Final de Área (85%)"></div>
+            </div>
+          </div>
+
+          <button id="btn-battle-fullscreen" class="btn-cyber-outline" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;" title="Alternar Pantalla Completa (Tecla F)">
+            ⛶ PANTALLA COMPLETA [F]
+          </button>
+
+          <button id="btn-exit-battle" class="btn-cyber-danger" style="padding: 0.35rem 0.75rem;">
+            ABORTAR
+          </button>
+        </div>
+      </div>
+
+      <!-- Pantalla Canvas del Juego -->
+      <div class="canvas-container" style="position: relative;">
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+
+        <!-- Overlay de Controles Táctiles para Móviles / Tablets -->
+        <div id="mobile-touch-controls" class="mobile-touch-overlay">
+          <!-- Botón Táctil Bomba (Abajo Izquierda) -->
+          <button id="btn-touch-bomb" class="touch-action-btn touch-bomb-btn" type="button" title="Lanzar Bomba Táctica [B]">
+            <span class="touch-btn-icon">💣</span>
+            <span class="touch-btn-label">BOMBA</span>
+            <span id="touch-bomb-badge" class="touch-btn-badge">1</span>
+          </button>
+
+          <!-- Botón Táctil Habilidad Especial (Abajo Derecha) -->
+          <button id="btn-touch-special" class="touch-action-btn touch-special-btn" type="button" title="Activar Habilidad Especial [E]">
+            <span class="touch-btn-icon">⚡</span>
+            <span class="touch-btn-label">ESPECIAL</span>
+            <span id="touch-special-badge" class="touch-btn-badge">LISTO</span>
+          </button>
+
+          <!-- Botón Táctil Pausa (Arriba Derecha) -->
+          <button id="btn-touch-pause" class="touch-action-btn touch-pause-btn" type="button" title="Pausar Combate [P]">
+            <span class="touch-btn-icon">⏸️</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Consejos de Control Multiplataforma -->
+      <div style="margin-top: 0.75rem; display: flex; justify-content: center; gap: 1.25rem; font-size: 0.72rem; font-family: monospace; color: #64748b; flex-wrap: wrap; text-align: center;">
+        <span>🎮 <b>WASD / Flechas / Ratón:</b> Mover</span>
+        <span>🔥 <b>Espacio / Clic:</b> Disparar</span>
+        <span>⚡ <b>Tecla E:</b> Habilidad</span>
+        <span>💣 <b>Tecla B:</b> Bomba</span>
+        <span>📱 <b>Móvil / Touch:</b> Desliza el dedo para mover (Disparo automático al tocar)</span>
+        <span>⛶ <b>Tecla F:</b> Pantalla Completa</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: Leaderboard Mundial (SQLite) -->
+  <div id="leaderboard-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #ffffff;">🏆 TABLA DE CLASIFICACIÓN MUNDIAL</h3>
+        <button id="btn-close-leaderboard" style="background: none; border: none; color: #64748b; font-size: 1.25rem; cursor: pointer;">✕</button>
+      </div>
+      <div style="overflow-x: auto; max-height: 380px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; font-family: monospace;">
+          <thead>
+            <tr style="border-bottom: 1px solid #1e293b; color: #94a3b8;">
+              <th style="padding: 0.5rem;">POS</th>
+              <th style="padding: 0.5rem;">PILOTO</th>
+              <th style="padding: 0.5rem;">NAVE</th>
+              <th style="padding: 0.5rem;">PUNTUACIÓN</th>
+              <th style="padding: 0.5rem;">ALCANCE</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Manual Táctico y Arquitectura Desplegable -->
+  <div id="help-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width: 920px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; border-color: #38bdf8; box-shadow: 0 0 50px rgba(56, 189, 248, 0.35); padding: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 0.75rem; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.35rem;">📖</span>
+          <div>
+            <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #38bdf8; font-weight: bold; letter-spacing: 1px;">
+              MANUAL TÁCTICO & ARQUITECTURA
+            </h3>
+            <p style="font-size: 0.68rem; color: #94a3b8; font-family: monospace;">GUÍA OFICIAL DE PILOTAJE, ARMAS, NAVEGACIÓN Y TECNOLOGÍA</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <a href="./manual.html" target="_blank" class="btn-cyber-outline" style="font-size: 0.72rem; padding: 0.3rem 0.75rem; text-decoration: none; border-color: #38bdf8; color: #38bdf8;">
+            ⛶ ABRIR EN OTRA PESTAÑA
+          </a>
+          <button id="btn-close-help" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0 0.4rem;">✕</button>
+        </div>
+      </div>
+
+      <!-- Lector de Manual Integrado -->
+      <div style="flex: 1; min-height: 520px; border-radius: 8px; border: 1px solid #1e293b; overflow: hidden; background: #090d16;">
+        <iframe src="./manual.html" style="width: 100%; height: 100%; min-height: 520px; border: none; display: block;" title="Manual Táctico del Juego"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Cambio de Contraseña de Piloto -->
+  <div id="change-password-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width: 440px; border-color: #38bdf8; box-shadow: 0 0 45px rgba(56, 189, 248, 0.35);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #38bdf8; font-weight: bold; letter-spacing: 1px;">
+          🔑 CAMBIO DE CONTRASEÑA
+        </h3>
+        <button id="btn-close-change-pwd" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+
+      <form id="form-change-password" style="display: flex; flex-direction: column; gap: 1rem; text-align: left;">
+        <div id="change-pwd-alert" class="hidden" style="padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-family: monospace;"></div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.35rem;">
+            CONTRASEÑA ACTUAL
+          </label>
+          <input type="password" id="input-curr-pwd" required placeholder="Tu clave actual..." class="input-cyber" style="width: 100%; padding: 0.65rem; background: #0b1120; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace;">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.35rem;">
+            NUEVA CONTRASEÑA (MÍNIMO 6 CARACTERES)
+          </label>
+          <input type="password" id="input-new-pwd" required minlength="6" placeholder="Nueva clave segura..." class="input-cyber" style="width: 100%; padding: 0.65rem; background: #0b1120; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace;">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.35rem;">
+            CONFIRMAR NUEVA CONTRASEÑA
+          </label>
+          <input type="password" id="input-confirm-pwd" required minlength="6" placeholder="Repite la nueva clave..." class="input-cyber" style="width: 100%; padding: 0.65rem; background: #0b1120; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace;">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+          <button type="button" id="btn-cancel-change-pwd" class="btn-cyber-outline" style="flex: 1; padding: 0.7rem;">
+            CANCELAR
+          </button>
+          <button type="submit" id="btn-submit-change-pwd" class="btn-cyber-primary" style="flex: 1.5; padding: 0.7rem;">
+            ACTUALIZAR CLAVE ➔
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Darse de Baja Voluntaria de Piloto -->
+  <div id="delete-account-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width: 440px; border-color: #ef4444; box-shadow: 0 0 45px rgba(239, 68, 68, 0.35);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(239, 68, 68, 0.3); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #ef4444; font-weight: bold; letter-spacing: 1px;">
+          ⚠️ DARSE DE BAJA
+        </h3>
+        <button id="btn-close-delete-acc" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+
+      <p style="font-size: 0.8rem; font-family: monospace; color: #cbd5e1; margin-bottom: 1rem; line-height: 1.4;">
+        Esta acción es voluntaria y permanente. Se eliminará tu ficha de piloto, tus marcas en el ranking y tus fases desbloqueadas.
+      </p>
+
+      <form id="form-delete-account" style="display: flex; flex-direction: column; gap: 1rem; text-align: left;">
+        <div id="delete-acc-alert" class="hidden" style="padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-family: monospace;"></div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.35rem;">
+            CONFIRMA TU CONTRASEÑA ACTUAL
+          </label>
+          <input type="password" id="input-del-acc-pwd" required placeholder="Introduce tu clave..." class="input-cyber" style="width: 100%; padding: 0.65rem; background: #0b1120; border: 1px solid #ef4444; border-radius: 6px; color: #fff; font-family: monospace;">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+          <button type="button" id="btn-cancel-delete-acc" class="btn-cyber-outline" style="flex: 1; padding: 0.7rem;">
+            CANCELAR
+          </button>
+          <button type="submit" id="btn-submit-delete-acc" class="btn-cyber-danger" style="flex: 1.5; padding: 0.7rem;">
+            CONFIRMAR BAJA ✕
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Restablecer Contraseña Olvidada -->
+  <div id="forgot-password-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width: 440px; border-color: #38bdf8; box-shadow: 0 0 45px rgba(56, 189, 248, 0.35);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #38bdf8; font-weight: bold; letter-spacing: 1px;">
+          🔄 RECUPERACIÓN DE ACCESO
+        </h3>
+        <button id="btn-close-forgot-pwd" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+
+      <p style="font-size: 0.8rem; font-family: monospace; color: #cbd5e1; margin-bottom: 1rem; line-height: 1.4;">
+        Introduce tu indicativo de piloto y el correo registrado para asignar una nueva contraseña de combate.
+      </p>
+
+      <form id="form-forgot-password" style="display: flex; flex-direction: column; gap: 1rem; text-align: left;">
+        <div id="forgot-pwd-alert" class="hidden" style="padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-family: monospace;"></div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.35rem;">
+            INDICATIVO DE PILOTO
+          </label>
+          <input type="text" id="input-forgot-user" required placeholder="ej. starshoulder" class="input-cyber" style="width: 100%; padding: 0.65rem; background: #0b1120; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace;">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.35rem;">
+            CORREO REGISTRADO
+          </label>
+          <input type="email" id="input-forgot-email" required placeholder="ej. josedavidmontesino@gmail.com" class="input-cyber" style="width: 100%; padding: 0.65rem; background: #0b1120; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace;">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-family: monospace; color: #94a3b8; margin-bottom: 0.35rem;">
+            NUEVA CONTRASEÑA (MÍNIMO 6 CARACTERES)
+          </label>
+          <input type="password" id="input-forgot-newpwd" required minlength="6" placeholder="Introduce tu nueva contraseña..." class="input-cyber" style="width: 100%; padding: 0.65rem; background: #0b1120; border: 1px solid #334155; border-radius: 6px; color: #fff; font-family: monospace;">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+          <button type="button" id="btn-cancel-forgot-pwd" class="btn-cyber-outline" style="flex: 1; padding: 0.7rem;">
+            CANCELAR
+          </button>
+          <button type="submit" id="btn-submit-forgot-pwd" class="btn-cyber-primary" style="flex: 1.5; padding: 0.7rem;">
+            GUARDAR CLAVE ➔
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Game Over -->
+  <div id="game-over-modal" class="modal-overlay hidden">
+    <div class="modal-box modal-gameover">
+      <h3 style="font-family: 'Orbitron', monospace; font-size: 1.85rem; color: #ef4444; font-weight: 900; letter-spacing: 2px;">MISIÓN FALLIDA</h3>
+      <p style="font-size: 0.75rem; font-family: monospace; color: #f87171; margin-top: 0.25rem; font-weight: bold;">💀 VIDAS AGOTADAS · CAMPAÑA REINICIADA DESDE FASE 1</p>
+
+      <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; font-family: monospace; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Vidas Restantes:</span>
+          <span style="color: #ef4444; font-weight: bold;">0 ❤️ (Agotadas)</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Puntuación Final:</span>
+          <span id="go-score" style="color: #38bdf8; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Enemigos Destruidos:</span>
+          <span id="go-enemies" style="color: #ffffff; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Jefes Derrotados:</span>
+          <span id="go-bosses" style="color: #ec4899; font-weight: bold;">0</span>
+        </div>
+        <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.5rem;">⚠️ Al perder todas tus vidas, el progreso y armamento se reinician al principio.</p>
+      </div>
+
+      <!-- Opción Recompensada Voluntaria: Revivir con escudo al 100% -->
+      <a id="btn-revive-rewarded" href="#revive-lives" class="btn-cyber-primary" style="background: linear-gradient(135deg, #059669, #10b981); border-color: #34d399; color: #ffffff; width: 100%; margin-bottom: 0.75rem; padding: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 0.88rem; font-weight: 900; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); cursor: pointer; text-decoration: none;" title="Ver anuncio voluntario para revivir con escudo al 100% y +2 vidas de rescate">
+        <span>⚡</span> <span>REVIVIR NAVE CON ESCUDO AL 100% (+2 VIDAS)</span>
+      </a>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="btn-restart-gameover" class="btn-cyber-primary" style="flex: 1; padding: 0.75rem;">
+          🔄 REINICIAR DESDE FASE 1
+        </button>
+        <button id="btn-hangar-gameover" class="btn-cyber-outline" style="flex: 1; padding: 0.75rem;">
+          HANGAR
+        </button>
+      </div>
+
+      <button id="btn-share-gameover" class="btn-cyber-outline" style="border-color: #00f3ff; color: #00f3ff; width: 100%; margin-top: 0.75rem; padding: 0.65rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 800; background: rgba(0, 243, 255, 0.08);" title="Compartir puntuación y desafiar amigos en redes">
+        <span>📢</span> COMPARTIR MI RÉCORD Y DESAFIAR AMIGOS
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Victoria de Fase -->
+  <div id="victory-modal" class="modal-overlay hidden">
+    <div class="modal-box modal-victory" style="max-width: 580px;">
+      <h3 id="vic-title" style="font-family: 'Orbitron', monospace; font-size: 1.85rem; color: #10b981; font-weight: 900; letter-spacing: 2px;">¡VICTORIA EN COMBATE!</h3>
+      <p id="vic-stage" style="font-size: 0.75rem; font-family: monospace; color: #38bdf8; margin-top: 0.25rem; font-weight: bold;">FASE SUPERADA</p>
+
+      <!-- Epílogo de Campaña (Solo visible al superar Fase 5) -->
+      <div id="vic-epilogue-box" class="hidden" style="margin: 1.25rem 0; padding: 1.2rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(15, 23, 42, 0.85)); border: 1px solid #10b981; border-radius: 10px; text-align: left;">
+        <span style="font-size: 0.72rem; font-family: 'Orbitron', monospace; color: #fbbf24; font-weight: bold; letter-spacing: 1px;">
+          🎖️ TRANSMISIÓN DEL ALTO MANDO DE LA FEDERACIÓN:
+        </span>
+        <p style="font-size: 0.88rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: #f8fafc; line-height: 1.5; margin-top: 0.5rem;">
+          ¡Comandante, hazaña legendaria! Con la aniquilación del Super-Dreadnought 'Goliath Titán' y la caída del General Vektor, la red satelital de subyugación ha colapsado. Los cielos de América y el planeta entero están libres. Tu nombre queda inscrito como el As Definitivo en los anales de la historia.
+        </p>
+        <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem; color: #34d399; font-size: 0.75rem; font-family: monospace; font-weight: bold;">
+          <span>⭐ CONDECORACIÓN OTORGADA: CRUZ SUPREMA DE VICTORIA</span>
+        </div>
+      </div>
+
+      <div style="margin: 1.25rem 0; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid #1e293b; border-radius: 10px; font-family: monospace; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Puntos de Batalla:</span>
+          <span id="vic-score" style="color: #34d399; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Bajas Hostiles:</span>
+          <span id="vic-enemies" style="color: #ffffff; font-weight: bold;">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: #94a3b8;">Jefes Neutralizados:</span>
+          <span id="vic-bosses" style="color: #ec4899; font-weight: bold;">0</span>
+        </div>
+        <div id="vic-lives-bonus-box" style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.5rem 0.75rem; border-radius: 6px; margin-top: 0.25rem;">
+          <span style="color: #34d399; font-weight: bold; font-size: 0.8rem;">🎁 Recompensa de Área:</span>
+          <span id="vic-lives-reward-text" style="color: #34d399; font-weight: 800; font-family: monospace;">+1 VIDA EXTRA CONCEDIDA</span>
+        </div>
+        <p id="vic-unlocked-msg" style="font-size: 0.7rem; color: #34d399; margin-top: 0.5rem;">✔ Siguiente fase desbloqueada en SQLite.</p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <a id="btn-next-victory" href="#next-stage" class="btn-cyber-primary" style="flex: 1; padding: 0.75rem; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          SIGUIENTE FASE ➔
+        </a>
+        <button id="btn-hangar-victory" class="btn-cyber-outline" style="flex: 1; padding: 0.75rem;">
+          HANGAR
+        </button>
+      </div>
+
+      <button id="btn-share-victory" class="btn-cyber-outline" style="border-color: #10b981; color: #34d399; width: 100%; margin-top: 0.75rem; padding: 0.65rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 800; background: rgba(16, 185, 129, 0.1);" title="Compartir victoria en redes sociales">
+        <span>🏆</span> COMPARTIR MI VICTORIA EN REDES SOCIALES
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Centro de Comunicaciones Tácticas // Recomendar en Redes Sociales -->
+  <div id="share-modal" class="modal-overlay hidden">
+    <div class="modal-box modal-box-share">
+      <!-- Encabezado del Modal -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(236, 72, 153, 0.35); padding-bottom: 0.85rem; margin-bottom: 1rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.25rem;">📡</span>
+            <h3 style="font-family: 'Orbitron', monospace; font-size: 1.15rem; color: #f472b6; font-weight: 900; letter-spacing: 1px; margin: 0;">
+              RECLUTAMIENTO & DIFUSIÓN
+            </h3>
+          </div>
+          <span id="share-context-badge" style="display: inline-block; font-size: 0.65rem; font-family: monospace; font-weight: bold; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(0, 243, 255, 0.4); background: rgba(0, 243, 255, 0.12); color: #00f3ff; margin-top: 0.4rem; letter-spacing: 0.5px;">
+            📡 RECLUTAMIENTO DE PILOTOS DE LA FEDERACIÓN
+          </span>
+        </div>
+        <button id="btn-close-share" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; padding: 0.2rem 0.5rem; line-height: 1;" title="Cerrar ventana">✕</button>
+      </div>
+
+      <!-- Alerta de Bono Táctico (Gamificación) -->
+      <div id="share-bonus-alert" class="hidden" style="margin-bottom: 1rem; padding: 0.65rem 0.85rem; border-radius: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.5); color: #34d399; font-size: 0.78rem; font-family: monospace; font-weight: bold; text-align: center;">
+        🎖️ ¡TRANSMISIÓN ENVIADA! Moral de combate y condecoración otorgada.
+      </div>
+
+      <!-- Previsualización / Edición del Mensaje -->
+      <div class="share-message-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.68rem; font-family: monospace; color: #38bdf8;">
+          <span>TRANSMISIÓN DE COMBATE (EDITABLE)</span>
+          <span style="color: #64748b;">PERSONALIZABLE</span>
+        </div>
+        <textarea id="share-custom-text" class="share-textarea" placeholder="Escribe tu mensaje para redes..."></textarea>
+      </div>
+
+      <!-- Grid de Redes Sociales -->
+      <div class="social-share-grid">
+        <!-- X / Twitter -->
+        <button id="btn-share-x" class="social-btn social-btn-x" title="Compartir en X / Twitter">
+          <span style="font-size: 1.1rem; font-weight: 900;">𝕏</span>
+          <span>POSTEAR</span>
+        </button>
+
+        <!-- WhatsApp -->
+        <button id="btn-share-whatsapp" class="social-btn social-btn-wa" title="Enviar por WhatsApp">
+          <span style="font-size: 1.1rem;">💬</span>
+          <span>WHATSAPP</span>
+        </button>
+
+        <!-- Facebook -->
+        <button id="btn-share-facebook" class="social-btn social-btn-fb" title="Compartir en Facebook">
+          <span style="font-size: 1.1rem; font-weight: 900;">f</span>
+          <span>FACEBOOK</span>
+        </button>
+
+        <!-- Telegram -->
+        <button id="btn-share-telegram" class="social-btn social-btn-tg" title="Compartir en Telegram">
+          <span style="font-size: 1.1rem;">✈️</span>
+          <span>TELEGRAM</span>
+        </button>
+
+        <!-- Instagram / Threads (Copiar Ficha) -->
+        <button id="btn-share-instagram" class="social-btn social-btn-ig" title="Copiar Ficha Táctica para Historias de Instagram o Threads" style="grid-column: span 2;">
+          <span style="font-size: 1.1rem;">📸</span>
+          <span>HISTORIA INSTAGRAM / THREADS</span>
+        </button>
+
+        <!-- Botón Compartir Nativo (Móvil / Web Share) -->
+        <button id="btn-share-native" class="social-btn social-btn-native" style="display: none;" title="Abrir menú de compartir de tu móvil">
+          <span style="font-size: 1.15rem;">📱</span>
+          <span>COMPARTIR DESDE TU DISPOSITIVO (TODAS LAS APPS)</span>
+        </button>
+      </div>
+
+      <!-- Copia Rápida de Enlace Directo -->
+      <div style="margin-top: 0.5rem;">
+        <span style="display: block; font-size: 0.68rem; font-family: monospace; color: #64748b; margin-bottom: 0.35rem; text-transform: uppercase;">
+          ENLACE DIRECTO AL JUEGO
+        </span>
+        <div class="share-copy-bar">
+          <input type="text" id="share-url-input" class="share-copy-input" readonly value="https://space-assault.onrender.com">
+          <button id="btn-copy-share-url" class="btn-cyber-outline" style="padding: 0.45rem 1rem; font-size: 0.75rem; font-weight: bold; white-space: nowrap; border-color: #00f3ff; color: #00f3ff;">
+            📋 COPIAR ENLACE
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: Briefing Táctico de Misión y Lore Coherente -->
+  <div id="briefing-modal" class="modal-overlay hidden">
+    <div class="modal-box modal-box-briefing" style="border-color: #00f3ff; box-shadow: 0 0 45px rgba(0, 243, 255, 0.35); max-width: 760px; max-height: 90vh; display: flex; flex-direction: column; padding: 1.25rem 1.5rem; overflow: hidden;">
+      
+      <!-- Encabezado Fijo Superior (No se pierde al scrollear) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 243, 255, 0.3); padding-bottom: 0.65rem; margin-bottom: 0.85rem; flex-shrink: 0;">
+        <div>
+          <span id="briefing-classification" style="font-size: 0.7rem; font-family: monospace; color: #34d399; letter-spacing: 1px; font-weight: bold;">
+            CLASIFICACIÓN MILITAR DE COMBATE
+          </span>
+          <h3 id="briefing-operation-title" style="font-family: 'Orbitron', monospace; font-size: 1.35rem; color: #00f3ff; font-weight: bold; margin-top: 0.2rem;">
+            OPERACIÓN MILITAR
+          </h3>
+        </div>
+        <span id="briefing-threat-level" style="padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.72rem; font-family: monospace; font-weight: bold; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #f87171;">
+          AMENAZA: ALTA
+        </span>
+      </div>
+
+      <!-- Contenedor Desplazable Central (Scrollable Body) con Scrollbar Cyber -->
+      <div class="modal-scrollable-body" style="overflow-y: auto; padding-right: 0.5rem; flex: 1; min-height: 0;">
+
+        <!-- Lore y Justificación Táctica -->
+        <div style="background: rgba(0,0,0,0.6); padding: 1.15rem; border-radius: 12px; border: 1px solid #1e293b; margin-bottom: 1rem;">
+          <span style="font-size: 0.72rem; font-family: 'Orbitron', monospace; color: #38bdf8; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 0.35rem;">
+            📜 CONTEXTO ESTRATÉGICO Y LORE DE CAMPAÑA:
+          </span>
+          <p id="briefing-lore-text" style="font-size: 0.92rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: #f1f5f9; line-height: 1.55;">
+            Cargando justificación táctica...
+          </p>
+        </div>
+
+        <!-- Objetivo Principal -->
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.75rem 1.15rem; border-radius: 10px; margin-bottom: 1rem;">
+          <span style="font-size: 0.7rem; font-family: monospace; color: #34d399; text-transform: uppercase; font-weight: bold;">
+            🎯 OBJETIVO PRIMARIO:
+          </span>
+          <p id="briefing-objective" style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #ffffff; margin-top: 0.2rem;">
+            Objetivo de la misión...
+          </p>
+        </div>
+
+        <!-- Inteligencia Visual sobre Subjefe y Jefe de Fase -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1rem; font-family: monospace; font-size: 0.75rem;">
+          <!-- Tarjeta Sublíder con Holograma -->
+          <div style="background: rgba(8, 20, 38, 0.75); border: 1px solid rgba(56, 189, 248, 0.35); padding: 0.75rem; border-radius: 8px; display: flex; gap: 0.75rem; align-items: center;">
+            <div style="text-align: center; min-width: 90px;">
+              <canvas id="briefing-subboss-canvas" width="90" height="75" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(2, 6, 23, 0.85) 80%); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 6px;"></canvas>
+              <span style="display: block; font-size: 0.6rem; color: #38bdf8; font-family: 'Orbitron', monospace; font-weight: bold; margin-top: 3px;">INTERCEPCIÓN 40%</span>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <span style="color: #38bdf8; font-weight: bold; font-family: 'Orbitron', monospace; font-size: 0.7rem; display: block; margin-bottom: 0.15rem;">SUBLÍDER DETECTADO</span>
+              <h4 id="briefing-subboss-name" style="font-family: 'Orbitron', monospace; font-size: 0.82rem; color: #f1f5f9; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">AURORA-9</h4>
+              <p id="briefing-subboss-intel" style="color: #cbd5e1; font-family: sans-serif; font-size: 0.74rem; line-height: 1.35;">Intel...</p>
+            </div>
+          </div>
+
+          <!-- Tarjeta Jefe Final con Holograma -->
+          <div style="background: rgba(38, 8, 20, 0.75); border: 1px solid rgba(255, 0, 85, 0.35); padding: 0.75rem; border-radius: 8px; display: flex; gap: 0.75rem; align-items: center;">
+            <div style="text-align: center; min-width: 90px;">
+              <canvas id="briefing-finalboss-canvas" width="90" height="75" style="background: radial-gradient(circle, rgba(255, 0, 85, 0.15) 0%, rgba(2, 6, 23, 0.85) 80%); border: 1px solid rgba(255, 0, 85, 0.35); border-radius: 6px;"></canvas>
+              <span style="display: block; font-size: 0.6rem; color: #ff0055; font-family: 'Orbitron', monospace; font-weight: bold; margin-top: 3px;">OBJETIVO 85%</span>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <span style="color: #ff0055; font-weight: bold; font-family: 'Orbitron', monospace; font-size: 0.7rem; display: block; margin-bottom: 0.15rem;">JEFE SUPREMO DE ÁREA</span>
+              <h4 id="briefing-finalboss-name" style="font-family: 'Orbitron', monospace; font-size: 0.82rem; color: #f1f5f9; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GOLIATH APEX</h4>
+              <p id="briefing-finalboss-intel" style="color: #cbd5e1; font-family: sans-serif; font-size: 0.74rem; line-height: 1.35;">Intel...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inteligencia sobre Escuadras Enemigas Progresivas -->
+        <div id="briefing-squadron-box" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 0.85rem; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-family: 'Orbitron', monospace; font-size: 0.72rem; color: #38bdf8; font-weight: bold; letter-spacing: 0.5px;">
+              👾 ESCUADRAS HOSTILES EN ESTA FASE (<span id="briefing-squadron-count">1</span> TIPOS ACTIVOS)
+            </span>
+            <span id="briefing-squadron-badge" style="font-size: 0.65rem; font-family: monospace; color: #fbbf24; background: rgba(245, 158, 11, 0.15); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.3);">
+              AMENAZA PROGRESIVA
+            </span>
+          </div>
+          <div id="briefing-squadron-list" style="display: flex; flex-direction: column; gap: 0.45rem; max-height: none; overflow: visible; padding-right: 4px;">
+            <!-- Generado dinámicamente según la fase -->
+          </div>
+        </div>
+
+        <!-- ESPACIO DE PUBLICIDAD GOOGLE ADSENSE (INICIO DE MISIÓN) -->
+        <div id="ad-briefing-slot" class="ad-slot-box" style="margin-bottom: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-family: monospace; font-size: 0.65rem; color: #64748b;">
+            <span>📢 PUBLICIDAD PATROCINADA · GOOGLE ADSENSE</span>
+            <span id="ad-launch-countdown" style="color: #38bdf8; display: none; font-weight: bold;">🚀 DESPEGUE EN <b id="ad-seconds-left">3</b>s...</span>
+          </div>
+
+          <!-- Contenedor Oficial Google AdSense -->
+          <div class="ad-content-wrapper" style="min-height: 90px; background: rgba(15, 23, 42, 0.7); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4px;">
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:100%;max-width:680px;height:90px;"
+                 data-ad-client="ca-pub-6261859133501243"
+                 data-ad-slot="1668600475"
+                 data-ad-format="horizontal"
+                 data-adtest="on"
+                 data-full-width-responsive="true"></ins>
+
+            <!-- Banner de previsualización mientras se configura el Client ID real -->
+            <div class="ad-preview-banner" style="text-align: center; padding: 0.75rem;">
+              <p style="font-family: 'Orbitron', monospace; font-size: 0.75rem; color: #38bdf8; font-weight: bold; letter-spacing: 1px;">
+                [ESPACIO RESERVADO PARA ANUNCIO DE GOOGLE ADSENSE (728×90 / RESPONSIVO)]
+              </p>
+              <p style="font-size: 0.7rem; color: #94a3b8; font-family: 'Rajdhani', sans-serif; margin-top: 0.2rem;">
+                Para monetizar tus misiones: ingresa tu <code>ca-pub-XXXXXXXXXXXXXXXX</code> en <code>frontend/js/ads_config.js</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Barra de Acción Inferior Fija (SIEMPRE VISIBLE sin importar zoom o resolución) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 0.85rem; border-top: 1px solid rgba(0, 243, 255, 0.25); margin-top: 0.65rem; flex-shrink: 0; background: #0c1122;">
+        <button id="btn-briefing-cancel" class="btn-cyber-outline" style="font-size: 0.8rem; padding: 0.75rem 1.5rem;">
+          VOLVER AL MAPA
+        </button>
+        <button id="btn-briefing-launch" class="btn-cyber-primary" style="width: auto; padding: 0.85rem 2.25rem; font-size: 0.9rem; font-weight: 800;">
+          🚀 CONFIRMAR Y DESPEGAR
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: Cinemática de Intro con General Vektor -->
+  <div id="intro-cinema-modal" class="modal-overlay hidden">
+    <div class="modal-box" style="border-color: #ff0055; box-shadow: 0 0 45px rgba(255, 0, 85, 0.4); max-width: 680px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 0, 85, 0.3); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.25rem;">📡</span>
+          <span style="font-family: 'Orbitron', monospace; font-size: 0.85rem; color: #ff0055; font-weight: bold; letter-spacing: 1px;">INTERCEPCIÓN HOLOGRAMÁTICA DE EMERGENCIA</span>
+        </div>
+        <span id="intro-counter" style="font-family: monospace; font-size: 0.75rem; color: #94a3b8;">1 / 5</span>
+      </div>
+
+      <div style="display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.5rem; background: rgba(0,0,0,0.6); padding: 1.25rem; border-radius: 12px; border: 1px solid #1e293b;">
+        <div id="intro-avatar" style="font-size: 2.75rem; min-width: 65px; height: 65px; border-radius: 12px; background: rgba(255, 0, 85, 0.15); border: 1px solid rgba(255, 0, 85, 0.4); display: flex; align-items: center; justify-content: center;">
+          👾
+        </div>
+        <div style="flex: 1;">
+          <h4 id="intro-speaker-name" style="font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: bold; color: #ff0055; letter-spacing: 1px;">
+            GENERAL VEKTOR
+          </h4>
+          <p id="intro-speaker-role" style="font-size: 0.7rem; font-family: monospace; color: #94a3b8; text-transform: uppercase; margin-bottom: 0.6rem;">
+            SUPREMO SEÑOR DE LA GUERRA (BOSS FINAL)
+          </p>
+          <p id="intro-dialogue-text" style="font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: #f1f5f9; line-height: 1.5;">
+            Cargando transmisión...
+          </p>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <button id="btn-intro-skip" class="btn-cyber-outline" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
+          SALTAR INTRO
+        </button>
+        <button id="btn-intro-next" class="btn-cyber-primary" style="width: auto; padding: 0.75rem 2rem; font-size: 0.85rem;">
+          CONTINUAR ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div style="margin-bottom: 0.5rem; display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; font-size: 0.75rem; font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.5px;">
+      <a href="manual.html" style="color: #38bdf8; text-decoration: none;" title="Manual Táctico y Arquitectura">📖 MANUAL</a>
+      <span style="color: #334155;">•</span>
+      <a href="acerca.html" style="color: #94a3b8; text-decoration: none;" title="Sobre el Proyecto">🚀 ACERCA DE</a>
+      <span style="color: #334155;">•</span>
+      <a href="privacidad.html" style="color: #94a3b8; text-decoration: none;" title="Política de Privacidad">🛡️ PRIVACIDAD</a>
+      <span style="color: #334155;">•</span>
+      <a href="terminos.html" style="color: #94a3b8; text-decoration: none;" title="Términos de Servicio">⚖️ TÉRMINOS</a>
+    </div>
+    <div style="font-size: 0.7rem; color: #64748b;">
+      SPACE ASSAULT v2.0 • ARQUITECTURA DE SOFTWARE PRO • CERO MOCKS • 60 FPS CANVAS
+    </div>
+  </footer>
+
+  <!-- Botón Flotante Permanente de Pantalla Completa / Expandir -->
+  <button id="btn-floating-fullscreen" class="floating-fullscreen-btn" title="Alternar Pantalla Completa (Tecla F o F11)">
+    <span>⛶</span> EXPANDIR JUEGO [F]
+  </button>
+
+  <!-- Single Bundled Standalone Script for CrazyGames -->
+  <script defer src="game.js"></script>
+</body>
+</html>
