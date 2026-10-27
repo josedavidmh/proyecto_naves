@@ -313,14 +313,14 @@ class UniversalAdsManager {
       this._triggerMonetagVignette();
 
       clearTimeout(timer);
-      let badge = "🛸 INTELIGENCIA TÁCTICA · MONETAG";
+      let badge = "🛸 INTELIGENCIA TÁCTICA · COORDENADAS";
       let title = "ANALIZANDO SECTOR DE COMBATE";
       let subtitle = "Coordenadas fijadas. Escaneando frecuencias de combate...";
 
       if (ctx === "ship_selected") {
-        badge = "🛸 TELEMETRÍA DE HANGAR · MONETAG";
+        badge = "🛸 TELEMETRÍA DE HANGAR · NAVE CALIBRADA";
         title = "CONFIGURANDO SISTEMAS DE VUELO";
-        subtitle = "Nave seleccionada. Sincronizando con satélites tácticos...";
+        subtitle = "Nave seleccionada. Sincronizando enlace de telemetría...";
       } else if (ctx === "stage_victory") {
         badge = "🛸 TRANSMISIÓN PATROCINADA · SIGUIENTE FASE";
         title = "HIPERSALTO A LA SIGUIENTE FASE";
@@ -485,49 +485,51 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Web Propia (Monetag): Invocar anuncio recompensado oficial
+      // 3. Web Propia: Invocar anuncio recompensado (Video) con fallback inmediato a anuncio normal
+      const showNormalFallbackAd = () => {
+        console.log("[AdsManager] Video no disponible o no desplegado. Mostrando anuncio normal de respaldo...");
+        this._triggerMonetagVignette();
+
+        // Desplegar anuncio normal de transición con duración estándar
+        this._showTacticalAdModal({
+          badge: "⚡ PROTOCOLO DE RESCATE · SUMINISTRO TÁCTICO",
+          title: "SUMINISTRO DE EMERGENCIA (+2 VIDAS)",
+          subtitle: "Transmisión táctica de emergencia en curso...",
+          durationSeconds: 4,
+          canSkipAfter: 2,
+          onFinished: () => {
+            console.log("[AdsManager] Anuncio normal completado. Otorgando +2 vidas de rescate.");
+            if (typeof onRewarded === "function") onRewarded();
+          }
+        });
+      };
+
       if (typeof window.show_12128966 === "function") {
         try {
           const res = window.show_12128966({ type: "inApp" });
           if (res && typeof res.then === "function") {
             res.then(() => {
-              console.log("[Monetag] Anuncio recompensado completado con éxito.");
+              console.log("[AdsManager] Video completado con éxito.");
               if (typeof onRewarded === "function") onRewarded();
             }).catch((err) => {
-              console.warn("[Monetag] Anuncio recompensado cerrado o no disponible:", err);
-              // Fallback de cortesía para asegurar que el jugador reciba sus 2 vidas
-              this._showTacticalAdModal({
-                badge: "⚡ PROTOCOLO DE RESCATE · MONETAG",
-                title: "SUMINISTRO DE EMERGENCIA (+2 VIDAS)",
-                subtitle: "Sincronizando rescate de emergencia...",
-                durationSeconds: 4,
-                canSkipAfter: 4,
-                onFinished: () => {
-                  if (typeof onRewarded === "function") onRewarded();
-                }
-              });
+              console.warn("[AdsManager] Video no desplegado o cerrado. Mostrando anuncio normal:", err);
+              // Si no despliega el video, despliega un anuncio normal:
+              showNormalFallbackAd();
             });
+            return;
+          } else {
+            showNormalFallbackAd();
             return;
           }
         } catch (err) {
-          console.warn("[Monetag] Error al invocar show_12128966:", err);
+          console.warn("[AdsManager] Error al invocar video:", err);
+          showNormalFallbackAd();
+          return;
         }
       }
 
-      this._triggerMonetagVignette();
-
-      // Modal Táctico de transmisión recompensada Monetag
-      this._showTacticalAdModal({
-        badge: "⚡ PROTOCOLO DE RESCATE · MONETAG",
-        title: "SUMINISTRO DE EMERGENCIA (+2 VIDAS)",
-        subtitle: "Visualiza la transmisión patrocinada para reparar tu nave...",
-        durationSeconds: 5,
-        canSkipAfter: 5, // Debe ver los 5s para desbloquear las 2 vidas
-        onFinished: () => {
-          console.log("[AdsManager] Recompensa concedida: Revivir de rescate + escudo 100%.");
-          if (typeof onRewarded === "function") onRewarded();
-        }
-      });
+      // Si no hay SDK de video disponible en el navegador, desplegar directamente el anuncio normal:
+      showNormalFallbackAd();
 
     } catch (e) {
       console.warn("[AdsManager] Fallo en anuncio recompensado:", e);
