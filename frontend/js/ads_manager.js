@@ -185,7 +185,8 @@ class UniversalAdsManager {
   detectPlatform() {
     if (typeof window === "undefined") return;
 
-    if (window.CrazyGames && window.CrazyGames.SDK) {
+    const isCrazyGames = window.location.hostname.includes("crazygames") || window.location.search.includes("cg=1");
+    if (isCrazyGames && window.CrazyGames && window.CrazyGames.SDK) {
       this.currentPlatform = "CRAZYGAMES";
       this.crazyGamesSDK = window.CrazyGames.SDK;
       console.log("[AdsManager] Entorno detectado: CrazyGames SDK");
