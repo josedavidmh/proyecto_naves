@@ -485,13 +485,44 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Web Propia (Render / Standalone): Anuncio Recompensado para Revivir con +2 Vidas
+      // 3. Web Propia (Monetag): Invocar anuncio recompensado oficial
+      if (typeof window.show_12128966 === "function") {
+        try {
+          const res = window.show_12128966({ type: "inApp" });
+          if (res && typeof res.then === "function") {
+            res.then(() => {
+              console.log("[Monetag] Anuncio recompensado completado con éxito.");
+              if (typeof onRewarded === "function") onRewarded();
+            }).catch((err) => {
+              console.warn("[Monetag] Anuncio recompensado cerrado o no disponible:", err);
+              // Fallback de cortesía para asegurar que el jugador reciba sus 2 vidas
+              this._showTacticalAdModal({
+                badge: "⚡ PROTOCOLO DE RESCATE · MONETAG",
+                title: "SUMINISTRO DE EMERGENCIA (+2 VIDAS)",
+                subtitle: "Sincronizando rescate de emergencia...",
+                durationSeconds: 4,
+                canSkipAfter: 4,
+                onFinished: () => {
+                  if (typeof onRewarded === "function") onRewarded();
+                }
+              });
+            });
+            return;
+          }
+        } catch (err) {
+          console.warn("[Monetag] Error al invocar show_12128966:", err);
+        }
+      }
+
+      this._triggerMonetagVignette();
+
+      // Modal Táctico de transmisión recompensada Monetag
       this._showTacticalAdModal({
-        badge: "⚡ PROTOCOLO DE RESCATE · ANUNCIO RECOMPENSADO",
+        badge: "⚡ PROTOCOLO DE RESCATE · MONETAG",
         title: "SUMINISTRO DE EMERGENCIA (+2 VIDAS)",
         subtitle: "Visualiza la transmisión patrocinada para reparar tu nave...",
         durationSeconds: 5,
-        canSkipAfter: 5, // Debe ver el anuncio completo para desbloquear las 2 vidas
+        canSkipAfter: 5, // Debe ver los 5s para desbloquear las 2 vidas
         onFinished: () => {
           console.log("[AdsManager] Recompensa concedida: Revivir de rescate + escudo 100%.");
           if (typeof onRewarded === "function") onRewarded();
