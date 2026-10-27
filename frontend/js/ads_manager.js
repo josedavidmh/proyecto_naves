@@ -43,23 +43,23 @@ export const ADS_CONFIG = {
   AD_TIMEOUT_MS: 4000,
 
   // --- POLÍTICAS DE EQUILIBRIO DINÁMICO DE ANUNCIOS ---
-  // Intervalo estándar entre anuncios automáticos (50 segundos)
-  MIN_COOLDOWN_MS: 50000,
+  // Intervalo estándar entre anuncios automáticos (3 minutos)
+  MIN_COOLDOWN_MS: 180000,
 
-  // Intervalo ágil para transiciones de fase superada (25 segundos)
-  STAGE_VICTORY_COOLDOWN_MS: 25000,
+  // Intervalo ágil para transiciones de fase superada (2 minutos)
+  STAGE_VICTORY_COOLDOWN_MS: 120000,
 
-  // Duración mínima de la partida para considerar mostrar anuncio (15 segundos)
-  MIN_PLAYTIME_FOR_AD_MS: 15000,
+  // Duración mínima de la partida para considerar mostrar anuncio (30 segundos)
+  MIN_PLAYTIME_FOR_AD_MS: 30000,
 
-  // Se evalúa desde la primera partida completada
-  FIRST_GAME_FREE: false,
+  // Primera partida siempre 100% libre de anuncios para fidelizar al jugador
+  FIRST_GAME_FREE: true,
 
   // Intervalo de publicidad periódica normal (1 vez cada hora = 3600000 ms)
   PERIODIC_HOURLY_INTERVAL_MS: 3600000,
 
-  // Límite ampliado de anuncios intersticiales por sesión
-  MAX_ADS_PER_SESSION: 25
+  // Límite razonable de anuncios automáticos por sesión
+  MAX_ADS_PER_SESSION: 6
 };
 
 // Aliases para retrocompatibilidad con código existente
@@ -136,35 +136,11 @@ class UniversalAdsManager {
    * Verifica periódicamente si ha transcurrido 1 hora para mostrar anuncio normal fuera de combate
    */
   checkPeriodicHourlyAd(isInCombat = false) {
-    if (isInCombat) {
-      return false; // Jamás interrumpir al jugador en medio de disparos o combate activo
-    }
-    const now = Date.now();
-    const timeSinceLastHourly = now - this.lastPeriodicAdTimestamp;
-
-    // Si ha transcurrido al menos 1 hora (o primera sesión tras 1 hora)
-    if (this.lastPeriodicAdTimestamp > 0 && timeSinceLastHourly >= ADS_CONFIG.PERIODIC_HOURLY_INTERVAL_MS) {
-      console.log(`[AdsManager] ⏱️ Intervalo horario cumplido (${Math.round(timeSinceLastHourly / 60000)} min transcurridos). Mostrando anuncio de cortesía en el hangar.`);
-      this._saveLastPeriodicAdTimestamp(now);
-      this.showInterstitial(null, { force: true, context: "periodic_hourly" });
-      return true;
-    } else if (this.lastPeriodicAdTimestamp === 0) {
-      // Iniciar el reloj de 1 hora desde el primer ingreso
-      this._saveLastPeriodicAdTimestamp(now);
-    }
     return false;
   }
 
-  /**
-   * Monitor en segundo plano que evalúa el temporizador de 1 hora
-   */
   _startPeriodicChecker() {
-    if (typeof window === "undefined") return;
-    setInterval(() => {
-      const battleContainer = document.getElementById("battle-container");
-      const isBattleActive = battleContainer && !battleContainer.classList.contains("hidden");
-      this.checkPeriodicHourlyAd(isBattleActive);
-    }, 120000); // Revisa cada 2 minutos sin impactar rendimiento
+    // Desactivado para no perturbar al jugador con popups automáticos en el lobby
   }
 
   /**
@@ -339,43 +315,7 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Monetag Programático (Zona 12128966 / Zona 302008)
-      if (typeof window.show_12128966 === "function") {
-        console.log("[AdsManager] 📺 Invocando Intersticial Monetag show_12128966...");
-        try {
-          window.show_12128966({ type: 'end' })
-            .then(() => {
-              clearTimeout(timer);
-              safeComplete();
-            })
-            .catch((err) => {
-              console.warn("[Monetag] Anuncio cerrado o no disponible:", err);
-              this._fallbackDirectLink();
-              clearTimeout(timer);
-              safeComplete();
-            });
-          return;
-        } catch (e) {
-          console.warn("[Monetag] Excepción al invocar show_12128966:", e);
-        }
-      } else if (typeof window.show_302008 === "function") {
-        try {
-          window.show_302008({ type: 'end' })
-            .then(() => { clearTimeout(timer); safeComplete(); })
-            .catch(() => { this._fallbackDirectLink(); clearTimeout(timer); safeComplete(); });
-          return;
-        } catch (_) {}
-      }
-
-      // 4. Fallback Direct Link (si está configurado)
-      if (this._fallbackDirectLink()) {
-        clearTimeout(timer);
-        safeComplete();
-        return;
-      }
-
-      // 5. Fallback Web Propia / Monetag: Disparar activamente el Vignette Banner
-      this._triggerMonetagVignette();
+      // Fallback limpio sin interrumpir con popups agresivos
       clearTimeout(timer);
       safeComplete();
 
@@ -390,21 +330,7 @@ class UniversalAdsManager {
    * Invoca activamente el Vignette Banner de Monetag y verifica estado de AdBlock
    */
   _triggerMonetagVignette() {
-    if (typeof document === "undefined") return;
-    try {
-      console.log(`[AdsManager] 📺 Invocando Vignette Banner de Monetag (Zona: ${ADS_CONFIG.MONETAG_ZONE_ID})...`);
-      
-      // Notificar a listeners de navegación
-      document.dispatchEvent(new CustomEvent("stage_completed", { detail: { timestamp: Date.now() } }));
-
-      if (typeof window.show_12128966 === "function") window.show_12128966();
-      if (typeof window.show_monetag_ad === "function") window.show_monetag_ad();
-
-      // Verificar si hay bloqueador de publicidad activo para informar al usuario
-      this.checkAdBlocker();
-    } catch (err) {
-      console.warn("[AdsManager] Error al invocar Monetag:", err);
-    }
+    // Desactivado para garantizar experiencia limpia sin interrupciones
   }
 
   /**
@@ -469,38 +395,7 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Monetag Rewarded Programático (Zona 12128966 / show_12128966)
-      if (typeof window.show_12128966 === "function") {
-        console.log("[AdsManager] ⚡ Invocando anuncio recompensado Monetag show_12128966...");
-        try {
-          window.show_12128966({ type: 'inApp' })
-            .then(() => {
-              console.log("[AdsManager] Recompensa Monetag completada con éxito.");
-              if (typeof onRewarded === "function") onRewarded();
-            })
-            .catch((err) => {
-              console.warn("[AdsManager] Recompensa Monetag cerrada o no disponible:", err);
-              this._fallbackDirectLink();
-              if (typeof onRewarded === "function") onRewarded();
-            });
-          return;
-        } catch (err) {
-          console.warn("[AdsManager] Error al ejecutar show_12128966:", err);
-        }
-      } else if (typeof window.show_302008 === "function") {
-        try {
-          window.show_302008({ type: 'inApp' })
-            .then(() => { if (typeof onRewarded === "function") onRewarded(); })
-            .catch(() => {
-              this._fallbackDirectLink();
-              if (typeof onRewarded === "function") onRewarded();
-            });
-          return;
-        } catch (_) {}
-      }
-
-      // 4. Fallback Direct Link si está configurado
-      this._fallbackDirectLink();
+      // 3. Conceder revivir de rescate al piloto en web independiente
 
       // 5. Conceder revivir de rescate al piloto
       console.log("[AdsManager] Recompensa concedida: Revivir de rescate + escudo 100%.");
@@ -518,14 +413,7 @@ class UniversalAdsManager {
    * Intenta abrir el Direct Link de Monetag en pestaña patrocinada si está configurado
    */
   _fallbackDirectLink() {
-    try {
-      const url = ADS_CONFIG.MONETAG_DIRECT_LINK_URL || (typeof localStorage !== "undefined" && localStorage.getItem("sa_monetag_direct_link"));
-      if (url && typeof window !== "undefined") {
-        console.log("[AdsManager] 🔗 Abriendo enlace patrocinado Direct Link de Monetag:", url);
-        window.open(url, "_blank");
-        return true;
-      }
-    } catch (_) {}
+    // Desactivado como fallback automático para evitar saturación de ventanas en móvil
     return false;
   }
 }

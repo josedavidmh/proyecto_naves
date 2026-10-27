@@ -202,6 +202,63 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Variables de Estado
+  const DEFAULT_SHIPS = [
+    {
+      id: 1,
+      slug: "phoenix-vanguard",
+      name: "Phoenix Vanguard",
+      description: "Caza interceptor de alta maniobrabilidad con disparo láser doble sincronizado.",
+      weapon: { name: "Doble Láser de Iones", type: "twin_laser", damage: 18, fire_rate_ms: 130 },
+      special: { name: "Escudo Cinético de Absorción", slug: "shield_matrix", duration_seconds: 5.0, cooldown_seconds: 18.0 },
+      stats: { max_health: 100, speed: 7.5 }
+    },
+    {
+      id: 2,
+      slug: "titan-colossus",
+      name: "Titan Colossus",
+      description: "Nave pesada acorazada con cañón de plasma concentrado y tremenda resistencia.",
+      weapon: { name: "Cañón de Plasma Pesado", type: "heavy_plasma", damage: 42, fire_rate_ms: 260 },
+      special: { name: "Pulso Sísmico de Choque (EMP)", slug: "emp_blast", duration_seconds: 3.0, cooldown_seconds: 24.0 },
+      stats: { max_health: 180, speed: 5.0 }
+    },
+    {
+      id: 3,
+      slug: "valkyrie-specter",
+      name: "Valkyrie Specter",
+      description: "Fragata de asalto táctico con ráfaga en cono triple para barrer oleadas de cazas.",
+      weapon: { name: "Tridente de Dispersión Cónica", type: "triple_spread", damage: 14, fire_rate_ms: 160 },
+      special: { name: "Modo Espectro y Sobrecarga Crítica", slug: "overdrive_ghost", duration_seconds: 4.5, cooldown_seconds: 20.0 },
+      stats: { max_health: 110, speed: 6.5 }
+    },
+    {
+      id: 4,
+      slug: "vortex-tempest",
+      name: "Vortex Tempest",
+      description: "Prototipo experimental equipado con cañones de ondas sonoras que penetran blindajes.",
+      weapon: { name: "Emisor de Ondas Resonantes", type: "wave_cannon", damage: 28, fire_rate_ms: 210 },
+      special: { name: "Agujero Negro Vorticial", slug: "singularity_vortex", duration_seconds: 4.0, cooldown_seconds: 22.0 },
+      stats: { max_health: 120, speed: 6.0 }
+    },
+    {
+      id: 5,
+      slug: "aura-eclipse",
+      name: "Aura Eclipse",
+      description: "Nave furtiva de operaciones encubiertas con láser quíntuple de barrido masivo.",
+      weapon: { name: "Láser Quíntuple de Fase", type: "quint_laser", damage: 22, fire_rate_ms: 180 },
+      special: { name: "Bombardeo Orbital Fotónico", slug: "orbital_bombardment", duration_seconds: 5.0, cooldown_seconds: 26.0 },
+      stats: { max_health: 95, speed: 8.0 }
+    },
+    {
+      id: 6,
+      slug: "hyperion-dreadnought",
+      name: "Hyperion Apex",
+      description: "Buque insignia de supremacía con haz de plasma focalizado continuo y devastador.",
+      weapon: { name: "Haz Focal de Fotones", type: "beam_laser", damage: 36, fire_rate_ms: 180 },
+      special: { name: "Bombardeo Suborbital Masivo", slug: "orbital_bombardment", duration_seconds: 4.0, cooldown_seconds: 28.0 },
+      stats: { max_health: 140, speed: 5.8 }
+    }
+  ];
+
   let availableShips = [];
   let selectedShip = null;
   let playerProgress = null;
@@ -229,10 +286,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (elVictories) elVictories.textContent = s.victories;
       }
 
-      // Sincronizar contador de vidas disponibles (5 base + bonos)
+      // Sincronizar contador de vidas disponibles (3 base + bonos)
       const elLives = document.getElementById("stat-lives");
       const bonus = (typeof localStorage !== "undefined") ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
-      if (elLives) elLives.textContent = 5 + bonus;
+      if (elLives) elLives.textContent = 3 + bonus;
       socialShare.updateLobbyBannerRewardStatus();
     } catch (err) {
       console.warn("[Error al cargar estadísticas]", err);
@@ -290,12 +347,25 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     onStageVictory: (stats) => {
       // CUANDO SUPERA UN ÁREA SE LE OTORGA +1 VIDA EXTRA:
-      const currentLives = engine ? engine.lives : 5;
+      const currentLives = engine ? engine.lives : 3;
       const rewardedLives = currentLives + 1;
       if (engine) {
         engine.lives = rewardedLives;
         engine.updateHudLives();
       }
+
+      // Sincronizar progreso local para asegurar desbloqueo en modo invitado u offline
+      try {
+        const localProg = getLocalStageProgress();
+        if (stats.stageCompleted < 5) {
+          const nextKey = String(stats.stageCompleted + 1);
+          if (localProg.stages[nextKey]) {
+            localProg.stages[nextKey].unlocked = true;
+          }
+          localProg.current_max_stage = Math.max(localProg.current_max_stage || 1, stats.stageCompleted + 1);
+          saveLocalStageProgress(localProg);
+        }
+      } catch (_) {}
 
       // PRESERVAR HISTORIAL MIENTRAS TENGA VIDAS VIGENTES:
       activeRunSession = {
@@ -538,7 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
         activeRunSession = null;
         battleContainer.classList.add("hidden");
         stageSelectContainer.classList.remove("hidden");
-        loadStages();
+        loadStageSelector();
       }
     }, { force: true, context: "stage_victory" });
   });
@@ -547,25 +617,27 @@ document.addEventListener("DOMContentLoaded", () => {
     victoryModal.classList.add("hidden");
     battleContainer.classList.add("hidden");
     stageSelectContainer.classList.remove("hidden");
-    loadStages();
+    loadStageSelector();
     adsManager.checkPeriodicHourlyAd(false);
   });
 
-  // Cargar las 5 naves desde SQLite mediante API
+  // Cargar las 5 naves desde SQLite mediante API con respaldo resiliente
   async function loadShips() {
-    const res = await ApiService.getShips();
-    if (!res.ok || !res.data.success) {
-      CyberDialog.alert({
-        title: "ERROR DE BASE DE DATOS",
-        message: "Error al cargar las naves de combate desde SQLite.",
-        icon: "⚠️",
-        isDanger: true
-      });
-      return;
+    let shipsList = null;
+    try {
+      const res = await ApiService.getShips();
+      if (res && res.ok && res.data && res.data.success && Array.isArray(res.data.ships) && res.data.ships.length > 0) {
+        shipsList = res.data.ships;
+      }
+    } catch (_) {}
+
+    if (!shipsList || shipsList.length === 0) {
+      shipsList = DEFAULT_SHIPS;
     }
 
-    availableShips = res.data.ships;
+    availableShips = shipsList;
     const shipsGrid = document.getElementById("ships-grid");
+    if (!shipsGrid) return;
     shipsGrid.innerHTML = "";
 
     availableShips.forEach((ship, idx) => {
@@ -577,7 +649,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
             <span style="font-size: 0.7rem; font-family: monospace; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(0,243,255,0.15); color: #00f3ff; border: 1px solid rgba(0,243,255,0.4);">NAVE #0${idx + 1}</span>
-            <span style="font-size: 0.75rem; font-family: monospace; color: #94a3b8;">VELOCIDAD: ${ship.stats.speed}x</span>
+            <span style="font-size: 0.75rem; font-family: monospace; color: #94a3b8;">VELOCIDAD: ${ship.stats ? ship.stats.speed : 7}x</span>
           </div>
 
           <div style="height: 110px; background: rgba(0,0,0,0.5); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; border: 1px solid #1e293b; position: relative;">
@@ -625,7 +697,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".btn-select-ship").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const shipId = parseInt(e.currentTarget.getAttribute("data-ship-id"));
-        selectedShip = availableShips.find((s) => s.id === shipId);
+        selectedShip = availableShips.find((s) => s.id === shipId) || availableShips[0];
         shipSelectContainer.classList.add("hidden");
         stageSelectContainer.classList.remove("hidden");
         await loadStageSelector();
@@ -633,21 +705,48 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Cargar selector de fases según el progreso real en SQLite
+  // Persistencia local de progreso de fases para modo invitado y resiliencia offline
+  function getLocalStageProgress() {
+    try {
+      const saved = localStorage.getItem("naves_guest_progress");
+      if (saved) return JSON.parse(saved);
+    } catch (_) {}
+    return {
+      current_max_stage: 1,
+      stages: {
+        "1": { unlocked: true },
+        "2": { unlocked: false },
+        "3": { unlocked: false },
+        "4": { unlocked: false },
+        "5": { unlocked: false }
+      }
+    };
+  }
+
+  function saveLocalStageProgress(prog) {
+    try {
+      localStorage.setItem("naves_guest_progress", JSON.stringify(prog));
+    } catch (_) {}
+  }
+
+  // Cargar selector de fases según el progreso real en SQLite o persistencia local
   async function loadStageSelector() {
-    const res = await ApiService.getProgress();
-    if (!res.ok || !res.data.success) {
-      CyberDialog.alert({
-        title: "ERROR DE PROTOCOLO",
-        message: "Error al cargar el progreso del piloto desde el servidor.",
-        icon: "⚠️",
-        isDanger: true
-      });
-      return;
+    let progressData = null;
+    try {
+      const res = await ApiService.getProgress();
+      if (res && res.ok && res.data && res.data.success && res.data.progress) {
+        progressData = res.data.progress;
+        saveLocalStageProgress(progressData);
+      }
+    } catch (_) {}
+
+    if (!progressData) {
+      progressData = getLocalStageProgress();
     }
 
-    playerProgress = res.data.progress;
+    playerProgress = progressData;
     const stagesContainer = document.getElementById("stages-list");
+    if (!stagesContainer) return;
     stagesContainer.innerHTML = "";
 
     const stagesInfo = [
@@ -655,31 +754,31 @@ document.addEventListener("DOMContentLoaded", () => {
         num: 1,
         title: "Fase 1: Norteamérica a la Antártida",
         desc: "Sobrevuela el continente con mapa de radar dinámico inferior hasta alcanzar los glaciares polares.",
-        unlocked: playerProgress.stages["1"].unlocked
+        unlocked: playerProgress && playerProgress.stages && playerProgress.stages["1"] ? playerProgress.stages["1"].unlocked : true
       },
       {
         num: 2,
         title: "Fase 2: Cruce del Océano Pacífico a Australia",
         desc: "Travesía sobre archipiélagos e islas del Pacífico hasta alcanzar la costa australiana.",
-        unlocked: playerProgress.stages["2"].unlocked
+        unlocked: playerProgress && playerProgress.stages && playerProgress.stages["2"] ? playerProgress.stages["2"].unlocked : false
       },
       {
         num: 3,
         title: "Fase 3: Travesía a Saturno (Vía Marte y Júpiter)",
         desc: "Despega de la Tierra, rebasa Marte y asteroides, vence a Jovian Core en Júpiter y asalta los anillos de Saturno contra Ganymede Titan.",
-        unlocked: playerProgress.stages["3"].unlocked
+        unlocked: playerProgress && playerProgress.stages && playerProgress.stages["3"] ? playerProgress.stages["3"].unlocked : false
       },
       {
         num: 4,
         title: "Fase 4: El Círculo Ártico: De Groenlandia al Polo Norte",
         desc: "Cruza el Círculo Polar a 66°N, el inmenso Inlandis de Groenlandia y la banquisa polar hasta la ciudadela subglacial del Polo Norte (90°N).",
-        unlocked: playerProgress.stages["4"].unlocked
+        unlocked: playerProgress && playerProgress.stages && playerProgress.stages["4"] ? playerProgress.stages["4"].unlocked : false
       },
       {
         num: 5,
         title: "Fase 5: Jungla Profunda / Fortaleza del Jefe Final",
         desc: "Zona selvática con vegetación destructible por bombardeo y confrontación con el Boss principal.",
-        unlocked: playerProgress.stages["5"].unlocked
+        unlocked: playerProgress && playerProgress.stages && playerProgress.stages["5"] ? playerProgress.stages["5"].unlocked : false
       }
     ];
 
@@ -951,17 +1050,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Iniciar la misión de combate en el Canvas 60 FPS
   function startMission(ship, stageNumber, runState = null) {
-    adsManager.markMissionStart();
-    battleContainer.classList.remove("hidden");
-    hudShipName.textContent = ship.name.toUpperCase();
-    const elStageBadge = document.getElementById("hud-stage-badge");
-    if (elStageBadge) elStageBadge.textContent = `FASE ${stageNumber}`;
-    engine.start(ship, stageNumber, currentUser ? currentUser.username : "PILOTO", runState);
+    try {
+      const shipToUse = ship || selectedShip || (availableShips && availableShips.length > 0 ? availableShips[0] : DEFAULT_SHIPS[0]);
+      selectedShip = shipToUse;
+      adsManager.markMissionStart();
+      battleContainer.classList.remove("hidden");
+      if (hudShipName) hudShipName.textContent = (shipToUse.name || "PHOENIX VANGUARD").toUpperCase();
+      const elStageBadge = document.getElementById("hud-stage-badge");
+      if (elStageBadge) elStageBadge.textContent = `FASE ${stageNumber}`;
+      if (canvas) {
+        if (!canvas.width || canvas.width === 0) canvas.width = 800;
+        if (!canvas.height || canvas.height === 0) canvas.height = 600;
+      }
+      engine.start(shipToUse, stageNumber, currentUser ? currentUser.username : "PILOTO", runState);
 
-    // Centrar automáticamente la pantalla de combate para eliminar el desplazamiento incómodo
-    requestAnimationFrame(() => {
-      battleContainer.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
+      // Centrar automáticamente la pantalla de combate para eliminar el desplazamiento incómodo
+      requestAnimationFrame(() => {
+        battleContainer.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    } catch (err) {
+      console.error("[startMission Critical Error]", err);
+      try {
+        engine.start(DEFAULT_SHIPS[0], stageNumber || 1, "PILOTO", runState);
+      } catch (_) {}
+    }
   }
 
   // Leaderboard Modal
@@ -1054,11 +1166,11 @@ document.addEventListener("DOMContentLoaded", () => {
       engine.addLives(added);
     }
     if (activeRunSession) {
-      activeRunSession.lives = (activeRunSession.lives || 5) + added;
+      activeRunSession.lives = (activeRunSession.lives || 3) + added;
     }
     const elLives = document.getElementById("stat-lives");
     const bonus = (typeof localStorage !== "undefined") ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
-    if (elLives) elLives.textContent = 5 + bonus;
+    if (elLives) elLives.textContent = 3 + bonus;
     socialShare.updateLobbyBannerRewardStatus();
   });
 });

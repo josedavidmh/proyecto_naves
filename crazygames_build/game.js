@@ -5566,8 +5566,8 @@
         upgradeHitsReceived: 0,
         invulnerableTimer: 0
       };
-      this.initialLives = 5;
-      this.lives = 5;
+      this.initialLives = 3;
+      this.lives = 3;
       this.bombs = 1;
       this.bombFlash = 0;
       this.projectiles = [];
@@ -5724,14 +5724,27 @@
         }
       }
       document.body.classList.add("battle-locked");
-      this.ship = shipData;
-      this.currentStage = stageNumber;
-      this.pilot = pilotName;
+      const defaultFallback = {
+        id: 1,
+        slug: "phoenix-vanguard",
+        name: "Phoenix Vanguard",
+        weapon: { name: "Doble Láser de Iones", type: "twin_laser", damage: 18, fire_rate_ms: 130 },
+        special: { name: "Escudo Cinético de Absorción", slug: "shield_matrix", duration_seconds: 5, cooldown_seconds: 18 },
+        stats: { max_health: 100, speed: 7.5 }
+      };
+      const safeShip = (shipData && typeof shipData === "object") ? shipData : defaultFallback;
+      this.ship = Object.assign({}, defaultFallback, safeShip);
+      this.ship.stats = Object.assign({}, defaultFallback.stats, safeShip.stats || {});
+      this.ship.weapon = Object.assign({}, defaultFallback.weapon, safeShip.weapon || {});
+      this.ship.special = Object.assign({}, defaultFallback.special, safeShip.special || {});
+
+      this.currentStage = stageNumber || 1;
+      this.pilot = pilotName || "PILOTO";
       this.player.x = this.canvas.width / 2;
       this.player.y = this.canvas.height - 90;
-      this.player.maxHealth = shipData.stats.max_health;
-      this.player.health = shipData.stats.max_health;
-      this.player.speed = shipData.stats.speed;
+      this.player.maxHealth = this.ship.stats.max_health || 100;
+      this.player.health = this.player.maxHealth;
+      this.player.speed = this.ship.stats.speed || 6.5;
       this.player.isSpecialActive = false;
       this.player.specialTimer = 0;
       this.player.specialCooldownTimer = 0;
@@ -5739,7 +5752,7 @@
       if (runState && runState.preserveHistory) {
         this.player.weaponLevel = runState.weaponLevel || 1;
         this.player.upgradeHitsReceived = runState.upgradeHitsReceived || 0;
-        this.lives = runState.lives !== void 0 && runState.lives > 0 ? runState.lives : 5;
+        this.lives = runState.lives !== void 0 && runState.lives > 0 ? runState.lives : 3;
         this.bombs = runState.bombs !== void 0 ? runState.bombs : 1;
         this.score = runState.score || 0;
         this.enemiesDestroyed = runState.enemies || 0;
@@ -5756,7 +5769,7 @@
         this.player.weaponLevel = 1;
         this.player.upgradeHitsReceived = 0;
         const bonusLives = typeof localStorage !== "undefined" ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
-        this.lives = 5 + bonusLives;
+        this.lives = 3 + bonusLives;
         this.bombs = 1;
         this.score = 0;
         this.enemiesDestroyed = 0;
@@ -5780,17 +5793,25 @@
       this.activeBoss = null;
       this.stageBannerTimer = 3.5;
       this.updateHudWeaponAndBombs();
-      if (stageNumber === 5) {
-        this.scenario.initJungle();
-      } else if (stageNumber === 2) {
-        this.scenario.initIslands();
-      } else if (stageNumber === 4) {
-        this.scenario.initSnow();
+      this.updateHudLives();
+      this.updateHUD(0);
+      try {
+        if (this.scenario) {
+          if (this.currentStage === 5 && typeof this.scenario.initJungle === "function") {
+            this.scenario.initJungle();
+          } else if (this.currentStage === 2 && typeof this.scenario.initIslands === "function") {
+            this.scenario.initIslands();
+          } else if (this.currentStage === 4 && typeof this.scenario.initSnow === "function") {
+            this.scenario.initSnow();
+          }
+        }
+      } catch (err) {
+        console.warn("[CrazyGames Engine] Fallo en escenario:", err);
       }
       this.isRunning = true;
       this.isPaused = false;
       this.lastTime = performance.now();
-      Sound.startMusic();
+      try { Sound.startMusic(); } catch (_) {}
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
       }
@@ -5882,8 +5903,8 @@
       }
       const dt = Math.min((currentTime - this.lastTime) / 1e3, 0.1);
       this.lastTime = currentTime;
-      this.update(dt);
-      this.render();
+      try { this.update(dt); } catch (e) { console.error("[CrazyGames Engine Update]", e); }
+      try { this.render(); } catch (e) { console.error("[CrazyGames Engine Render]", e); }
       this.animationFrameId = requestAnimationFrame((t2) => this.loop(t2));
     }
     update(dt) {
@@ -8859,7 +8880,7 @@ ${url}`;
         }
         const elLives = document.getElementById("stat-lives");
         const bonus = typeof localStorage !== "undefined" ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
-        if (elLives) elLives.textContent = 5 + bonus;
+        if (elLives) elLives.textContent = 3 + bonus;
         socialShare.updateLobbyBannerRewardStatus();
       } catch (err) {
         console.warn("[Error al cargar estad\xEDsticas]", err);
@@ -8910,7 +8931,7 @@ ${url}`;
         loadPilotStats();
       },
       onStageVictory: (stats) => {
-        const currentLives = engine ? engine.lives : 5;
+        const currentLives = engine ? engine.lives : 3;
         const rewardedLives = currentLives + 1;
         if (engine) {
           engine.lives = rewardedLives;
@@ -9123,7 +9144,7 @@ ${url}`;
           activeRunSession = null;
           battleContainer.classList.add("hidden");
           stageSelectContainer.classList.remove("hidden");
-          loadStages();
+          loadStageSelector();
         }
       }, { force: true, context: "stage_victory" });
     });
@@ -9131,7 +9152,7 @@ ${url}`;
       victoryModal.classList.add("hidden");
       battleContainer.classList.add("hidden");
       stageSelectContainer.classList.remove("hidden");
-      loadStages();
+      loadStageSelector();
       adsManager.checkPeriodicHourlyAd(false);
     });
     async function loadShips() {
@@ -9206,17 +9227,20 @@ ${url}`;
       });
     }
     async function loadStageSelector() {
-      const res = await ApiService.getProgress();
-      if (!res.ok || !res.data.success) {
-        CyberDialog.alert({
-          title: "ERROR DE PROTOCOLO",
-          message: "Error al cargar el progreso del piloto desde el servidor.",
-          icon: "\u26A0\uFE0F",
-          isDanger: true
-        });
-        return;
+      let progressData = null;
+      try {
+        const res = await ApiService.getProgress();
+        if (res && res.ok && res.data && res.data.success && res.data.progress) {
+          progressData = res.data.progress;
+        }
+      } catch (_) {}
+      if (!progressData) {
+        progressData = {
+          current_max_stage: 1,
+          stages: { "1": { unlocked: true }, "2": { unlocked: false }, "3": { unlocked: false }, "4": { unlocked: false }, "5": { unlocked: false } }
+        };
       }
-      playerProgress = res.data.progress;
+      playerProgress = progressData;
       const stagesContainer = document.getElementById("stages-list");
       stagesContainer.innerHTML = "";
       const stagesInfo = [
@@ -9549,11 +9573,11 @@ ${url}`;
         engine.addLives(added);
       }
       if (activeRunSession) {
-        activeRunSession.lives = (activeRunSession.lives || 5) + added;
+        activeRunSession.lives = (activeRunSession.lives || 3) + added;
       }
       const elLives = document.getElementById("stat-lives");
       const bonus = typeof localStorage !== "undefined" ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
-      if (elLives) elLives.textContent = 5 + bonus;
+      if (elLives) elLives.textContent = 3 + bonus;
       socialShare.updateLobbyBannerRewardStatus();
     });
   });

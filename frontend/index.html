@@ -19,65 +19,6 @@
       sAd.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6261859133501243";
       sAd.crossOrigin = "anonymous";
       document.head.appendChild(sAd);
-
-      // 2. Monetag SDK Programático con cola asíncrona (solo en web propia)
-      function initMonetagHandler(zoneId) {
-        var sdkName = "show_" + zoneId;
-        var queue = [];
-        var isLoaded = false;
-
-        window[sdkName] = function(options) {
-          if (typeof window[sdkName + "_raw"] === "function") {
-            return window[sdkName + "_raw"](options);
-          }
-          return new Promise(function(resolve, reject) {
-            if (isLoaded && typeof window[sdkName + "_raw"] !== "function") {
-              return reject(new Error("Monetag no disponible"));
-            }
-            queue.push([options, resolve, reject]);
-          });
-        };
-
-        var script = document.createElement("script");
-        script.src = "https://yoszi.com/sdk.js";
-        script.dataset.zone = zoneId;
-        script.dataset.sdk = sdkName + "_raw";
-        script.async = true;
-        script.setAttribute("data-cfasync", "false");
-
-        var onDone = function() {
-          isLoaded = true;
-          var rawFn = window[sdkName + "_raw"];
-          while (queue.length > 0) {
-            var item = queue.shift();
-            if (typeof rawFn === "function") {
-              rawFn(item[0]).then(item[1]).catch(item[2]);
-            } else {
-              item[2](new Error("Monetag no listo"));
-            }
-          }
-        };
-
-        script.addEventListener("load", onDone);
-        script.addEventListener("error", onDone);
-        document.head.appendChild(script);
-      }
-
-      initMonetagHandler("12128966");
-
-      var sMulti = document.createElement("script");
-      sMulti.src = "https://quge5.com/88/tag.min.js";
-      sMulti.dataset.zone = "302008";
-      sMulti.async = true;
-      sMulti.setAttribute("data-cfasync", "false");
-      document.head.appendChild(sMulti);
-
-      var sVig = document.createElement("script");
-      sVig.src = "https://n6wxm.com/vignette.min.js";
-      sVig.dataset.zone = "12128966";
-      sVig.async = true;
-      sVig.setAttribute("data-cfasync", "false");
-      document.head.appendChild(sVig);
     })();
   </script>
 
@@ -378,7 +319,7 @@
         </div>
         <div style="background: rgba(0,0,0,0.35); border: 1px solid #1e293b; border-radius: 8px; padding: 0.75rem; text-align: center;">
           <p style="font-size: 0.65rem; color: #64748b; font-family: monospace;">VIDAS DE COMBATE</p>
-          <p id="stat-lives" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #f43f5e; margin-top: 0.2rem;">5</p>
+          <p id="stat-lives" style="font-size: 1.15rem; font-family: 'Orbitron', monospace; font-weight: bold; color: #f43f5e; margin-top: 0.2rem;">3</p>
         </div>
       </div>
 
@@ -487,7 +428,7 @@
           <span style="display: block; font-size: 0.62rem; font-family: monospace; color: #64748b; text-transform: uppercase;">VIDAS</span>
           <div style="display: flex; align-items: center; justify-content: center; gap: 0.3rem;">
             <span style="font-size: 0.95rem; filter: drop-shadow(0 0 6px rgba(244,63,94,0.7));">❤️</span>
-            <span id="hud-lives-count" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 900; color: #f43f5e; text-shadow: 0 0 8px rgba(244,63,94,0.6);">5</span>
+            <span id="hud-lives-count" style="font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 900; color: #f43f5e; text-shadow: 0 0 8px rgba(244,63,94,0.6);">3</span>
           </div>
         </div>
 
@@ -1040,35 +981,6 @@
           </div>
           <div id="briefing-squadron-list" style="display: flex; flex-direction: column; gap: 0.45rem; max-height: none; overflow: visible; padding-right: 4px;">
             <!-- Generado dinámicamente según la fase -->
-          </div>
-        </div>
-
-        <!-- ESPACIO DE PUBLICIDAD GOOGLE ADSENSE (INICIO DE MISIÓN) -->
-        <div id="ad-briefing-slot" class="ad-slot-box" style="margin-bottom: 0.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-family: monospace; font-size: 0.65rem; color: #64748b;">
-            <span>📢 PUBLICIDAD PATROCINADA · GOOGLE ADSENSE</span>
-            <span id="ad-launch-countdown" style="color: #38bdf8; display: none; font-weight: bold;">🚀 DESPEGUE EN <b id="ad-seconds-left">3</b>s...</span>
-          </div>
-
-          <!-- Contenedor Oficial Google AdSense -->
-          <div class="ad-content-wrapper" style="min-height: 90px; background: rgba(15, 23, 42, 0.7); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4px;">
-            <ins class="adsbygoogle"
-                 style="display:inline-block;width:100%;max-width:680px;height:90px;"
-                 data-ad-client="ca-pub-6261859133501243"
-                 data-ad-slot="1668600475"
-                 data-ad-format="horizontal"
-                 data-adtest="on"
-                 data-full-width-responsive="true"></ins>
-
-            <!-- Banner de previsualización mientras se configura el Client ID real -->
-            <div class="ad-preview-banner" style="text-align: center; padding: 0.75rem;">
-              <p style="font-family: 'Orbitron', monospace; font-size: 0.75rem; color: #38bdf8; font-weight: bold; letter-spacing: 1px;">
-                [ESPACIO RESERVADO PARA ANUNCIO DE GOOGLE ADSENSE (728×90 / RESPONSIVO)]
-              </p>
-              <p style="font-size: 0.7rem; color: #94a3b8; font-family: 'Rajdhani', sans-serif; margin-top: 0.2rem;">
-                Para monetizar tus misiones: ingresa tu <code>ca-pub-XXXXXXXXXXXXXXXX</code> en <code>frontend/js/ads_config.js</code>.
-              </p>
-            </div>
           </div>
         </div>
 

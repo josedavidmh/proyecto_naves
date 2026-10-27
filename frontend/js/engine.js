@@ -40,9 +40,9 @@ export class GameEngine {
       invulnerableTimer: 0
     };
 
-    // Sistema de Vidas de Combate (5 vidas iniciales)
-    this.initialLives = 5;
-    this.lives = 5;
+    // Sistema de Vidas de Combate (3 vidas iniciales)
+    this.initialLives = 3;
+    this.lives = 3;
 
     // Munición de bombas tácticas y destello de detonación
     this.bombs = 1;
@@ -232,15 +232,31 @@ export class GameEngine {
       }
     }
     document.body.classList.add("battle-locked");
-    this.ship = shipData;
-    this.currentStage = stageNumber;
-    this.pilot = pilotName;
+
+    // Saneamiento robusto de datos de nave con fallbacks garantizados
+    const defaultFallback = {
+      id: 1,
+      slug: "phoenix-vanguard",
+      name: "Phoenix Vanguard",
+      weapon: { name: "Doble Láser de Iones", type: "twin_laser", damage: 18, fire_rate_ms: 130 },
+      special: { name: "Escudo Cinético de Absorción", slug: "shield_matrix", duration_seconds: 5.0, cooldown_seconds: 18.0 },
+      stats: { max_health: 100, speed: 7.5 }
+    };
+
+    const safeShip = (shipData && typeof shipData === "object") ? shipData : defaultFallback;
+    this.ship = Object.assign({}, defaultFallback, safeShip);
+    this.ship.stats = Object.assign({}, defaultFallback.stats, safeShip.stats || {});
+    this.ship.weapon = Object.assign({}, defaultFallback.weapon, safeShip.weapon || {});
+    this.ship.special = Object.assign({}, defaultFallback.special, safeShip.special || {});
+
+    this.currentStage = stageNumber || 1;
+    this.pilot = pilotName || "PILOTO";
 
     this.player.x = this.canvas.width / 2;
     this.player.y = this.canvas.height - 90;
-    this.player.maxHealth = shipData.stats.max_health;
-    this.player.health = shipData.stats.max_health;
-    this.player.speed = shipData.stats.speed;
+    this.player.maxHealth = this.ship.stats.max_health || 100;
+    this.player.health = this.player.maxHealth;
+    this.player.speed = this.ship.stats.speed || 6.5;
     this.player.isSpecialActive = false;
     this.player.specialTimer = 0;
     this.player.specialCooldownTimer = 0;
@@ -251,7 +267,7 @@ export class GameEngine {
       // Conserva nivel de arma, vidas restantes, bombas, puntuación y bajas acumuladas
       this.player.weaponLevel = runState.weaponLevel || 1;
       this.player.upgradeHitsReceived = runState.upgradeHitsReceived || 0;
-      this.lives = (runState.lives !== undefined && runState.lives > 0) ? runState.lives : 5;
+      this.lives = (runState.lives !== undefined && runState.lives > 0) ? runState.lives : 3;
       this.bombs = runState.bombs !== undefined ? runState.bombs : 1;
       this.score = runState.score || 0;
       this.enemiesDestroyed = runState.enemies || 0;
@@ -270,7 +286,7 @@ export class GameEngine {
       this.player.weaponLevel = 1;
       this.player.upgradeHitsReceived = 0;
       const bonusLives = (typeof localStorage !== "undefined") ? parseInt(localStorage.getItem("naves_bonus_lives") || "0", 10) : 0;
-      this.lives = 5 + bonusLives;
+      this.lives = 3 + bonusLives;
       this.bombs = 1;
       this.score = 0;
       this.enemiesDestroyed = 0;
@@ -295,22 +311,34 @@ export class GameEngine {
     this.mainBossDefeated = false;
     this.activeBoss = null;
     this.stageBannerTimer = 3.5;
-    this.updateHudWeaponAndBombs();
 
-    // Reinicializar terreno para la fase correspondiente
-    if (stageNumber === 5) {
-      this.scenario.initJungle();
-    } else if (stageNumber === 2) {
-      this.scenario.initIslands();
-    } else if (stageNumber === 4) {
-      this.scenario.initSnow();
+    // Actualización inmediata del HUD para sincronizar vidas, armas y salud
+    this.updateHudWeaponAndBombs();
+    this.updateHudLives();
+    this.updateHUD(0);
+
+    // Reinicializar terreno para la fase correspondiente de forma protegida
+    try {
+      if (this.scenario) {
+        if (this.currentStage === 5 && typeof this.scenario.initJungle === "function") {
+          this.scenario.initJungle();
+        } else if (this.currentStage === 2 && typeof this.scenario.initIslands === "function") {
+          this.scenario.initIslands();
+        } else if (this.currentStage === 4 && typeof this.scenario.initSnow === "function") {
+          this.scenario.initSnow();
+        }
+      }
+    } catch (err) {
+      console.warn("[GameEngine] Aviso en inicialización de escenario:", err);
     }
 
     this.isRunning = true;
     this.isPaused = false;
     this.lastTime = performance.now();
 
-    Sound.startMusic();
+    try {
+      Sound.startMusic();
+    } catch (_) {}
 
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
@@ -358,16 +386,20 @@ export class GameEngine {
     if (!this.isRunning || this.isPaused || this.player.isSpecialActive) return;
     if (this.player.specialCooldownTimer > 0) return;
 
+    const special = (this.ship && this.ship.special) || {};
     this.player.isSpecialActive = true;
-    this.player.specialTimer = this.ship.special.duration_seconds;
-    this.player.specialCooldownTimer = this.ship.special.cooldown_seconds;
+    this.player.specialTimer = special.duration_seconds || 5.0;
+    this.player.specialCooldownTimer = special.cooldown_seconds || 18.0;
 
-    Sound.playSpecialAbility();
+    try {
+      Sound.playSpecialAbility();
+    } catch (_) {}
 
     // Efectos tácticos y de destrucción ambiental en suelo selvático
-    if (this.ship.special.slug === "emp_blast") {
+    const specialSlug = special.slug || "";
+    if (specialSlug === "emp_blast") {
       this.triggerEMPBlast();
-      if (this.currentStage === 5) {
+      if (this.currentStage === 5 && this.scenario && typeof this.scenario.addGroundExplosion === "function") {
         for (let i = 0; i < 5; i++) {
           this.scenario.addGroundExplosion(
             Math.random() * this.canvas.width,
@@ -376,7 +408,7 @@ export class GameEngine {
           );
         }
       }
-    } else if (this.ship.special.slug === "orbital_bombardment" && this.currentStage === 5) {
+    } else if (specialSlug === "orbital_bombardment" && this.currentStage === 5 && this.scenario && typeof this.scenario.addGroundExplosion === "function") {
       for (let i = 0; i < 8; i++) {
         this.scenario.addGroundExplosion(
           this.player.x + (Math.random() * 140 - 70),
@@ -411,8 +443,17 @@ export class GameEngine {
     const dt = Math.min((currentTime - this.lastTime) / 1000, 0.1);
     this.lastTime = currentTime;
 
-    this.update(dt);
-    this.render();
+    try {
+      this.update(dt);
+    } catch (err) {
+      console.error("[GameEngine] Error en frame update:", err);
+    }
+
+    try {
+      this.render();
+    } catch (err) {
+      console.error("[GameEngine] Error en frame render:", err);
+    }
 
     this.animationFrameId = requestAnimationFrame((t) => this.loop(t));
   }
@@ -472,7 +513,8 @@ export class GameEngine {
   }
 
   updatePlayer(dt) {
-    let speed = this.player.speed * (this.player.isSpecialActive && this.ship.special.slug === "overdrive_ghost" ? 1.6 : 1.0);
+    const specialSlug = (this.ship && this.ship.special && this.ship.special.slug) || "";
+    let speed = (this.player.speed || 6.0) * (this.player.isSpecialActive && specialSlug === "overdrive_ghost" ? 1.6 : 1.0);
     if (this.keys["KeyW"] || this.keys["ArrowUp"]) this.player.y -= speed;
     if (this.keys["KeyS"] || this.keys["ArrowDown"]) this.player.y += speed;
     if (this.keys["KeyA"] || this.keys["ArrowLeft"]) this.player.x -= speed;
@@ -512,7 +554,7 @@ export class GameEngine {
       this.fireWeapon();
     }
 
-    if (this.player.isSpecialActive && this.ship.special.slug === "micromissile_swarm") {
+    if (this.player.isSpecialActive && specialSlug === "micromissile_swarm") {
       if (Math.random() < 0.3) {
         this.fireHomingMicroMissile();
       }
@@ -527,8 +569,10 @@ export class GameEngine {
 
   fireWeapon() {
     const now = performance.now();
-    let fireRate = this.ship.weapon.fire_rate_ms;
-    if (this.player.isSpecialActive && this.ship.special.slug === "overdrive_ghost") {
+    const weapon = (this.ship && this.ship.weapon) || {};
+    const specialSlug = (this.ship && this.ship.special && this.ship.special.slug) || "";
+    let fireRate = weapon.fire_rate_ms || 150;
+    if (this.player.isSpecialActive && specialSlug === "overdrive_ghost") {
       fireRate *= 0.5;
     }
     const lvl = this.player.weaponLevel;
@@ -1456,7 +1500,16 @@ export class GameEngine {
     const distanceRatio = Math.min(1.0, this.stageDistance / this.stageTargetDistance);
 
     // 1. Renderizado del Escenario Temático
-    this.scenario.render(this.currentStage, distanceRatio);
+    try {
+      if (this.scenario && typeof this.scenario.render === "function") {
+        this.scenario.render(this.currentStage, distanceRatio);
+      } else {
+        this.drawFallbackSpaceBackground();
+      }
+    } catch (err) {
+      console.warn("[GameEngine] Error al renderizar escenario dinámico:", err);
+      this.drawFallbackSpaceBackground();
+    }
 
     // 2. Ondas Expansivas (Shockwaves de Jefes)
     for (const sw of this.shockwaves) {
@@ -1572,15 +1625,19 @@ export class GameEngine {
       const shouldDraw = !isInvul || (Math.floor(this.player.invulnerableTimer * 12) % 2 === 0);
 
       if (shouldDraw) {
-        ShipRenderer.drawPlayerShip(
-          this.ctx,
-          this.ship,
-          this.player.x,
-          this.player.y,
-          this.player.width,
-          this.player.height,
-          this.player.isSpecialActive
-        );
+        try {
+          ShipRenderer.drawPlayerShip(
+            this.ctx,
+            this.ship,
+            this.player.x,
+            this.player.y,
+            this.player.width,
+            this.player.height,
+            this.player.isSpecialActive
+          );
+        } catch (err) {
+          console.warn("[GameEngine] Error al dibujar nave del jugador:", err);
+        }
       }
 
       // Escudo holográfico protector tras perder una vida
@@ -1659,6 +1716,20 @@ export class GameEngine {
     }
 
     this.ctx.restore();
+  }
+
+  drawFallbackSpaceBackground() {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    ctx.fillStyle = "#030712";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "rgba(0, 243, 255, 0.4)";
+    for (let i = 0; i < 45; i++) {
+      const sx = (i * 97 + (this.stageDistance * 0.4)) % w;
+      const sy = (i * 137 + (this.stageDistance * 1.2)) % h;
+      ctx.fillRect(sx, sy, (i % 3 === 0) ? 2 : 1, (i % 3 === 0) ? 2 : 1);
+    }
   }
 
   drawStageIntroBanner() {
