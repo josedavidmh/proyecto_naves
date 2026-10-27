@@ -2,8 +2,8 @@
  * SISTEMA INTERNACIONAL DE LOCALIZACIÓN (i18n)
  * Space Assault v2.0 - Tactical Aerial & Space Assault
  * 
- * Idioma por defecto en CrazyGames y entornos globales: INGLÉS (EN)
- * Idioma por defecto en navegadores en español propios: ESPAÑOL (ES)
+ * Idioma por defecto en entornos globales: INGLÉS (EN)
+ * Idioma por defecto en navegadores en español: ESPAÑOL (ES)
  * Conmutador interactivo 🌐 EN / ES disponible en la cabecera.
  */
 
@@ -242,20 +242,12 @@ class I18nManager {
       }
     } catch (_) {}
 
-    // 2. En CrazyGames, SIEMPRE el idioma por defecto es INGLÉS (requisito estricto de publicación)
-    const isCrazyGames = window.location.hostname.includes("crazygames.com") || 
-                         window.location.hostname.includes("crazygames.io") || 
-                         window.location.search.includes("cg=1");
-    if (isCrazyGames) {
+    // 2. Idioma preferido del navegador (o español por defecto)
+    const browserLang = (navigator.language || navigator.userLanguage || "es").toLowerCase();
+    if (browserLang.startsWith("en")) {
       return "en";
     }
-
-    // 3. En otros portales internacionales o por defecto
-    const browserLang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
-    if (browserLang.startsWith("es")) {
-      return "es";
-    }
-    return "en";
+    return "es";
   }
 
   getLanguage() {

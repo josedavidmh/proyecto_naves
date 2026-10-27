@@ -9,9 +9,7 @@
  * 4. Apoyo prioritario a Anuncios Recompensados voluntarios (Revivir nave, +escudo).
  * 
  * Compatible con:
- * - Google AdSense (Display Banners)
  * - Monetag (Direct Web Interstitials / Vignette / Rewarded)
- * - CrazyGames SDK (Midgame & Rewarded Video)
  * - GameDistribution SDK (Azerion HTML5 Ads)
  * - AdinPlay (AIP Web Game Ads)
  */
@@ -23,9 +21,6 @@ export const ADS_CONFIG = {
 
   // Configuración GameDistribution (Game GUID asignado al crear el juego)
   GD_GAME_ID: "d49c747be6564b50b1e93571d8b0ad58",
-
-  // Configuración CrazyGames
-  CRAZYGAMES_ENABLED: false,
 
   // Modo seguro de pruebas:
   TEST_MODE: false,
@@ -62,7 +57,6 @@ class UniversalAdsManager {
   constructor() {
     this.currentPlatform = "STANDALONE";
     this.isInitialized = false;
-    this.crazyGamesSDK = null;
 
     // Métricas de sesión en memoria y persistentes
     this.missionStartTime = 0;
@@ -185,12 +179,7 @@ class UniversalAdsManager {
   detectPlatform() {
     if (typeof window === "undefined") return;
 
-    const isCrazyGames = window.location.hostname.includes("crazygames") || window.location.search.includes("cg=1");
-    if (isCrazyGames && window.CrazyGames && window.CrazyGames.SDK) {
-      this.currentPlatform = "CRAZYGAMES";
-      this.crazyGamesSDK = window.CrazyGames.SDK;
-      console.log("[AdsManager] Entorno detectado: CrazyGames SDK");
-    } else if (window.gdsdk) {
+    if (window.gdsdk) {
       this.currentPlatform = "GAMEDISTRIBUTION";
       console.log("[AdsManager] Entorno detectado: GameDistribution SDK");
     } else if (window.aiptag) {
@@ -246,29 +235,7 @@ class UniversalAdsManager {
     }, ADS_CONFIG.AD_TIMEOUT_MS);
 
     try {
-      // 1. CrazyGames
-      if (this.currentPlatform === "CRAZYGAMES" && this.crazyGamesSDK && this.crazyGamesSDK.ad) {
-        this.crazyGamesSDK.ad.requestAd("midgame", {
-          adStarted: () => {
-            console.log("[CrazyGames] Anuncio midgame iniciado");
-            if (typeof window !== "undefined" && window.Sound && window.Sound.stopMusic) window.Sound.stopMusic();
-          },
-          adFinished: () => {
-            clearTimeout(timer);
-            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
-            safeComplete();
-          },
-          adError: (error) => {
-            console.warn("[CrazyGames] Error en anuncio midgame:", error);
-            clearTimeout(timer);
-            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
-            safeComplete();
-          }
-        });
-        return;
-      }
-
-      // 2. GameDistribution
+      // 1. GameDistribution
       if (this.currentPlatform === "GAMEDISTRIBUTION" && window.gdsdk && typeof window.gdsdk.showAd === "function") {
         window.gdsdk.showAd()
           .then(() => {
@@ -452,28 +419,7 @@ class UniversalAdsManager {
    */
   showRewardedAd(onRewarded, onDismissed) {
     try {
-      // 1. CrazyGames Rewarded Video
-      if (this.currentPlatform === "CRAZYGAMES" && this.crazyGamesSDK && this.crazyGamesSDK.ad) {
-        this.crazyGamesSDK.ad.requestAd("rewarded", {
-          adStarted: () => {
-            console.log("[CrazyGames] Video de recompensa iniciado");
-            if (typeof window !== "undefined" && window.Sound && window.Sound.stopMusic) window.Sound.stopMusic();
-          },
-          adFinished: () => {
-            console.log("[CrazyGames] Recompensa completada.");
-            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
-            if (typeof onRewarded === "function") onRewarded();
-          },
-          adError: (error) => {
-            console.warn("[CrazyGames] Error o descarte en video recompensado:", error);
-            if (typeof window !== "undefined" && window.Sound && window.Sound.startMusic) window.Sound.startMusic();
-            if (typeof onDismissed === "function") onDismissed();
-          }
-        });
-        return;
-      }
-
-      // 2. GameDistribution Rewarded Video
+      // 1. GameDistribution Rewarded Video
       if (this.currentPlatform === "GAMEDISTRIBUTION" && window.gdsdk && typeof window.gdsdk.showAd === "function") {
         window.gdsdk.showAd("rewarded")
           .then(() => {

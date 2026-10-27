@@ -224,24 +224,9 @@ export class GameEngine {
     }
   }
 
-  _triggerCrazyGamesAction(actionName) {
-    try {
-      if (typeof window !== "undefined" && window.CrazyGames && window.CrazyGames.SDK) {
-        const isCG = window.location.hostname.includes("crazygames") || window.location.search.includes("cg=1");
-        if (isCG) {
-          const sdk = window.CrazyGames.SDK;
-          if (sdk && sdk.game && typeof sdk.game[actionName] === "function") {
-            sdk.game[actionName]();
-          }
-        }
-      }
-    } catch (_) {}
-  }
-
   start(shipData, stageNumber = 1, pilotName = "PILOTO", runState = null) {
     if (typeof window !== "undefined") {
       window.__sa_combat_active = true;
-      this._triggerCrazyGamesAction("gameplayStart");
     }
     document.body.classList.add("battle-locked");
 
@@ -362,7 +347,6 @@ export class GameEngine {
     this.isRunning = false;
     if (typeof window !== "undefined") {
       window.__sa_combat_active = false;
-      this._triggerCrazyGamesAction("gameplayStop");
     }
     Sound.stopMusic();
     document.body.classList.remove("battle-locked");
@@ -376,7 +360,6 @@ export class GameEngine {
     this.isPaused = !this.isPaused;
     if (typeof window !== "undefined") {
       window.__sa_combat_active = !this.isPaused;
-      this._triggerCrazyGamesAction(this.isPaused ? "gameplayStop" : "gameplayStart");
     }
     if (!this.isPaused) {
       this.lastTime = performance.now();
@@ -1988,8 +1971,6 @@ export class GameEngine {
     this.stop();
     Sound.stopMusic();
     Sound.playVictory();
-
-    this._triggerCrazyGamesAction("happytime");
 
     const isCampaignVictory = this.currentStage === 5;
     const bonusScore = isCampaignVictory ? 15000 : 5000;

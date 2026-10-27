@@ -71,41 +71,15 @@
   <!-- Estilos Sci-Fi Arcade 100% autosuficientes (Ruta relativa estática limpia sin query params) -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- CrazyGames HTML5 SDK v3 Oficial (Solo cargado en el portal CrazyGames o mediante ?cg=1) -->
-  <script type="text/javascript">
-    (function() {
-      var isCrazyGames = window.location.hostname.includes("crazygames") || 
-                         window.location.search.includes("cg=1");
-      if (isCrazyGames) {
-        var s = document.createElement("script");
-        s.src = "https://sdk.crazygames.com/crazygames-sdk-v3.js";
-        s.async = true;
-        s.onload = async function() {
-          if (window.CrazyGames && window.CrazyGames.SDK) {
-            try {
-              await window.CrazyGames.SDK.init();
-              console.log("[CrazyGames SDK v3] Inicializado exitosamente.");
-            } catch (e) {
-              console.log("[CrazyGames SDK v3] Inicialización en entorno de prueba:", e);
-            }
-          }
-        };
-        document.head.appendChild(s);
-      }
-    })();
-  </script>
-
   <!-- GameDistribution HTML5 SDK Oficial (Solo activo en la red de GameDistribution o embebidos externos) -->
   <script type="text/javascript">
     (function() {
       var isOwnSite = window.location.hostname.includes("onrender.com") || 
                       window.location.hostname === "localhost" || 
                       window.location.hostname === "127.0.0.1";
-      var isCrazyGames = window.location.hostname.includes("crazygames") || 
-                         window.location.search.includes("cg=1");
       
-      // En GameDistribution activamos el SDK de GD (nunca en CrazyGames ni web propia)
-      if (!isOwnSite && !isCrazyGames && (window.location.search.includes("gd=1") || window.location.hostname.includes("gamedistribution"))) {
+      // En GameDistribution activamos el SDK de GD (nunca en web propia)
+      if (!isOwnSite && (window.location.search.includes("gd=1") || window.location.hostname.includes("gamedistribution"))) {
         window["GD_OPTIONS"] = {
           "gameId": "d49c747be6564b50b1e93571d8b0ad58",
           "onEvent": function(event) {

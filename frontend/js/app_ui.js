@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Aplicar traducciones iniciales (inglés predeterminado en CrazyGames y global)
+  // Aplicar traducciones iniciales
   i18n.applyTranslations();
 
   if (btnAudioToggle) {
