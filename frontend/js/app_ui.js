@@ -959,21 +959,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // Cargar y mostrar anuncio Google AdSense configurado
-      const adSlotBox = document.getElementById("ad-briefing-slot");
-      if (adSlotBox) {
-        const ins = adSlotBox.querySelector("ins.adsbygoogle");
-        const preview = adSlotBox.querySelector(".ad-preview-banner");
-        if (ins && ADS_CONFIG.CLIENT_ID && ADS_CONFIG.CLIENT_ID !== "ca-pub-XXXXXXXXXXXXXXXX") {
-          ins.setAttribute("data-ad-client", ADS_CONFIG.CLIENT_ID);
-          ins.setAttribute("data-ad-slot", ADS_CONFIG.SLOT_PRE_MISSION);
-          if (ADS_CONFIG.TEST_MODE) {
-            ins.setAttribute("data-adtest", "on");
-          }
-          if (preview) preview.style.display = "none";
-        }
-        renderGoogleAd(adSlotBox, ADS_CONFIG.SLOT_PRE_MISSION);
-      }
+
 
       const scrollBody = briefingModal.querySelector(".modal-scrollable-body");
       if (scrollBody) {

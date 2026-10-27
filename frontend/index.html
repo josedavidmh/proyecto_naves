@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Assault v2.0 - Tactical Aerial & Space Combat</title>
   
-  <!-- Redes publicitarias externas (AdSense y Monetag: estrictamente condicionadas a dominio propio, NUNCA en CrazyGames) -->
+  <!-- Red publicitaria Monetag Oficial (Zona 12128966: Vignette Banner e Intersticial In-App para Web Propia) -->
   <script type="text/javascript">
     (function() {
       var isOwnSite = window.location.hostname.includes("onrender.com") || 
@@ -13,12 +13,58 @@
                       window.location.hostname === "127.0.0.1";
       if (!isOwnSite) return;
 
-      // 1. Google AdSense dinámico (solo en web propia)
-      var sAd = document.createElement("script");
-      sAd.async = true;
-      sAd.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6261859133501243";
-      sAd.crossOrigin = "anonymous";
-      document.head.appendChild(sAd);
+      // 1. Manejador Monetag In-App Programático Oficial (Zona 12128966) con cola asíncrona
+      function initMonetagHandler(zoneId) {
+        var sdkName = "show_" + zoneId;
+        var queue = [];
+        var isLoaded = false;
+
+        window[sdkName] = function(options) {
+          if (typeof window[sdkName + "_raw"] === "function") {
+            return window[sdkName + "_raw"](options);
+          }
+          return new Promise(function(resolve, reject) {
+            if (isLoaded && typeof window[sdkName + "_raw"] !== "function") {
+              return reject(new Error("Monetag no disponible"));
+            }
+            queue.push([options, resolve, reject]);
+          });
+        };
+
+        var script = document.createElement("script");
+        script.src = "https://libtl.com/sdk.js";
+        script.dataset.zone = zoneId;
+        script.dataset.sdk = sdkName + "_raw";
+        script.async = true;
+        script.setAttribute("data-cfasync", "false");
+
+        var onDone = function() {
+          isLoaded = true;
+          var rawFn = window[sdkName + "_raw"];
+          while (queue.length > 0) {
+            var item = queue.shift();
+            if (typeof rawFn === "function") {
+              rawFn(item[0]).then(item[1]).catch(item[2]);
+            } else {
+              item[2](new Error("Monetag no listo"));
+            }
+          }
+        };
+
+        script.addEventListener("load", onDone);
+        script.addEventListener("error", onDone);
+        document.head.appendChild(script);
+      }
+
+      initMonetagHandler("12128966");
+
+      // 2. Monetag Vignette Banner Oficial (Zona 12128966)
+      var sVig = document.createElement("script");
+      sVig.src = "https://n6wxm.com/vignette.min.js";
+      sVig.dataset.zone = "12128966";
+      sVig.async = true;
+      sVig.setAttribute("data-cfasync", "false");
+      document.head.appendChild(sVig);
     })();
   </script>
 
@@ -815,26 +861,29 @@
     <div class="modal-box" style="max-width: 520px; width: 92%; text-align: center; border: 1px solid rgba(0, 243, 255, 0.4); box-shadow: 0 0 35px rgba(0, 243, 255, 0.25); border-radius: 12px; padding: 1.5rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid #1e293b; padding-bottom: 0.5rem;">
         <span id="tactical-ad-badge" style="font-size: 0.68rem; font-family: monospace; color: #00f3ff; background: rgba(0, 243, 255, 0.12); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(0, 243, 255, 0.3);">
-          🛸 TRANSMISIÓN PATROCINADA · HIPERSALTO
+          🛸 TRANSMISIÓN PATROCINADA · MONETAG
         </span>
         <span style="font-size: 0.65rem; font-family: monospace; color: #64748b;">PUBLICIDAD</span>
       </div>
 
       <h3 id="tactical-ad-title" style="font-family: 'Orbitron', monospace; font-size: 1.25rem; color: #38bdf8; font-weight: bold; margin-bottom: 0.25rem;">
-        PREPARANDO SIGUIENTE FASE
+        PREPARANDO OPERACIÓN
       </h3>
       <p id="tactical-ad-subtitle" style="font-size: 0.78rem; color: #94a3b8; font-family: monospace; margin-bottom: 1rem;">
-        Sincronizando coordenadas y reactores de plasma...
+        Sincronizando satélites orbitales y calibrando armamento...
       </p>
 
-      <!-- Contenedor del Anuncio Google AdSense -->
-      <div id="tactical-ad-slot-box" style="min-height: 250px; background: rgba(0, 0, 0, 0.6); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 8px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
-        <ins class="adsbygoogle"
-             style="display:block; width: 100%; min-height: 250px;"
-             data-ad-client="ca-pub-6261859133501243"
-             data-ad-slot="1668600475"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
+      <!-- Contenedor del Anuncio Monetag -->
+      <div id="tactical-ad-slot-box" style="min-height: 180px; background: rgba(0, 0, 0, 0.6); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 8px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+        <div style="text-align: center; padding: 1.5rem;">
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem; filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.6));">🛰️</div>
+          <p style="font-family: 'Orbitron', monospace; font-size: 0.95rem; color: #00f3ff; font-weight: bold; letter-spacing: 1px; margin-bottom: 0.35rem;">
+            MONETAG · TRANSMISIÓN PATROCINADA
+          </p>
+          <p style="font-size: 0.78rem; color: #94a3b8; font-family: 'Rajdhani', sans-serif;">
+            Enlace de telemetría seguro · Zona 12128966
+          </p>
+        </div>
       </div>
 
       <!-- Barra de Progreso y Temporizador -->

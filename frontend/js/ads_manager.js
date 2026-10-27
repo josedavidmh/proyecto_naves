@@ -17,18 +17,9 @@
  */
 
 export const ADS_CONFIG = {
-  // Configuración Google AdSense
-  ADSENSE_CLIENT_ID: "ca-pub-6261859133501243",
-  ADSENSE_SLOT_PRE_MISSION: "1668600475",
-  ADSENSE_SLOT_POST_MISSION: "0987654321",
-  CLIENT_ID: "ca-pub-6261859133501243",
-  SLOT_PRE_MISSION: "1668600475",
-
-  // Configuración Monetag (Zona Vignette Limpia + Zona MultiTag + Direct Link)
+  // Configuración Monetag (Zona Limpia 12128966: Vignette e In-App)
   MONETAG_ZONE_ID: "12128966",
   MONETAG_ZONE_VIGNETTE: "12128966",
-  MONETAG_ZONE_MULTITAG: "302008",
-  MONETAG_DIRECT_LINK_URL: (typeof localStorage !== "undefined" && localStorage.getItem("sa_monetag_direct_link")) || "",
 
   // Configuración GameDistribution (Game GUID asignado al crear el juego)
   GD_GAME_ID: "d49c747be6564b50b1e93571d8b0ad58",
@@ -43,28 +34,16 @@ export const ADS_CONFIG = {
   AD_TIMEOUT_MS: 4000,
 
   // --- POLÍTICAS DE EQUILIBRIO DINÁMICO DE ANUNCIOS ---
-  // Intervalo estándar entre anuncios automáticos (3 minutos)
-  MIN_COOLDOWN_MS: 180000,
-
-  // Intervalo ágil para transiciones de fase superada (2 minutos)
-  STAGE_VICTORY_COOLDOWN_MS: 120000,
-
-  // Duración mínima de la partida para considerar mostrar anuncio (30 segundos)
-  MIN_PLAYTIME_FOR_AD_MS: 30000,
-
-  // Primera partida siempre 100% libre de anuncios para fidelizar al jugador
-  FIRST_GAME_FREE: true,
-
-  // Intervalo de publicidad periódica normal (1 vez cada hora = 3600000 ms)
-  PERIODIC_HOURLY_INTERVAL_MS: 3600000,
-
-  // Límite razonable de anuncios automáticos por sesión
-  MAX_ADS_PER_SESSION: 6
+  MIN_COOLDOWN_MS: 30000,
+  STAGE_VICTORY_COOLDOWN_MS: 30000,
+  MIN_PLAYTIME_FOR_AD_MS: 15000,
+  FIRST_GAME_FREE: false,
+  MAX_ADS_PER_SESSION: 20
 };
 
 // Aliases para retrocompatibilidad con código existente
-export const CLIENT_ID = ADS_CONFIG.ADSENSE_CLIENT_ID;
-export const SLOT_PRE_MISSION = ADS_CONFIG.ADSENSE_SLOT_PRE_MISSION;
+export const CLIENT_ID = "";
+export const SLOT_PRE_MISSION = "";
 
 // ESCUDO DE COMBATE: Previene que ventanas emergentes o popunders interrumpan los controles táctiles en combate
 if (typeof window !== "undefined") {
@@ -92,8 +71,12 @@ class UniversalAdsManager {
     this.lastAdTimestamp = this._loadLastAdTimestamp();
     this.lastPeriodicAdTimestamp = this._loadLastPeriodicAdTimestamp();
 
+    // Banderas estrictas: solo una vez al escoger nave y solo una vez al escoger o iniciar fase
+    this.hasShownShipAd = false;
+    this.hasShownStageAd = false;
+
     this.detectPlatform();
-    this._startPeriodicChecker();
+    // Periodic checker desactivado para garantizar cero anuncios automáticos en segundo plano
   }
 
   _loadLastAdTimestamp() {
@@ -212,40 +195,22 @@ class UniversalAdsManager {
     } else if (window.aiptag) {
       this.currentPlatform = "ADINPLAY";
       console.log("[AdsManager] Entorno detectado: AdinPlay");
-    } else if (window.monetag || window.show_monetag_ad) {
-      this.currentPlatform = "MONETAG";
-      console.log("[AdsManager] Entorno detectado: Monetag");
     } else {
-      this.currentPlatform = "STANDALONE_WEB";
-      console.log("[AdsManager] Entorno detectado: Web Propia (AdSense / Monetag / Standalone)");
+      this.currentPlatform = "MONETAG";
+      console.log("[AdsManager] Entorno detectado: Web Propia (Monetag Oficial - Zona 12128966)");
     }
   }
 
   /**
-   * Renderiza el banner de Google AdSense en un contenedor específico (ej: Briefing de Misión)
+   * Render de compatibilidad (AdSense eliminado por requerimiento de Monetag exclusivo)
    */
-  renderGoogleAd(containerElement, slotId = ADS_CONFIG.ADSENSE_SLOT_PRE_MISSION) {
-    if (!containerElement) return;
-
-    try {
-      const ins = containerElement.querySelector("ins.adsbygoogle");
-      if (!ins) return;
-
-      if (ins.getAttribute("data-adsbygoogle-status")) {
-        return;
-      }
-
-      if (window.adsbygoogle) {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        console.log("[AdsManager] Solicitud AdSense procesada para slot:", slotId);
-      }
-    } catch (err) {
-      console.warn("[AdsManager] AdSense bloqueado por AdBlock o en modo simulación.", err);
-    }
+  renderGoogleAd(containerElement, slotId) {
+    // No-op: Google AdSense desactivado, canal exclusivo Monetag
   }
 
   /**
-   * Muestra un anuncio Interstitial entre partidas respetando el balance de juego
+   * Muestra un anuncio Interstitial respetando la regla estricta:
+   * Solo una vez al escoger nave y solo una vez al escoger/iniciar fase.
    */
   showInterstitial(onComplete, options = {}) {
     let finished = false;
@@ -256,15 +221,29 @@ class UniversalAdsManager {
       }
     };
 
-    const force = options.force === true;
-    const isAllowed = force || this.canShowInterstitial(options.context || "game_over");
+    const ctx = options.context || "stage_selected";
 
-    // Siempre incrementamos el contador de partidas jugadas para evaluar la cortesía futura
-    this.gamesPlayedCount++;
-
-    if (!isAllowed) {
-      safeComplete();
-      return;
+    // REGLA ESTRICTA: Solo una vez al escoger nave y solo una vez al escoger o iniciar fase
+    if (ctx === "ship_selected") {
+      if (this.hasShownShipAd) {
+        console.log("[AdsManager] 🛸 Anuncio de selección de nave ya mostrado una vez en esta sesión. Omitiendo.");
+        safeComplete();
+        return;
+      }
+      this.hasShownShipAd = true;
+    } else if (ctx === "stage_selected") {
+      if (this.hasShownStageAd) {
+        console.log("[AdsManager] 🛸 Anuncio de selección de fase ya mostrado una vez en esta sesión. Omitiendo.");
+        safeComplete();
+        return;
+      }
+      this.hasShownStageAd = true;
+    } else {
+      // Cualquier otro contexto sin forzar no dispara anuncio no deseado
+      if (!options.force) {
+        safeComplete();
+        return;
+      }
     }
 
     // Registramos la exhibición del anuncio
@@ -315,29 +294,53 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Web Propia (Render / Standalone): Mostrar Anuncio Táctico según contexto
-      clearTimeout(timer);
-      const ctx = options.context || "stage_victory";
-      let badge = "🛸 TRANSMISIÓN PATROCINADA · HIPERSALTO DE ÁREA";
-      let title = "SINCRONIZANDO SIGUIENTE FASE";
-      let subtitle = "Cargando coordenadas tácticas y preparando armamento...";
+      // 3. Web Propia: Invocar Monetag Oficial (Zona 12128966)
+      console.log(`[AdsManager] 📺 Invocando Intersticial Monetag para contexto: ${ctx}`);
 
-      if (ctx === "ship_selected") {
-        badge = "🛸 TELEMETRÍA DE HANGAR · NAVE CALIBRADA";
-        title = "CONFIGURANDO SISTEMAS DE VUELO";
-        subtitle = "Cargando especificaciones técnicas y transfiriendo al mapa de operaciones...";
-      } else if (ctx === "stage_selected") {
-        badge = "🛸 INTELIGENCIA TÁCTICA · COORDENADAS DE FASE";
-        title = "ANALIZANDO SECTOR DE COMBATE";
-        subtitle = "Escaneando defensas enemigas y frecuencias satelitales...";
+      // Invocar SDK programático de Monetag si está listo
+      if (typeof window.show_12128966 === "function") {
+        try {
+          const res = window.show_12128966({ type: "inApp" });
+          if (res && typeof res.then === "function") {
+            res.then(() => {
+              console.log("[Monetag] Anuncio completado con éxito.");
+              clearTimeout(timer);
+              safeComplete();
+            }).catch((err) => {
+              console.warn("[Monetag] Anuncio cerrado o no disponible:", err);
+              clearTimeout(timer);
+              safeComplete();
+            });
+            return;
+          }
+        } catch (err) {
+          console.warn("[Monetag] Excepción al invocar show_12128966:", err);
+        }
       }
+
+      if (typeof window.show_monetag_ad === "function") {
+        try { window.show_monetag_ad(); } catch (_) {}
+      }
+
+      this._triggerMonetagVignette();
+
+      clearTimeout(timer);
+      let badge = ctx === "ship_selected" 
+        ? "🛸 TELEMETRÍA DE HANGAR · MONETAG" 
+        : "🛸 INTELIGENCIA TÁCTICA · MONETAG";
+      let title = ctx === "ship_selected" 
+        ? "CONFIGURANDO SISTEMAS DE VUELO" 
+        : "ANALIZANDO SECTOR DE COMBATE";
+      let subtitle = ctx === "ship_selected"
+        ? "Nave seleccionada. Sincronizando con satélites tácticos..."
+        : "Coordenadas fijadas. Escaneando frecuencias de combate...";
 
       this._showTacticalAdModal({
         badge,
         title,
         subtitle,
-        durationSeconds: 4,
-        canSkipAfter: 2,
+        durationSeconds: 3,
+        canSkipAfter: 1,
         onFinished: safeComplete
       });
 
@@ -349,9 +352,9 @@ class UniversalAdsManager {
   }
 
   /**
-   * Muestra el modal táctico patrocinado con AdSense para transiciones de fase y vidas
+   * Muestra el modal táctico patrocinado Monetag para transiciones de fase y nave
    */
-  _showTacticalAdModal({ badge, title, subtitle, durationSeconds = 5, canSkipAfter = 2, onFinished }) {
+  _showTacticalAdModal({ badge, title, subtitle, durationSeconds = 3, canSkipAfter = 1, onFinished }) {
     if (typeof document === "undefined") {
       if (typeof onFinished === "function") onFinished();
       return;
@@ -369,16 +372,10 @@ class UniversalAdsManager {
     const timerText = document.getElementById("tactical-ad-timer-text");
     const progressBar = document.getElementById("tactical-ad-progress-bar");
     const btnContinue = document.getElementById("btn-tactical-ad-continue");
-    const slotBox = document.getElementById("tactical-ad-slot-box");
 
     if (badgeEl && badge) badgeEl.textContent = badge;
     if (titleEl && title) titleEl.textContent = title;
     if (subtitleEl && subtitle) subtitleEl.textContent = subtitle;
-
-    // Renderizar anuncio AdSense en el contenedor táctico
-    if (slotBox) {
-      this.renderGoogleAd(slotBox, ADS_CONFIG.SLOT_PRE_MISSION);
-    }
 
     modal.classList.remove("hidden");
 
@@ -429,7 +426,9 @@ class UniversalAdsManager {
    * Invoca activamente el Vignette Banner de Monetag y verifica estado de AdBlock
    */
   _triggerMonetagVignette() {
-    // Desactivado para garantizar experiencia limpia sin interrupciones
+    try {
+      document.dispatchEvent(new CustomEvent("stage_completed", { detail: { timestamp: Date.now() } }));
+    } catch (_) {}
   }
 
   /**
