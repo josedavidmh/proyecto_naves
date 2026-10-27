@@ -315,13 +315,28 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Web Propia (Render / Standalone): Mostrar Anuncio Táctico de Transición de Fase
+      // 3. Web Propia (Render / Standalone): Mostrar Anuncio Táctico según contexto
       clearTimeout(timer);
+      const ctx = options.context || "stage_victory";
+      let badge = "🛸 TRANSMISIÓN PATROCINADA · HIPERSALTO DE ÁREA";
+      let title = "SINCRONIZANDO SIGUIENTE FASE";
+      let subtitle = "Cargando coordenadas tácticas y preparando armamento...";
+
+      if (ctx === "ship_selected") {
+        badge = "🛸 TELEMETRÍA DE HANGAR · NAVE CALIBRADA";
+        title = "CONFIGURANDO SISTEMAS DE VUELO";
+        subtitle = "Cargando especificaciones técnicas y transfiriendo al mapa de operaciones...";
+      } else if (ctx === "stage_selected") {
+        badge = "🛸 INTELIGENCIA TÁCTICA · COORDENADAS DE FASE";
+        title = "ANALIZANDO SECTOR DE COMBATE";
+        subtitle = "Escaneando defensas enemigas y frecuencias satelitales...";
+      }
+
       this._showTacticalAdModal({
-        badge: "🛸 TRANSMISIÓN PATROCINADA · HIPERSALTO DE ÁREA",
-        title: "SINCRONIZANDO SIGUIENTE FASE",
-        subtitle: "Cargando coordenadas tácticas y preparando armamento...",
-        durationSeconds: 5,
+        badge,
+        title,
+        subtitle,
+        durationSeconds: 4,
         canSkipAfter: 2,
         onFinished: safeComplete
       });

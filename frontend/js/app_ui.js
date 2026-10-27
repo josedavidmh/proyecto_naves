@@ -695,12 +695,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Eventos de selección de nave
     document.querySelectorAll(".btn-select-ship").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
+      btn.addEventListener("click", (e) => {
         const shipId = parseInt(e.currentTarget.getAttribute("data-ship-id"));
         selectedShip = availableShips.find((s) => s.id === shipId) || availableShips[0];
-        shipSelectContainer.classList.add("hidden");
-        stageSelectContainer.classList.remove("hidden");
-        await loadStageSelector();
+        adsManager.showInterstitial(async () => {
+          shipSelectContainer.classList.add("hidden");
+          stageSelectContainer.classList.remove("hidden");
+          await loadStageSelector();
+        }, { force: true, context: "ship_selected" });
       });
     });
   }
@@ -994,7 +996,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".btn-launch-stage").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const stageNum = parseInt(e.currentTarget.getAttribute("data-stage"));
-        openBriefing(stageNum);
+        adsManager.showInterstitial(() => {
+          openBriefing(stageNum);
+        }, { force: true, context: "stage_selected" });
       });
     });
 
