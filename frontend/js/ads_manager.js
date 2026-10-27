@@ -223,27 +223,15 @@ class UniversalAdsManager {
 
     const ctx = options.context || "stage_selected";
 
-    // REGLA ESTRICTA: Solo una vez al escoger nave y solo una vez al escoger o iniciar fase
-    if (ctx === "ship_selected") {
-      if (this.hasShownShipAd) {
-        console.log("[AdsManager] 🛸 Anuncio de selección de nave ya mostrado una vez en esta sesión. Omitiendo.");
-        safeComplete();
-        return;
-      }
-      this.hasShownShipAd = true;
-    } else if (ctx === "stage_selected") {
-      if (this.hasShownStageAd) {
-        console.log("[AdsManager] 🛸 Anuncio de selección de fase ya mostrado una vez en esta sesión. Omitiendo.");
-        safeComplete();
-        return;
-      }
-      this.hasShownStageAd = true;
-    } else {
-      // Cualquier otro contexto sin forzar no dispara anuncio no deseado
-      if (!options.force) {
-        safeComplete();
-        return;
-      }
+    // Política requerida por el usuario:
+    // Mostrar anuncio:
+    // 1) Cada vez que el usuario cambia de nave (ship_selected)
+    // 2) Cada vez que inicie una fase nueva al picar en el inicio de la siguiente fase (stage_victory / stage_selected)
+    const isTargetEvent = (ctx === "ship_selected" || ctx === "stage_victory" || ctx === "stage_selected" || options.force === true);
+
+    if (!isTargetEvent) {
+      safeComplete();
+      return;
     }
 
     // Registramos la exhibición del anuncio
@@ -325,15 +313,19 @@ class UniversalAdsManager {
       this._triggerMonetagVignette();
 
       clearTimeout(timer);
-      let badge = ctx === "ship_selected" 
-        ? "🛸 TELEMETRÍA DE HANGAR · MONETAG" 
-        : "🛸 INTELIGENCIA TÁCTICA · MONETAG";
-      let title = ctx === "ship_selected" 
-        ? "CONFIGURANDO SISTEMAS DE VUELO" 
-        : "ANALIZANDO SECTOR DE COMBATE";
-      let subtitle = ctx === "ship_selected"
-        ? "Nave seleccionada. Sincronizando con satélites tácticos..."
-        : "Coordenadas fijadas. Escaneando frecuencias de combate...";
+      let badge = "🛸 INTELIGENCIA TÁCTICA · MONETAG";
+      let title = "ANALIZANDO SECTOR DE COMBATE";
+      let subtitle = "Coordenadas fijadas. Escaneando frecuencias de combate...";
+
+      if (ctx === "ship_selected") {
+        badge = "🛸 TELEMETRÍA DE HANGAR · MONETAG";
+        title = "CONFIGURANDO SISTEMAS DE VUELO";
+        subtitle = "Nave seleccionada. Sincronizando con satélites tácticos...";
+      } else if (ctx === "stage_victory") {
+        badge = "🛸 TRANSMISIÓN PATROCINADA · SIGUIENTE FASE";
+        title = "HIPERSALTO A LA SIGUIENTE FASE";
+        subtitle = "Cargando coordenadas tácticas y suministros de combate...";
+      }
 
       this._showTacticalAdModal({
         badge,
