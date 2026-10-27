@@ -315,15 +315,99 @@ class UniversalAdsManager {
         return;
       }
 
-      // Fallback limpio sin interrumpir con popups agresivos
+      // 3. Web Propia (Render / Standalone): Mostrar Anuncio Táctico de Transición de Fase
       clearTimeout(timer);
-      safeComplete();
+      this._showTacticalAdModal({
+        badge: "🛸 TRANSMISIÓN PATROCINADA · HIPERSALTO DE ÁREA",
+        title: "SINCRONIZANDO SIGUIENTE FASE",
+        subtitle: "Cargando coordenadas tácticas y preparando armamento...",
+        durationSeconds: 5,
+        canSkipAfter: 2,
+        onFinished: safeComplete
+      });
 
     } catch (e) {
       console.warn("[AdsManager] Excepción al invocar anuncio:", e);
       clearTimeout(timer);
       safeComplete();
     }
+  }
+
+  /**
+   * Muestra el modal táctico patrocinado con AdSense para transiciones de fase y vidas
+   */
+  _showTacticalAdModal({ badge, title, subtitle, durationSeconds = 5, canSkipAfter = 2, onFinished }) {
+    if (typeof document === "undefined") {
+      if (typeof onFinished === "function") onFinished();
+      return;
+    }
+
+    const modal = document.getElementById("tactical-ad-modal");
+    if (!modal) {
+      if (typeof onFinished === "function") onFinished();
+      return;
+    }
+
+    const badgeEl = document.getElementById("tactical-ad-badge");
+    const titleEl = document.getElementById("tactical-ad-title");
+    const subtitleEl = document.getElementById("tactical-ad-subtitle");
+    const timerText = document.getElementById("tactical-ad-timer-text");
+    const progressBar = document.getElementById("tactical-ad-progress-bar");
+    const btnContinue = document.getElementById("btn-tactical-ad-continue");
+    const slotBox = document.getElementById("tactical-ad-slot-box");
+
+    if (badgeEl && badge) badgeEl.textContent = badge;
+    if (titleEl && title) titleEl.textContent = title;
+    if (subtitleEl && subtitle) subtitleEl.textContent = subtitle;
+
+    // Renderizar anuncio AdSense en el contenedor táctico
+    if (slotBox) {
+      this.renderGoogleAd(slotBox, ADS_CONFIG.SLOT_PRE_MISSION);
+    }
+
+    modal.classList.remove("hidden");
+
+    let elapsed = 0;
+    if (btnContinue) {
+      btnContinue.disabled = canSkipAfter > 0;
+      btnContinue.textContent = canSkipAfter > 0 ? `ESPERE ${canSkipAfter}s...` : "CONTINUAR ➔";
+    }
+    if (progressBar) progressBar.style.width = "0%";
+    if (timerText) timerText.textContent = `⏳ Desplegando en ${durationSeconds}s...`;
+
+    let completed = false;
+    let interval = null;
+    const finish = () => {
+      if (completed) return;
+      completed = true;
+      if (interval) clearInterval(interval);
+      modal.classList.add("hidden");
+      if (typeof onFinished === "function") onFinished();
+    };
+
+    if (btnContinue) {
+      btnContinue.onclick = () => finish();
+    }
+
+    interval = setInterval(() => {
+      elapsed += 0.5;
+      const pct = Math.min(100, (elapsed / durationSeconds) * 100);
+      if (progressBar) progressBar.style.width = `${pct}%`;
+
+      const left = Math.max(0, Math.ceil(durationSeconds - elapsed));
+      if (timerText) {
+        timerText.textContent = left > 0 ? `⏳ Continuando en ${left}s...` : "✔ Transmisión completada";
+      }
+
+      if (elapsed >= canSkipAfter && btnContinue && btnContinue.disabled) {
+        btnContinue.disabled = false;
+        btnContinue.textContent = "CONTINUAR [SALTAR] ➔";
+      }
+
+      if (elapsed >= durationSeconds) {
+        finish();
+      }
+    }, 500);
   }
 
   /**
@@ -345,7 +429,7 @@ class UniversalAdsManager {
       const isBlocked = bait.offsetHeight === 0 || bait.clientHeight === 0 || !bait.offsetParent;
       bait.remove();
       if (isBlocked) {
-        console.warn("[AdsManager] ⚠️ Se detectó un bloqueador de anuncios (AdBlock / Brave Shields) activo en el navegador. Para ver y monetizar con Monetag, desactiva el escudo o agrega este sitio a la lista de permitidos.");
+        console.warn("[AdsManager] ⚠️ Se detectó un bloqueador de anuncios (AdBlock / Brave Shields) activo en el navegador.");
       } else {
         console.log("[AdsManager] ✅ Verificación de red: Sin bloqueador de anuncios detectado.");
       }
@@ -395,13 +479,18 @@ class UniversalAdsManager {
         return;
       }
 
-      // 3. Conceder revivir de rescate al piloto en web independiente
-
-      // 5. Conceder revivir de rescate al piloto
-      console.log("[AdsManager] Recompensa concedida: Revivir de rescate + escudo 100%.");
-      if (typeof onRewarded === "function") {
-        setTimeout(onRewarded, 350);
-      }
+      // 3. Web Propia (Render / Standalone): Anuncio Recompensado para Revivir con +2 Vidas
+      this._showTacticalAdModal({
+        badge: "⚡ PROTOCOLO DE RESCATE · ANUNCIO RECOMPENSADO",
+        title: "SUMINISTRO DE EMERGENCIA (+2 VIDAS)",
+        subtitle: "Visualiza la transmisión patrocinada para reparar tu nave...",
+        durationSeconds: 5,
+        canSkipAfter: 5, // Debe ver el anuncio completo para desbloquear las 2 vidas
+        onFinished: () => {
+          console.log("[AdsManager] Recompensa concedida: Revivir de rescate + escudo 100%.");
+          if (typeof onRewarded === "function") onRewarded();
+        }
+      });
 
     } catch (e) {
       console.warn("[AdsManager] Fallo en anuncio recompensado:", e);
