@@ -407,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isFinal) {
         if (elTitle) elTitle.textContent = isEn ? "🏆 TOTAL VICTORY: CAMPAIGN CONQUERED!" : "🏆 ¡VICTORIA TOTAL: CAMPAÑA CONQUISTADA!";
         document.getElementById("vic-stage").textContent = isEn ? "GENERAL VEKTOR DEFEATED · ALL SECTORS 100% CLEARED" : "GENERAL VEKTOR DERROTADO · TODAS LAS ÁREAS SUPERADAS AL 100%";
-        if (elUnlocked) elUnlocked.textContent = isEn ? "✔ Congratulations commander! Campaign completed and recorded." : "✔ ¡Felicidades comandante! Campaña militar completada y guardada en SQLite.";
+        if (elUnlocked) elUnlocked.textContent = isEn ? "✔ Congratulations commander! Campaign completed and recorded." : "✔ ¡Felicidades comandante! Campaña militar completada y guardada.";
         if (elEpilogue) elEpilogue.classList.remove("hidden");
         btnNextStageVictory.style.display = "none";
         btnHangarVictory.textContent = isEn ? "🎖️ RETURN TO HANGAR WITH HONORS" : "🎖️ REGRESAR AL HANGAR CON HONORES";
@@ -415,7 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         if (elTitle) elTitle.textContent = isEn ? `🎖️ AREA ${stats.stageCompleted} CLEARED!` : `🎖️ ¡ÁREA ${stats.stageCompleted} SUPERADA!`;
         document.getElementById("vic-stage").textContent = isEn ? `FLAGSHIP DESTROYED! AREA ${stats.stageCompleted} SECURED ➔ READY FOR STAGE ${nextStageNum}` : `¡JEFE PRINCIPAL ABATIDO! ÁREA ${stats.stageCompleted} DESPEJADA ➔ LISTO PARA FASE ${nextStageNum}`;
-        if (elUnlocked) elUnlocked.textContent = isEn ? `✔ Area ${stats.stageCompleted} secured. Stage ${nextStageNum} unlocked.` : `✔ Área ${stats.stageCompleted} superada con éxito. Fase ${nextStageNum} desbloqueada en SQLite.`;
+        if (elUnlocked) elUnlocked.textContent = isEn ? `✔ Area ${stats.stageCompleted} secured. Stage ${nextStageNum} unlocked.` : `✔ Área ${stats.stageCompleted} superada con éxito. Fase ${nextStageNum} desbloqueada.`;
         if (elEpilogue) elEpilogue.classList.add("hidden");
         btnNextStageVictory.style.display = "block";
         btnNextStageVictory.textContent = isEn ? `🚀 DEPLOY TO STAGE ${nextStageNum} ➔` : `🚀 DESPLEGAR A LA FASE ${nextStageNum} ➔`;
@@ -1070,7 +1070,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btnOpenLeaderboard.addEventListener("click", async () => {
     leaderboardModal.classList.remove("hidden");
     const tbody = document.getElementById("leaderboard-body");
-    tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-xs font-mono text-gray-500">Consultando registros en SQLite...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-xs font-mono text-gray-500">Consultando registros del cuartel general...</td></tr>`;
 
     const res = await ApiService.getLeaderboard(15);
     if (!res.ok || !res.data.success) {
@@ -1079,7 +1079,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (res.data.leaderboard.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-xs font-mono text-gray-400">Aún no hay puntuaciones registradas en SQLite. ¡Sé el primer piloto en el ranking!</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-xs font-mono text-gray-400">Aún no hay puntuaciones registradas en el ranking. ¡Sé el primer piloto en la clasificación!</td></tr>`;
       return;
     }
 

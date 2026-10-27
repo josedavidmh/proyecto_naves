@@ -309,7 +309,7 @@
     <section id="lobby-container" class="cyber-card hidden">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <span style="font-size: 0.72rem; color: #34d399; font-family: monospace; letter-spacing: 1px;">● SESIÓN ACTIVA EN BASE DE DATOS SQLITE</span>
+          <span style="font-size: 0.72rem; color: #34d399; font-family: monospace; letter-spacing: 1px;">● PILOTO CONECTADO · EN LÍNEA</span>
           <h2 style="font-family: 'Orbitron', monospace; font-size: 1.75rem; color: #ffffff; margin-top: 0.25rem; letter-spacing: 2px;">SPACE ASSAULT <span class="game-version-badge">v1.7</span> · HANGAR DE COMBATE</h2>
         </div>
         <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
@@ -405,12 +405,12 @@
         </button>
       </div>
 
-      <!-- Verificación JWT -->
+      <!-- Estado de Enlace y Telemetría -->
       <div style="background: rgba(0,0,0,0.4); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem; font-size: 0.8rem; font-family: monospace; display: flex; flex-direction: column; gap: 0.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-          <span style="color: #94a3b8;">Verificación criptográfica de token JWT contra SQLite:</span>
+          <span style="color: #94a3b8;">Estado del enlace de telemetría:</span>
           <button id="btn-verify-session" class="btn-cyber-outline" style="padding: 0.35rem 0.85rem; font-size: 0.75rem;">
-            Verificar /api/auth/me
+            Comprobar Enlace
           </button>
         </div>
         <div id="verify-result" style="color: #64748b;"></div>
@@ -838,7 +838,7 @@
           <span style="color: #34d399; font-weight: bold; font-size: 0.8rem;">🎁 Recompensa de Área:</span>
           <span id="vic-lives-reward-text" style="color: #34d399; font-weight: 800; font-family: monospace;">+1 VIDA EXTRA CONCEDIDA</span>
         </div>
-        <p id="vic-unlocked-msg" style="font-size: 0.7rem; color: #34d399; margin-top: 0.5rem;">✔ Siguiente fase desbloqueada en SQLite.</p>
+        <p id="vic-unlocked-msg" style="font-size: 0.7rem; color: #34d399; margin-top: 0.5rem;">✔ Siguiente fase desbloqueada y lista para desplegar.</p>
       </div>
 
       <div style="display: flex; gap: 0.75rem;">
@@ -1142,7 +1142,7 @@
       <a href="/terminos.html" style="color: #94a3b8; text-decoration: none;" title="Términos de Servicio">⚖️ TÉRMINOS</a>
     </div>
     <div style="font-size: 0.7rem; color: #64748b;">
-      SPACE ASSAULT v2.0 • ARQUITECTURA DE SOFTWARE PRO • CERO MOCKS • 60 FPS CANVAS
+      SPACE ASSAULT v2.0 • COMBATE AÉREO Y ESPACIAL • 60 FPS ARCADE
     </div>
   </footer>
 

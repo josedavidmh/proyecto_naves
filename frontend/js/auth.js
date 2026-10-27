@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Chequeo de servidor
     const health = await ApiService.checkHealth();
     if (health.ok) {
-      serverStatusBadge.textContent = "ONLINE [SQLITE LISTO]";
+      serverStatusBadge.textContent = "ONLINE [CONECTADO]";
       serverStatusBadge.className = "badge-status";
     } else {
       serverStatusBadge.textContent = "OFFLINE [SIN CONEXIÓN]";
@@ -253,16 +253,16 @@ document.addEventListener("DOMContentLoaded", () => {
     showAlert("Has cerrado sesión en el hangar de combate.", "success");
   });
 
-  // Botón de Verificación de Sesión Activa con JWT
+  // Botón de Verificación de Enlace y Estado
   btnVerifySession.addEventListener("click", async () => {
-    verifyResultEl.textContent = "Comprobando token criptográfico en backend...";
+    verifyResultEl.textContent = "Comprobando enlace de telemetría con el cuartel general...";
     const res = await ApiService.getProfile();
     if (res.ok && res.data.success) {
       verifyResultEl.className = "text-xs font-mono text-emerald-400 mt-2 p-3 bg-black/60 rounded border border-emerald-500/50";
-      verifyResultEl.textContent = `[VERIFICADO 200 OK] Token válido. Usuario BD id=${res.data.user.id}, Piloto="${res.data.user.username}".`;
+      verifyResultEl.textContent = `[ENLACE ACTIVO · SEÑAL 100%] Piloto confirmado: "${res.data.user.username}". Identificador de Flota: #${res.data.user.id}.`;
     } else {
       verifyResultEl.className = "text-xs font-mono text-red-400 mt-2 p-3 bg-black/60 rounded border border-red-500/50";
-      verifyResultEl.textContent = `[FALLÓ 401] ${res.data.error || "Token inválido"}`;
+      verifyResultEl.textContent = `[SEÑAL DÉBIL O REQUERIDA] ${res.data.error || "Enlace no disponible"}`;
     }
   });
 
@@ -327,7 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (res.ok && res.data.success) {
         changePwdAlert.className = "p-2 rounded text-xs font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-500";
-        changePwdAlert.textContent = "✔ ¡Contraseña actualizada con éxito en SQLite!";
+        changePwdAlert.textContent = "✔ ¡Contraseña de piloto actualizada con éxito!";
         changePwdAlert.classList.remove("hidden");
         setTimeout(() => {
           closeChangePasswordModal();
